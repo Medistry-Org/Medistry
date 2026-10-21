@@ -1,0 +1,174 @@
+.hero {
+  overflow: clip;
+  position: relative;
+  background: var(--teal-800);
+  color: var(--on-dark);
+  display: grid;
+  padding: 0 0 var(--gutter);
+}
+
+.panel {
+  position: relative;
+  isolation: isolate;
+  padding: calc(var(--nav-h) + 52px + env(safe-area-inset-top)) var(--gutter) 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.field {
+  position: absolute;
+  inset: 0 0 -60vw 0;
+  width: 100%;
+  height: calc(100% + 60vw);
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0;
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent 96%);
+  animation: fieldIn 2400ms var(--ease-out) 100ms forwards;
+}
+@keyframes fieldIn {
+  to {
+    opacity: 1;
+  }
+}
+
+.copy {
+  display: grid;
+  gap: 22px;
+  max-width: 40rem;
+}
+
+.title {
+  color: var(--on-dark);
+  font-size: clamp(2.6rem, 1.4rem + 5.4vw, 5.2rem);
+}
+
+.lede {
+  font-size: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem);
+  line-height: 1.5;
+  color: var(--on-dark-2);
+  max-width: 27em;
+  text-wrap: pretty;
+}
+
+/* what happens after the click, said right at the button */
+.proof {
+  margin-top: -6px;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--on-dark-2);
+  max-width: 30em;
+  text-wrap: pretty;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.ruler {
+  display: none;
+}
+
+@media (max-width: 479px) {
+  .actions {
+    display: grid;
+  }
+  .actions > * {
+    justify-content: space-between;
+  }
+  .actions > :last-child {
+    justify-content: center;
+  }
+}
+
+/* phones: the photo sits on the text column's edges. The crop keeps her face
+   on the upper third and the call on her laptop in view (docs/photo-brief.md) */
+.media {
+  position: relative;
+  margin: 0 var(--gutter);
+  aspect-ratio: 4 / 3.5;
+  border-radius: var(--r-media);
+  overflow: hidden;
+  background: var(--teal-700);
+  --wipe: var(--teal-800);
+}
+.img {
+  object-fit: cover;
+  object-position: 50% 66%;
+}
+
+@media (min-width: 640px) {
+  .media {
+    aspect-ratio: 16 / 12;
+  }
+  .img {
+    object-position: 50% 55%;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hero {
+    grid-template-columns: minmax(0, 1.38fr) minmax(0, 1fr);
+    container-type: inline-size;
+    min-height: 100svh;
+    max-height: 1040px;
+    padding: 0;
+  }
+  .panel {
+    /* the copy starts on the same edge as the nav logo and every section below */
+    padding: calc(var(--nav-h) + 64px) clamp(40px, 5vw, 72px) clamp(48px, 7vh, 80px)
+      max(var(--gutter), calc((100cqi - var(--max)) / 2));
+    overflow: hidden;
+  }
+  .field {
+    inset: 0;
+    height: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+  .title {
+    font-size: clamp(3.2rem, 5.3vw, 5.6rem);
+  }
+  .copy {
+    max-width: 46rem;
+  }
+  .ruler {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: 14px;
+    height: 100%;
+    stroke: rgb(234 242 240 / 0.22);
+    stroke-width: 1;
+  }
+  .media {
+    margin: 0;
+    aspect-ratio: auto;
+    border-radius: 0;
+    height: 100%;
+    min-height: 100svh;
+    max-height: 1040px;
+  }
+
+}
+
+
+/* desktop: a tall column, so the crop is horizontal. On small laptops the
+   column is too narrow for both, so her face wins; from 1280 the laptop screen fits too */
+@media (min-width: 1024px) {
+  .img {
+    object-position: 62% 50%;
+  }
+}
+@media (min-width: 1280px) {
+  .img {
+    object-position: 20% 50%;
+  }
+}

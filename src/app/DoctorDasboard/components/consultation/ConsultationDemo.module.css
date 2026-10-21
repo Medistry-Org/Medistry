@@ -1,0 +1,436 @@
+.demo {
+  min-height: 100dvh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-text);
+  line-height: 1.45;
+}
+.demo button,
+.demo select,
+.demo textarea { font-family: inherit; }
+.demo button { cursor: pointer; }
+.demo button:disabled { cursor: default; opacity: .6; }
+.demo button:focus-visible,
+.demo select:focus-visible,
+.demo textarea:focus-visible { outline: 2px solid var(--mint-ink); outline-offset: 3px; }
+.previewBar {
+  min-height: 62px;
+  padding: 9px 22px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--teal-950);
+  color: var(--on-dark);
+}
+.previewTitle,
+.previewActions { display: flex; align-items: center; gap: 14px; }
+.previewTitle { font-family: var(--font-display); font-size: 14px; font-weight: 500; white-space: nowrap; }
+.previewMark { display: grid; place-items: center; width: 28px; height: 28px; border: 1px solid var(--hair-dark); border-radius: 50%; color: var(--mint); font-size: 16px; }
+.previewFiction { font-family: var(--font-text); font-size: 12px; color: var(--on-dark-3); font-weight: 400; }
+.previewFictionMobile { display: none; }
+.roleSwitch { display: flex; padding: 3px; border: 1px solid var(--hair-dark); border-radius: 999px; background: rgb(255 255 255 / .05); }
+.roleSwitch button { min-height: 44px; padding: 0 15px; border: 0; border-radius: 999px; color: var(--on-dark-2); background: transparent; font-size: 12px; white-space: nowrap; transition: background 160ms var(--ease-out), color 160ms var(--ease-out); }
+.roleSwitch .roleActive { color: var(--teal-950); background: var(--paper); }
+.scenarioSelect { display: flex; align-items: center; gap: 8px; position: relative; color: var(--on-dark-3); font-size: 12px; white-space: nowrap; }
+.scenarioSelect select { appearance: none; min-height: 44px; max-width: 165px; padding: 0 28px 0 12px; border: 1px solid var(--hair-dark); border-radius: 999px; color: var(--on-dark); background: rgb(255 255 255 / .07); font-size: 12px; cursor: pointer; }
+.scenarioSelect svg { position: absolute; right: 10px; pointer-events: none; color: var(--on-dark-2); }
+.scenarioSelect option { color: var(--ink); }
+.appShell { height: calc(100dvh - 70px); min-height: 0; padding: 0 18px 18px; display: flex; flex-direction: column; }
+.appHeader { height: 72px; flex: none; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.brandCluster,
+.headerMeta { display: flex; align-items: center; gap: 17px; }
+.brandCluster { color: #111; }
+.headerDivider { width: 1px; height: 22px; background: var(--hair-2); }
+.headerTitle { font-family: var(--font-display); font-size: 17px; font-weight: 500; letter-spacing: -.02em; }
+.headerMeta { font-size: 12px; color: var(--ink-3); }
+.connection { display: inline-flex; align-items: center; gap: 6px; color: var(--mint-ink); font-weight: 600; }
+.connectionProblem { color: var(--alert); }
+.workspace { flex: 1; min-height: 0; display: grid; gap: 14px; position: relative; }
+.doctorWorkspace { grid-template-columns: minmax(0, 1fr) 394px; }
+.patientWorkspace { grid-template-columns: minmax(0, 1fr) 350px; }
+.railCollapsed { grid-template-columns: minmax(0, 1fr); }
+.videoArea { min-width: 0; min-height: 0; display: flex; flex-direction: column; background: var(--teal-950); border-radius: 20px; overflow: hidden; }
+.remoteFrame { position: relative; flex: 1; min-height: 0; overflow: hidden; background: var(--teal-900); }
+.remoteFrame::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to bottom, rgb(6 22 24 / .38), transparent 20%, transparent 68%, rgb(6 22 24 / .25)); }
+.remoteImage { object-fit: cover; object-position: 50% 42%; }
+.videoTop { position: absolute; z-index: 2; top: 18px; left: 19px; right: 19px; display: flex; align-items: start; justify-content: space-between; gap: 12px; color: #fff; }
+.remoteIdentity { display: flex; align-items: center; gap: 9px; padding: 8px 12px; border: 1px solid rgb(255 255 255 / .24); border-radius: 999px; background: rgb(7 27 29 / .48); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); font-size: 13px; font-weight: 550; }
+.liveIndicator { width: 7px; height: 7px; border-radius: 50%; background: var(--mint); box-shadow: 0 0 0 3px rgb(70 216 173 / .14); }
+.elapsed { padding: 8px 10px; font-size: 12px; font-variant-numeric: tabular-nums; background: rgb(7 27 29 / .35); border-radius: 7px; }
+.selfView { position: absolute; z-index: 3; right: 20px; bottom: 20px; width: 171px; aspect-ratio: 4/3; overflow: hidden; border: 2px solid rgb(255 255 255 / .84); border-radius: 14px; background: var(--teal-800); box-shadow: 0 12px 30px rgb(0 0 0 / .18); }
+.selfImage { object-fit: cover; object-position: 50% 33%; }
+.selfLabel { position: absolute; left: 8px; bottom: 7px; padding: 3px 7px; border-radius: 7px; background: rgb(5 19 21 / .62); color: #fff; font-size: 12px; }
+.hideSelf { position: absolute; top: 0; right: 0; width: 44px; height: 44px; display: grid; place-items: center; border: 0; border-radius: 50%; background: transparent; color: #fff; }
+.hideSelf svg { box-sizing: border-box; width: 24px; height: 24px; padding: 5px; border-radius: 50%; background: rgb(5 19 21 / .7); }
+.selfOff { position: absolute; inset: 0; display: grid; align-content: center; justify-items: center; gap: 7px; color: var(--on-dark-2); font-size: 12px; }
+.showSelf { position: absolute; z-index: 3; right: 20px; bottom: 20px; width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1px solid rgb(255 255 255 / .4); border-radius: 50%; background: rgb(5 19 21 / .55); color: #fff; }
+.openRecordOnVideo,
+.doctorInfoOnVideo { position: absolute; z-index: 3; left: 20px; bottom: 20px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid rgb(255 255 255 / .4); border-radius: 999px; color: white; background: rgb(5 19 21 / .56); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 12px; }
+.controls { position: relative; z-index: 10; height: 78px; flex: none; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px; padding: 0 21px; border-top: 1px solid var(--hair-dark); color: var(--on-dark); }
+.controlsSideRight { justify-self: end; }
+.controlsCenter { display: flex; align-items: center; gap: 9px; }
+.iconButton { display: inline-grid; place-items: center; flex: none; width: 45px; height: 45px; padding: 0; border: 1px solid rgb(255 255 255 / .18); border-radius: 50%; color: var(--on-dark); background: rgb(255 255 255 / .09); transition: background 140ms var(--ease-out), transform 120ms var(--ease-out), border-color 140ms var(--ease-out); }
+.iconButton:hover { background: rgb(255 255 255 / .17); border-color: rgb(255 255 255 / .32); }
+.iconButton:active { transform: scale(.96); }
+.controlOff { background: var(--paper); color: var(--teal-950); }
+.controlOff:hover { background: var(--bg-2); }
+.endButton { background: var(--alert); border-color: var(--alert); color: white; margin-left: 8px; }
+.endButton:hover { background: #963925; border-color: #963925; }
+.moreWrap { position: relative; }
+.moreMenu { position: absolute; z-index: 10; left: 50%; bottom: 55px; width: 236px; padding: 6px; transform: translateX(-50%); border: 1px solid var(--hair); border-radius: 13px; background: var(--paper); box-shadow: 0 14px 38px rgb(5 25 27 / .18); }
+.moreMenu button { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 44px; padding: 0 11px; border: 0; border-radius: 7px; color: var(--ink); background: none; text-align: left; font-size: 12px; }
+.moreMenu button:hover { background: var(--bg-2); }
+.recordToggle { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 13px; border: 1px solid var(--hair-dark); border-radius: 999px; color: var(--on-dark); background: transparent; font-size: 12px; white-space: nowrap; }
+.recordToggle[aria-pressed="true"] { border-color: rgb(255 255 255 / .26); background: rgb(255 255 255 / .08); }
+.recordToggle:hover { background: rgb(255 255 255 / .1); }
+.reconnectOverlay { position: absolute; z-index: 6; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 24px; text-align: center; color: #fff; background: rgb(11 30 33 / .9); }
+.reconnectOverlay strong { font-family: var(--font-display); font-size: 26px; font-weight: 500; }
+.reconnectOverlay span { max-width: 27em; color: var(--on-dark-2); font-size: 14px; }
+.reconnectOverlay button { display: inline-flex; align-items: center; gap: 8px; margin-top: 9px; min-height: 44px; padding: 0 17px; border: 0; border-radius: 999px; color: var(--teal-950); background: var(--mint); font-weight: 600; font-size: 13px; }
+.sharingNotice { position: absolute; z-index: 4; bottom: 20px; left: 20px; max-width: calc(100% - 220px); display: flex; align-items: center; gap: 8px; padding: 9px 10px 9px 13px; border: 1px solid rgb(255 255 255 / .28); border-radius: 14px; color: #fff; background: rgb(8 35 36 / .78); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); font-size: 12px; }
+.sharingNotice svg { color: var(--mint); flex: none; }
+.sharingNotice button { min-height: 44px; margin-left: 6px; padding: 0 9px; border: 1px solid rgb(255 255 255 / .34); border-radius: 999px; color: #fff; background: transparent; font-size: 12px; white-space: nowrap; }
+.clinicalRail,
+.patientCare { min-width: 0; min-height: 0; border: 1px solid var(--hair); border-radius: 20px; background: var(--paper); overflow: hidden; }
+.clinicalRail { display: flex; flex-direction: column; }
+.railMiniVideo { display: none; }
+.railHeader { flex: none; display: flex; justify-content: space-between; align-items: start; gap: 10px; padding: 24px 22px 17px; }
+.railHeader h1 { margin-top: 5px; font-family: var(--font-display); font-size: 27px; letter-spacing: -.035em; font-weight: 500; line-height: 1.1; }
+.railHeader p { margin-top: 5px; color: var(--ink-3); font-size: 12px; }
+.railHeader .iconButton { width: 44px; height: 44px; border-color: var(--hair); color: var(--ink-2); background: transparent; }
+.railHeaderActions { display: flex; align-items: center; gap: 5px; }
+.notesShortcut { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-height: 44px; padding: 0 9px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+.notesShortcut:hover,
+.notesShortcut[aria-pressed="true"] { border-color: var(--hair); background: var(--bg); color: var(--mint-ink); }
+.railFocus { display: block; margin-top: 7px; color: var(--mint-ink); font-size: 12px; line-height: 1.3; }
+.expandRecord { display: none; min-height: 44px; padding: 0 7px; border: 0; background: transparent; color: var(--mint-ink); font-size: 12px; font-weight: 650; }
+.railHeader .iconButton:hover { background: var(--bg-2); }
+.eyebrow { color: var(--ink-3); font-size: 12px; font-weight: 560; letter-spacing: 0; }
+.safetyLine { flex: none; display: flex; gap: 9px; align-items: start; padding: 11px 22px; border-block: 1px solid var(--hair); background: var(--bg); color: var(--ink-2); font-size: 12px; line-height: 1.4; }
+.safetyLine svg { flex: none; margin-top: 1px; color: var(--teal-700); }
+.safetyNeedsReview { background: var(--alert-wash, #fbf4f0); color: var(--ink); }
+.safetyNeedsReview svg { color: var(--alert); }
+.railScroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 21px 22px 26px; scrollbar-color: var(--hair-2) transparent; }
+.visitHeadline { padding-bottom: 20px; border-bottom: 1px solid var(--hair); }
+.visitHeadline h2 { margin: 6px 0 4px; font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -.028em; line-height: 1.14; }
+.visitHeadline > span:last-child { color: var(--ink-3); font-size: 12px; }
+.metricPair { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0; }
+.metricPair > button,
+.metricPair > div { min-width: 0; min-height: 102px; padding: 13px 13px 11px; border: 1px solid var(--hair); border-radius: 14px; background: var(--bg); text-align: left; transition: border-color 140ms var(--ease-out), background 140ms var(--ease-out); }
+.metricPair button:hover { border-color: var(--hair-2); background: var(--bg-2); }
+.metricPair span,
+.metricPair small { display: block; color: var(--ink-3); font-size: 12px; }
+.metricPair strong { display: block; margin: 4px 0 2px; font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -.035em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.metricPair .metricAction { display: inline-flex; align-items: center; gap: 4px; margin-top: 9px; color: var(--mint-ink); font-size: 12px; font-weight: 650; }
+.railBlock { padding: 0 0 18px; border-bottom: 1px solid var(--hair); }
+.patientQuote { margin-top: 9px; color: var(--ink); font-size: 13px; line-height: 1.5; }
+.sourceLine { display: block; margin-top: 8px; color: var(--ink-3); font-size: 12px; line-height: 1.45; }
+.compactRow { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 68px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--hair); background: none; text-align: left; }
+.compactRow:hover strong { color: var(--mint-ink); }
+.compactRowStatic { cursor: default; }
+.compactRowStatic:hover strong { color: var(--ink); }
+.rowIcon { flex: none; display: grid; place-items: center; width: 35px; height: 35px; border-radius: 14px; color: var(--teal-700); background: var(--mint-wash); }
+.compactRow > span:nth-child(2) { flex: 1; min-width: 0; }
+.compactRow small,
+.compactRow strong { display: block; }
+.compactRow small { color: var(--ink-3); font-size: 12px; }
+.compactRow strong { margin-top: 2px; color: var(--ink); font-size: 12px; font-weight: 600; line-height: 1.35; }
+.compactRow .rowAction { display: block; margin-top: 5px; color: var(--mint-ink); font-size: 12px; font-weight: 650; }
+.compactRow > svg { flex: none; color: var(--ink-3); }
+.sectionList { margin-top: 17px; }
+.sectionList button { display: flex; align-items: center; gap: 11px; width: 100%; min-height: 44px; padding: 0 5px; border: 0; border-radius: 6px; background: none; text-align: left; color: var(--ink-2); font-size: 12px; }
+.sectionList button:hover { background: var(--bg); color: var(--ink); }
+.sectionList button span { flex: 1; }
+.sectionList button > svg:last-child { color: var(--ink-3); }
+.sectionBar { flex: none; display: flex; align-items: center; gap: 11px; min-height: 58px; padding: 7px 20px; border-bottom: 1px solid var(--hair); background: var(--paper); }
+.sectionBar h2 { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: var(--font-display); font-size: 17px; font-weight: 500; letter-spacing: -.02em; }
+.sectionDivider { flex: none; width: 1px; height: 20px; background: var(--hair-2); }
+.backLink { flex: none; display: inline-flex; align-items: center; gap: 6px; min-height: 44px; padding: 0 3px; border: 0; color: var(--mint-ink); background: none; font-size: 12px; font-weight: 650; }
+.backLink:hover { color: var(--mint-ink); }
+.detailContent { display: grid; align-content: start; gap: 16px; }
+.detailStat { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 5px; padding-bottom: 15px; border-bottom: 1px solid var(--hair); }
+.detailStat span { color: var(--ink-2); font-size: 12px; }
+.detailStat strong { font-family: var(--font-display); font-size: 21px; font-weight: 500; }
+.detailStat small { width: 100%; color: var(--ink-3); font-size: 12px; }
+.chart { padding: 17px 16px 13px; border: 1px solid var(--hair); border-radius: 14px; background: var(--bg); }
+.chartTop { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+.chartTop > div { display: grid; gap: 3px; }
+.chartLabel { color: var(--ink-2); font-size: 12px; }
+.chartTop strong { font-family: var(--font-display); font-size: 25px; font-weight: 500; letter-spacing: -.035em; }
+.chartTop > span { padding-top: 3px; color: var(--ink-3); font-size: 12px; white-space: nowrap; }
+.chart svg { width: 100%; height: 150px; margin-top: 8px; overflow: visible; }
+.chartBase { stroke: var(--hair-2); stroke-width: .35; }
+.chartLine { fill: none; stroke: var(--mint-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.chartPoint { fill: var(--paper); stroke: var(--mint-ink); stroke-width: 1.6; vector-effect: non-scaling-stroke; }
+.chartDates { display: flex; justify-content: space-between; color: var(--ink-3); font-size: 12px; }
+.chartCompact svg { height: 125px; }
+.sharedReadings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 11px; }
+.sharedReadings span { display: flex; justify-content: space-between; gap: 7px; padding: 8px 9px; border-radius: 7px; background: var(--bg); color: var(--ink-3); font-size: 12px; }
+.sharedReadings strong { color: var(--ink); font-weight: 650; white-space: nowrap; }
+.readingList { display: grid; border-top: 1px solid var(--hair); }
+.readingList > div { display: flex; justify-content: space-between; gap: 10px; padding: 11px 2px; border-bottom: 1px solid var(--hair); font-size: 12px; }
+.readingList span { color: var(--ink-3); }
+.readingList strong { font-variant-numeric: tabular-nums; font-weight: 600; }
+.actionRow { display: flex; flex-wrap: wrap; align-items: center; gap: 11px; }
+.primaryButton,
+.secondaryButton,
+.textButton { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 44px; padding: 0 15px; border-radius: 999px; font-size: 12px; font-weight: 600; transition: transform 120ms var(--ease-out), background 140ms var(--ease-out); }
+.primaryButton { border: 1px solid var(--teal-800); color: white; background: var(--teal-800); }
+.primaryButton:hover { background: var(--teal-700); }
+.secondaryButton { border: 1px solid var(--hair-2); color: var(--ink); background: var(--paper); }
+.secondaryButton:hover { background: var(--bg-2); }
+.textButton { padding-inline: 4px; border: 0; color: var(--mint-ink); background: transparent; }
+.primaryButton:active,
+.secondaryButton:active,
+.textButton:active { transform: scale(.98); }
+.treatmentCard,
+.labCard { padding: 18px; border: 1px solid var(--hair); border-radius: 14px; background: var(--bg); }
+.treatmentCard h3 { margin: 9px 0 2px; font-family: var(--font-display); font-size: 22px; font-weight: 500; }
+.treatmentCard p { color: var(--ink-2); font-size: 13px; }
+.treatmentCard small { display: block; margin-top: 11px; color: var(--ink-3); font-size: 12px; }
+.detailLine { display: grid; gap: 4px; padding: 14px 0; border-bottom: 1px solid var(--hair); }
+.detailLine span { color: var(--ink-3); font-size: 12px; }
+.detailLine strong { font-size: 12px; font-weight: 550; }
+.labCard > div { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-top: 9px; }
+.labCard h3 { font-family: var(--font-display); font-size: 23px; font-weight: 500; }
+.labCard strong { font-family: var(--font-display); font-size: 26px; font-weight: 500; font-variant-numeric: tabular-nums; }
+.labCard p { margin-top: 10px; color: var(--ink-3); font-size: 12px; }
+.emptyState { display: grid; justify-items: start; gap: 8px; padding: 28px 16px; border: 1px dashed var(--hair-2); border-radius: 14px; color: var(--ink-2); }
+.emptyState h3 { font-family: var(--font-display); color: var(--ink); font-size: 18px; font-weight: 500; }
+.emptyState p { font-size: 12px; }
+.scribeStatus { display: flex; align-items: start; gap: 13px; padding: 19px; border: 1px solid var(--hair); border-radius: 14px; background: var(--bg); }
+.scribeStatus > svg { flex: none; color: var(--teal-700); }
+.scribeStatus div { display: grid; gap: 6px; }
+.scribeStatus strong { font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+.scribeStatus span { color: var(--ink-2); font-size: 12px; line-height: 1.5; }
+.noteLabel { font-family: var(--font-display); font-size: 17px; font-weight: 500; }
+.noteHelp { margin-top: -12px; color: var(--ink-3); font-size: 12px; }
+.detailContent textarea { width: 100%; min-height: 210px; resize: vertical; padding: 14px; border: 1px solid var(--hair-2); border-radius: 14px; background: var(--bg); color: var(--ink); font-size: 13px; line-height: 1.55; }
+.detailContent textarea::placeholder { color: var(--ink-3); }
+.patientCare { display: flex; flex-direction: column; }
+.careHeader { flex: none; display: flex; justify-content: space-between; align-items: start; gap: 10px; padding: 27px 25px 21px; border-bottom: 1px solid var(--hair); }
+.careHeader h2 { margin-top: 7px; font-family: var(--font-display); font-size: 28px; font-weight: 500; letter-spacing: -.035em; line-height: 1.12; }
+.careHeader button { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--hair); border-radius: 50%; background: transparent; color: var(--ink-2); }
+.careHeader button:hover { background: var(--bg); }
+.careHeader button > svg { transform: rotate(0deg); transition: transform 180ms var(--ease-out); }
+.careHeader button .caretUp { transform: rotate(180deg); }
+.careBody { flex: 1; min-height: 0; overflow: auto; padding: 22px 25px 27px; }
+.careIntro,
+.sharedIntro { color: var(--ink-2); font-size: 13px; line-height: 1.55; }
+.careFacts { display: grid; gap: 0; margin-top: 29px; border-top: 1px solid var(--hair); }
+.careFacts > div { display: grid; gap: 3px; padding: 18px 0; border-bottom: 1px solid var(--hair); }
+.careFacts span { color: var(--ink-3); font-size: 12px; }
+.careFacts strong { font-family: var(--font-display); font-size: 22px; font-weight: 500; letter-spacing: -.025em; }
+.careFacts small { color: var(--ink-3); font-size: 12px; }
+.doctorDetailsLink { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; min-height: 44px; padding: 0; border: 0; background: none; color: var(--mint-ink); font-size: 12px; font-weight: 650; }
+.patientCare .chart { margin-top: 19px; }
+.shareLab,
+.sharePlan { display: grid; gap: 7px; margin-top: 20px; padding: 20px; border: 1px solid var(--hair); border-radius: 14px; background: var(--bg); }
+.shareLab > div { display: flex; justify-content: space-between; gap: 10px; }
+.shareLab strong,
+.sharePlan strong { font-family: var(--font-display); font-size: 21px; font-weight: 500; }
+.shareLab p { font-family: var(--font-display); font-size: 43px; letter-spacing: -.04em; line-height: 1; }
+.shareLab > span,
+.sharePlan > span:last-child { color: var(--ink-3); font-size: 12px; }
+.sharePlan p { font-size: 14px; }
+.emptyText { color: var(--ink-2); font-size: 13px; }
+.modalBackdrop { position: fixed; z-index: 100; inset: 0; display: flex; align-items: center; justify-content: center; padding: 24px; background: rgb(6 23 25 / .66); -webkit-backdrop-filter: blur(3px); backdrop-filter: blur(3px); }
+.reportDialog { width: min(720px, 100%); max-height: min(760px, calc(100dvh - 42px)); display: flex; flex-direction: column; border: 1px solid var(--hair); border-radius: 20px; background: var(--paper); box-shadow: 0 30px 80px rgb(0 0 0 / .22); overflow: hidden; }
+.reportHeader { flex: none; display: flex; justify-content: space-between; gap: 15px; align-items: start; padding: 25px 28px 20px; border-bottom: 1px solid var(--hair); }
+.reportHeader h2 { margin-top: 4px; font-family: var(--font-display); font-size: 30px; font-weight: 500; letter-spacing: -.03em; }
+.closeButton { flex: none; display: grid; place-items: center; width: 44px; height: 44px; border: 1px solid var(--hair); border-radius: 50%; color: var(--ink); background: var(--paper); }
+.closeButton:hover { background: var(--bg); }
+.reportContent { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 26px 28px 28px; }
+.reportContent .chart svg { height: 220px; }
+.reportContent .readingList { margin-top: 17px; }
+.reportVideo { float: right; position: relative; width: 132px; height: 100px; margin: 0 0 15px 18px; border-radius: 7px; overflow: hidden; background: var(--teal-900); }
+.reportVideo img { object-fit: cover; object-position: 50% 30%; }
+.reportVideo span { position: absolute; inset: auto 0 0; padding: 5px 7px; color: #fff; background: rgb(5 20 21 / .72); font-size: 9px; }
+.reportSheet { clear: both; padding: 25px; border: 1px solid var(--hair); border-radius: 14px; background: var(--bg); }
+.reportSheetTop { display: flex; align-items: start; justify-content: space-between; gap: 15px; padding-bottom: 21px; border-bottom: 1px solid var(--hair-2); }
+.reportSheetTop h3 { margin-top: 4px; font-family: var(--font-display); font-size: 25px; font-weight: 500; letter-spacing: -.025em; }
+.reportBadge { flex: none; padding: 6px 9px; border-radius: 6px; background: var(--mint-wash); color: var(--mint-ink); font-size: 12px; font-weight: 650; }
+.reportMeta { display: grid; grid-template-columns: 1fr 1fr; gap: 17px 24px; padding: 22px 0; }
+.reportMeta div { display: grid; gap: 3px; }
+.reportMeta dt { color: var(--ink-3); font-size: 12px; }
+.reportMeta dd { color: var(--ink); font-size: 13px; font-weight: 550; }
+.reportResultRow { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 14px 0; border-block: 1px solid var(--hair-2); }
+.reportResultRow span { color: var(--ink-3); font-size: 12px; }
+.reportResultRow strong { font-family: var(--font-display); font-size: 22px; font-weight: 500; }
+.reportResultRow strong:last-child { font-variant-numeric: tabular-nums; }
+.reportSheet .sourceLine { margin-top: 18px; }
+.reportDocument { display: flex; gap: 11px; margin-top: 15px; padding: 17px; border: 1px solid var(--hair); border-radius: 14px; }
+.reportDocument svg { color: var(--mint-ink); }
+.reportDocument > div { display: grid; gap: 3px; }
+.reportDocument strong { font-size: 13px; }
+.reportDocument span { color: var(--ink-3); font-size: 12px; }
+.reportFooter { flex: none; display: flex; justify-content: flex-end; gap: 10px; padding: 17px 28px; border-top: 1px solid var(--hair); }
+.simpleDialog,
+.confirmDialog { position: relative; width: min(450px, 100%); padding: 30px; border-radius: 20px; background: var(--paper); box-shadow: 0 30px 80px rgb(0 0 0 / .22); }
+.simpleDialog > .closeButton,
+.confirmDialog > .closeButton { position: absolute; top: 23px; right: 23px; }
+.doctorPortrait { position: relative; width: 92px; height: 92px; margin-bottom: 22px; border-radius: 16px; overflow: hidden; }
+.doctorPortrait img { object-fit: cover; object-position: 50% 28%; }
+.simpleDialog h2,
+.confirmDialog h2 { margin: 7px 0 3px; font-family: var(--font-display); font-size: 30px; font-weight: 500; letter-spacing: -.035em; }
+.simpleDialog > p,
+.confirmDialog > p { color: var(--ink-2); font-size: 14px; }
+.simpleDialog dl { margin-top: 25px; border-top: 1px solid var(--hair); }
+.simpleDialog dl > div { display: grid; grid-template-columns: 100px 1fr; gap: 9px; padding: 13px 0; border-bottom: 1px solid var(--hair); font-size: 12px; }
+.simpleDialog dt { color: var(--ink-3); }
+.simpleDialog dd { color: var(--ink); }
+.confirmSymbol { display: grid; place-items: center; width: 50px; height: 50px; margin-bottom: 18px; border-radius: 50%; color: var(--alert); background: rgb(180 68 43 / .09); }
+.confirmDialog > p { margin-top: 12px; line-height: 1.6; }
+.confirmDialog > div:last-child { display: flex; gap: 9px; justify-content: flex-end; margin-top: 26px; }
+.confirmEnd { min-height: 44px; padding: 0 18px; border: 1px solid var(--alert); border-radius: 999px; color: white; background: var(--alert); font-size: 12px; font-weight: 650; }
+.ended { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 48px 20px; text-align: center; }
+.doctorEnded { justify-content: flex-start; min-height: 0; overflow-y: auto; padding-block: 25px; }
+.doctorEnded .endedIcon { width: 50px; height: 50px; margin-bottom: 12px; }
+.doctorEnded .endedSummary { width: min(620px, 100%); margin-top: 18px; }
+.endedIcon { display: grid; place-items: center; width: 70px; height: 70px; margin-bottom: 27px; border: 1px solid var(--hair-2); border-radius: 50%; color: var(--mint-ink); background: var(--mint-wash); }
+.ended h1 { margin: 10px 0 9px; font-family: var(--font-display); font-size: clamp(36px, 5vw, 56px); font-weight: 500; letter-spacing: -.04em; line-height: 1.05; }
+.ended > p { max-width: 420px; color: var(--ink-2); font-size: 14px; }
+.endedSummary { width: min(470px, 100%); margin: 25px 0 15px; padding: 23px; border: 1px solid var(--hair); border-radius: 16px; background: var(--paper); text-align: left; }
+.endedSummary h2 { font-family: var(--font-display); font-size: 20px; font-weight: 500; }
+.endedSummary p { margin-top: 6px; color: var(--ink-2); font-size: 12px; }
+.endedSummary .reviewedNarrative { margin: 18px 0 20px; color: var(--ink); font-size: 13px; line-height: 1.6; }
+.scribeLabel { display: block; margin: 22px 0 8px; color: var(--ink); font-size: 12px; font-weight: 650; }
+.scribeTextarea { width: 100%; min-height: 128px; resize: vertical; padding: 13px 14px; border: 1px solid var(--hair-2); border-radius: 14px; outline-color: var(--mint-ink); background: var(--bg); color: var(--ink); font-size: 13px; line-height: 1.55; }
+.scribeHighlights { display: grid; gap: 9px; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--hair); }
+.scribeHighlights > span { color: var(--ink-3); font-size: 12px; }
+.scribeHighlights > div { display: flex; align-items: start; gap: 8px; font-size: 12px; }
+.scribeHighlights svg { flex: none; color: var(--mint-ink); }
+.endedSummary ul { display: grid; gap: 13px; margin-top: 19px; }
+.endedSummary li { display: flex; align-items: start; gap: 9px; font-size: 13px; }
+.endedSummary li svg { color: var(--mint-ink); flex: none; }
+.endedSummary .primaryButton { margin-top: 20px; }
+.ended > .secondaryButton { margin-top: 26px; }
+@media (max-width: 1100px) {
+  .controlsSide .secureNote { display: none; }
+  .controls { grid-template-columns: 1fr auto 1fr; }
+  .doctorWorkspace { grid-template-columns: minmax(0, 1fr) 352px; }
+  .patientWorkspace { grid-template-columns: minmax(0, 1fr) 315px; }
+}
+@media (max-width: 900px) {
+  .previewFiction,
+  .appointment { display: none; }
+  .appShell { padding-inline: 12px; padding-bottom: 12px; }
+  .workspace { min-height: 0; }
+  .doctorWorkspace { display: block; min-height: 620px; }
+  .doctorWorkspace .videoArea { height: 100%; }
+  .doctorWorkspace .clinicalRail { position: absolute; z-index: 7; inset: 0 0 78px 0; width: min(410px, 100%); margin-left: auto; border-radius: 18px 18px 0 0; box-shadow: -20px 0 50px rgb(5 25 27 / .18); }
+  .railMiniVideo { display: block; position: relative; flex: none; height: 105px; overflow: hidden; background: var(--teal-950); }
+  .railMiniVideo img { object-fit: cover; object-position: 50% 37%; }
+  .railMiniVideo span { position: absolute; left: 12px; bottom: 8px; padding: 4px 7px; border-radius: 7px; color: white; background: rgb(5 20 21 / .66); font-size: 12px; }
+  .patientWorkspace { grid-template-columns: minmax(0, 1fr) 300px; }
+}
+@media (min-width: 761px) and (max-width: 900px) {
+  .doctorWorkspace:not(.railCollapsed) .remoteImage { transform: translateX(-19%); }
+}
+@media (max-width: 760px) {
+  .previewBar { min-height: 0; flex-wrap: wrap; padding: 9px 14px; }
+  .previewTitle { width: 100%; gap: 9px; font-size: 12px; }
+  .previewFictionMobile { display: inline; margin-left: auto; color: var(--on-dark-3); font-family: var(--font-text); font-size: 12px; font-weight: 400; }
+  .previewMark { width: 22px; height: 22px; font-size: 12px; }
+  .previewActions { width: 100%; justify-content: space-between; gap: 6px; }
+  .roleSwitch button { min-height: 44px; padding: 0 11px; font-size: 12px; }
+  .scenarioSelect select { max-width: 165px; min-height: 44px; font-size: 12px; }
+  .scenarioSelect > span { display: none; }
+  .appShell { height: auto; min-height: calc(100dvh - 108px); }
+  .endedShell { height: calc(100dvh - 108px); min-height: 0; }
+  .appHeader { height: 59px; }
+  .brandCluster { gap: 10px; }
+  .brandCluster svg { width: 88px; height: auto; }
+  .headerDivider { height: 18px; }
+  .headerTitle { font-size: 14px; }
+  .headerMeta { font-size: 12px; }
+  .patientWorkspace { display: block; height: calc(100dvh - 179px); min-height: 0; }
+  .patientWorkspace .videoArea { height: calc(100dvh - 179px); min-height: 0; }
+  .patientCare { position: absolute; z-index: 7; left: 0; right: 0; bottom: 70px; min-height: 0; max-height: 164px; border-radius: 17px 17px 0 0; box-shadow: 0 -12px 36px rgb(5 25 27 / .13); transition: max-height 230ms var(--ease-drawer); }
+  .patientCareOpen { max-height: min(58dvh, 485px); }
+  .patientCare .careBody { overflow-y: auto; overscroll-behavior: contain; }
+  .careHeader { padding: 14px 18px 10px; }
+  .careHeader h2 { margin-top: 3px; font-size: 19px; }
+  .careHeader button { width: 44px; height: 44px; }
+  .careBody { padding: 11px 18px 17px; }
+  .careIntro { display: none; }
+  .patientCareOpen .careIntro { display: block; }
+  .careFacts { display: flex; gap: 25px; margin-top: 0; border-top: 0; }
+  .careFacts > div { flex: 1; min-width: 0; padding: 0; border: 0; }
+  .careFacts strong { font-size: 17px; overflow-wrap: anywhere; }
+  .careFacts small { overflow-wrap: anywhere; }
+  .patientCareOpen .careFacts { margin-top: 18px; }
+  .patientCare:not(.patientCareOpen) .doctorDetailsLink { display: none; }
+  .doctorDetailsLink { margin-top: 14px; }
+  .patientCare .chart { margin-top: 10px; }
+  .doctorWorkspace { flex: none; height: calc(100dvh - 184px); min-height: 0; }
+  .controls { height: 70px; grid-template-columns: 1fr; padding-inline: 10px; }
+  .controlsCenter { justify-content: center; gap: 8px; }
+  .controlsSide,
+  .controlsSideRight { display: none; }
+  .iconButton { width: 45px; height: 45px; }
+  .endButton { margin-left: 2px; }
+  .selfView { width: 112px; right: 12px; bottom: 12px; border-width: 1px; border-radius: 7px; }
+  .patientWorkspace .selfView { bottom: 180px; }
+  .patientWorkspace .showSelf { bottom: 180px; }
+  .videoTop { top: 12px; left: 12px; right: 12px; }
+  .remoteIdentity { padding: 7px 9px; font-size: 12px; }
+  .elapsed { font-size: 12px; }
+  .doctorInfoOnVideo,
+  .openRecordOnVideo { left: 12px; bottom: 12px; min-height: 44px; padding: 0 10px; font-size: 12px; }
+  .patientWorkspace .doctorInfoOnVideo { bottom: 180px; }
+  .sharingNotice { left: 12px; bottom: 112px; right: 12px; max-width: none; flex-wrap: wrap; font-size: 12px; }
+  .doctorWorkspace .clinicalRail { inset: auto 0 70px 0; width: 100%; height: min(54dvh, 470px); border-radius: 16px 16px 0 0; }
+  .doctorWorkspace .clinicalRail.recordExpanded { height: calc(100% - 70px); }
+  /* the main video still shows above the half-height sheet, so the mini video appears only once the record covers it */
+  .doctorWorkspace .clinicalRail .railMiniVideo { display: none; }
+  .doctorWorkspace .clinicalRail.recordExpanded .railMiniVideo { display: block; height: 88px; }
+  .notesShortcut { width: 44px; padding: 0; border-color: var(--hair); border-radius: 50%; background: var(--bg); color: var(--mint-ink); }
+  .notesShortcut span { display: none; }
+  .expandRecord { display: inline-flex; align-items: center; }
+  .modalBackdrop { padding: 12px; }
+  .reportDialog { max-height: calc(100dvh - 24px); }
+  .reportHeader { padding: 18px 18px 15px; }
+  .reportContent { padding: 18px; }
+  .reportVideo { display: none; }
+  .reportSheet { padding: 18px; }
+  .reportSheetTop h3 { font-size: 21px; }
+  .reportMeta { gap: 13px; }
+  .reportFooter { padding: 12px 18px; }
+  .reportContent .chart svg { height: 160px; }
+  .simpleDialog,
+  .confirmDialog { padding: 24px; }
+}
+@media (max-width: 390px) {
+  .scenarioSelect select { max-width: 165px; }
+  .previewBar { padding-inline: 10px; }
+  .appShell { padding-inline: 7px; }
+  .headerTitle { font-size: 13px; }
+  .headerMeta { gap: 4px; }
+  .doctorWorkspace { height: calc(100dvh - 184px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .demo *,
+  .demo *::before,
+  .demo *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
+}
+
+/* the brand's mark is the dot, never a monogram */
+.previewMark {
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: #fff !important;
+  font-size: 0 !important;
+}
+/* after the call: one way on to the note, one way back to the day */
+.endedActions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.endedSummary .endedActions .primaryButton { margin-top: 0; font-size: 13px; padding-inline: 18px; }
+.endedSummary .endedActions .secondaryButton { font-size: 13px; padding-inline: 18px; }
+.endedActions a { text-decoration: none; }
+.endedSummary .scribeHighlights svg { color: var(--ink-3); }
+.ended > .textButton { margin-top: 14px; }

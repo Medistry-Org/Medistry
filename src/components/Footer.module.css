@@ -1,0 +1,153 @@
+.foot {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  background: var(--teal-950);
+  color: var(--on-dark);
+  padding: var(--section) 0 calc(96px + env(safe-area-inset-bottom));
+}
+.field {
+  position: absolute;
+  inset: 0 0 auto 0;
+  width: 100%;
+  height: 72%;
+  z-index: -1;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, #000 40%, transparent);
+  mask-image: linear-gradient(to bottom, #000 40%, transparent);
+}
+
+.cta {
+  display: grid;
+  gap: 28px;
+  padding-bottom: clamp(72px, 10vw, 128px);
+}
+.title {
+  color: var(--on-dark);
+}
+.ctaSide {
+  display: grid;
+  gap: 24px;
+  justify-items: start;
+}
+.ctaSide p {
+  color: var(--on-dark-2);
+  font-size: clamp(1.06rem, 0.98rem + 0.32vw, 1.2rem);
+  line-height: 1.55;
+  max-width: 28em;
+}
+
+.base {
+  position: relative;
+  display: grid;
+  gap: 40px;
+  padding-top: 40px;
+}
+/* the rule sits on the content column, not the full wrap */
+.base::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: var(--gutter);
+  right: var(--gutter);
+  height: 1px;
+  background: var(--hair-dark);
+}
+.brand {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.brand svg {
+  color: #fff;
+}
+.brand p {
+  color: var(--on-dark);
+  font-size: 1rem;
+  max-width: 28ch;
+}
+
+.cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px 24px;
+}
+.colTitle {
+  font-size: 0.8125rem;
+  color: var(--on-dark-3);
+  margin-bottom: 12px;
+}
+.cols ul {
+  display: grid;
+}
+.cols a {
+  font-size: 0.9375rem;
+  text-decoration: none;
+  color: var(--on-dark);
+  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat;
+  transition: background-size 420ms var(--ease-out);
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  background-position: 0 calc(100% - 12px);
+}
+@media (hover: hover) and (pointer: fine) {
+  .cols a:hover {
+    background-size: 100% 1px;
+  }
+}
+
+.legal {
+  display: grid;
+  gap: 12px;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  color: var(--on-dark-2);
+}
+.legal > * {
+  max-width: 72ch;
+}
+.copy {
+  margin-top: 8px;
+}
+
+@media (min-width: 768px) {
+  .foot {
+    padding-bottom: 56px;
+  }
+  .cols {
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    column-gap: 64px;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* one template for both rows, so the right-hand columns share an edge */
+  .cta {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    align-items: end;
+    gap: 64px;
+  }
+  .base {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 30rem);
+    column-gap: 64px;
+  }
+  .cols {
+    justify-content: space-between;
+    column-gap: 40px;
+  }
+  .legal {
+    grid-column: 1 / -1;
+    padding-top: 32px;
+    border-top: 1px solid var(--hair-dark);
+  }
+}
+
+/* on phones the closing action spans the column, like every other primary action */
+@media (max-width: 479px) {
+  .ctaSide :global(.btn) {
+    width: 100%;
+    justify-content: space-between;
+  }
+}

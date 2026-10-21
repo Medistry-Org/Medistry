@@ -1,0 +1,1043 @@
+/* The signed-in home: one next step on the teal plate, what happens after it, and the patient's own numbers. */
+
+/* clip, not hidden: no scroll container, so the sticky bar still sticks, and iOS cannot pan the page sideways */
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  overflow-x: clip;
+  background: var(--bg);
+}
+
+/* ---------- top bar ---------- */
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: var(--chrome-bg);
+  --chrome-blur: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: var(--chrome-blur);
+  backdrop-filter: var(--chrome-blur);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .bar {
+    background: var(--bg);
+  }
+}
+.barInner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  max-width: calc(1180px + var(--gutter) * 2);
+  min-height: 64px;
+  margin-inline: auto;
+  padding: calc(8px + env(safe-area-inset-top)) var(--gutter) 8px;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--ink);
+}
+.barEnd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.help {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 14px;
+  border-radius: 999px;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: background-color 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .help:hover {
+    background: var(--hover-wash);
+  }
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--teal-900);
+  color: var(--on-dark);
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 560;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms var(--ease-out);
+}
+.avatar:active {
+  transform: scale(0.95);
+}
+.menuWrap {
+  position: relative;
+}
+/* the menu grows out of the avatar that opened it */
+.menu {
+  position: absolute;
+  z-index: 40;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 264px;
+  padding: 6px;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 24px 48px -24px rgb(11 30 33 / 0.35);
+  transform-origin: calc(100% - 22px) -8px;
+  opacity: 0;
+  transform: scale(0.96);
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 150ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    visibility 0s linear 200ms;
+}
+.menu[data-open="true"] {
+  opacity: 1;
+  transform: none;
+  visibility: visible;
+  pointer-events: auto;
+  transition:
+    opacity 150ms var(--ease-out),
+    transform 200ms var(--ease-out),
+    visibility 0s;
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu,
+  .menu[data-open="true"] {
+    transform: none;
+  }
+}
+.menuHead {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px 12px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid var(--hair);
+}
+.menuHead strong {
+  font-size: 0.9375rem;
+  font-weight: 560;
+}
+.menuHead span {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+.menu button,
+.menu a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-size: 0.9375rem;
+  color: var(--ink);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out);
+}
+.menu svg {
+  color: var(--ink-3);
+}
+@media (hover: hover) and (pointer: fine) {
+  .menu button:hover,
+  .menu a:hover {
+    background: var(--bg);
+  }
+}
+
+/* ---------- page ---------- */
+.page {
+  max-width: calc(1180px + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: clamp(16px, 3vw, 36px) var(--gutter) calc(32px + env(safe-area-inset-bottom));
+}
+.hello {
+  display: grid;
+  gap: 6px;
+  margin-bottom: clamp(20px, 3vw, 32px);
+}
+.h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(2rem, 1.62rem + 1.2vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
+}
+.date {
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+}
+
+/* one column on a phone, ordered by what matters first; two on a laptop */
+.grid {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.main,
+.side {
+  display: contents;
+}
+.oNext {
+  order: 1;
+}
+.oNum {
+  order: 2;
+}
+.oSteps {
+  order: 3;
+}
+.oToday {
+  order: 4;
+}
+.oRec {
+  order: 5;
+}
+/* an empty numbers card waits below the steps until the profile is finished */
+.oLate {
+  order: 4;
+}
+@media (min-width: 1024px) {
+  /* two rows of paired cards, each pair the same height, so no row opens a gap */
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 20px;
+  }
+  .oNext {
+    grid-area: 1 / 1;
+  }
+  .oNum,
+  .oLate {
+    grid-area: 1 / 2;
+  }
+  .oSteps {
+    grid-area: 2 / 1;
+  }
+  .oToday {
+    grid-area: 2 / 2;
+  }
+}
+
+/* ---------- the next step, on the teal plate ---------- */
+.next {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: grid;
+  align-content: end;
+  gap: 16px;
+  min-height: 300px;
+  padding: var(--card-pad);
+  border-radius: var(--r-surface);
+  background: var(--teal-950);
+  color: var(--on-dark);
+}
+@media (min-width: 1024px) {
+  .next {
+    min-height: 340px;
+  }
+}
+.next :focus-visible {
+  outline-color: var(--mint);
+}
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+}
+.kicker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 10px;
+  font-size: 0.9375rem;
+  color: var(--on-dark-2);
+}
+.until {
+  color: var(--mint);
+  font-weight: 560;
+}
+.nextTitle {
+  max-width: 20ch;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.625rem, 1.35rem + 0.9vw, 2rem);
+  line-height: 1.05;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+}
+.nextTime {
+  color: var(--on-dark-2);
+}
+.nextNote {
+  max-width: 44ch;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--on-dark-2);
+}
+.ruler {
+  display: flex;
+  gap: 4px;
+  max-width: 320px;
+}
+.ruler i {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(234 242 240 / 0.14);
+}
+.ruler i[data-on="true"] {
+  background: var(--mint);
+}
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+}
+.meta li {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  color: var(--on-dark-2);
+}
+.meta svg {
+  color: var(--mint);
+}
+.nextActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 12px;
+  margin-top: 8px;
+}
+.darkLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 6px;
+  border: 0;
+  background: none;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--on-dark);
+  cursor: pointer;
+}
+@media (hover: hover) and (pointer: fine) {
+  .darkLink:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.22em;
+  }
+}
+.cancel {
+  padding-top: 6px;
+  border-top: 1px solid var(--hair-dark);
+}
+.cancel .darkLink {
+  font-weight: 450;
+  color: var(--on-dark-2);
+}
+.cancel p {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 12px;
+  font-size: 0.9375rem;
+  color: var(--on-dark);
+}
+.cancel p .darkLink:first-of-type {
+  color: var(--on-dark);
+  font-weight: 560;
+}
+
+/* ---------- cards ---------- */
+.card {
+  display: grid;
+  align-content: start;
+  gap: 20px;
+  min-width: 0;
+  padding: var(--card-pad);
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+.empty {
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+}
+
+/* ---------- what happens next: a measured line, done in teal, now in the signal colour ---------- */
+.steps {
+  display: grid;
+}
+.steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  gap: 0 14px;
+  padding-bottom: 20px;
+}
+.steps li:last-child {
+  padding-bottom: 0;
+}
+.steps li::before {
+  content: "";
+  position: absolute;
+  left: 9.5px;
+  top: 24px;
+  bottom: 3px;
+  width: 1px;
+  background: var(--hair-2);
+}
+.steps li:last-child::before {
+  display: none;
+}
+.steps li[data-state="done"]::before {
+  background: var(--teal-600);
+}
+.node {
+  position: relative;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+}
+[data-state="done"] > .node {
+  background: var(--teal-800);
+  box-shadow: none;
+}
+/* a small tick drawn with two borders */
+[data-state="done"] > .node::after {
+  content: "";
+  position: absolute;
+  left: 7px;
+  top: 4px;
+  width: 5px;
+  height: 9px;
+  border-right: 1.75px solid var(--mint);
+  border-bottom: 1.75px solid var(--mint);
+  transform: rotate(45deg);
+}
+[data-state="now"] > .node {
+  box-shadow: inset 0 0 0 1.5px var(--mint-ink);
+}
+[data-state="now"] > .node::after {
+  content: "";
+  position: absolute;
+  inset: 6px;
+  border-radius: 999px;
+  background: var(--mint-ink);
+}
+.stepText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.stepTitle {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  font-size: 1rem;
+  font-weight: 560;
+  line-height: 1.35;
+}
+[data-state="later"] .stepTitle {
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.nowTag {
+  padding: 3px 8px;
+  border-radius: 7px;
+  background: var(--mint-wash);
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--mint-ink);
+}
+.stepNote {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.stepWhen {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  padding-top: 2px;
+}
+
+/* ---------- your numbers ---------- */
+.weight {
+  display: grid;
+  gap: 4px;
+}
+.reading {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 2.3rem + 1.8vw, 3.6rem);
+  font-weight: 500;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+}
+.unit {
+  font-family: var(--font-text);
+  font-size: 1rem;
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+.source {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+/* the marker's sliding layer is as wide as the track; keep it from widening the page */
+.bmi {
+  overflow: clip;
+  display: grid;
+  gap: 10px;
+  padding-top: 18px;
+  border-top: 1px solid var(--hair);
+}
+.bmiHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.bmiHead span {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.bmiHead strong {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 520;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+.log {
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+.log li {
+  display: grid;
+  grid-template-columns: 4.5em minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hair);
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.logSrc {
+  color: var(--ink-3);
+}
+.log strong {
+  font-weight: 560;
+  color: var(--ink);
+}
+.wide {
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+}
+
+/* ---------- records: what the programme opens later ---------- */
+.records li {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hair);
+  color: var(--teal-600);
+}
+.records li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.records li:last-child {
+  padding-bottom: 0;
+}
+.records li > span {
+  display: grid;
+  gap: 2px;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--ink);
+}
+.records small {
+  font-size: 0.8125rem;
+  font-weight: 450;
+  color: var(--ink-3);
+}
+.lock {
+  color: var(--ink-3);
+}
+
+.foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-top: 40px;
+  padding-top: 16px;
+  border-top: 1px solid var(--hair);
+}
+
+/* ---------- sheets ---------- */
+.sheetBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.instrument {
+  display: grid;
+  gap: 24px;
+  padding: calc(var(--card-pad) + 2px) var(--card-pad) var(--card-pad);
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.profile {
+  display: grid;
+  margin-bottom: 16px;
+}
+.profile div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-bottom: 1px solid var(--hair);
+  font-size: 0.9375rem;
+}
+.profile dt {
+  color: var(--ink-3);
+}
+.profile dd {
+  margin: 0;
+  font-weight: 560;
+  text-align: right;
+}
+
+.toast {
+  position: fixed;
+  z-index: 70;
+  left: 0;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: 0;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 12px 18px;
+  border-radius: 999px;
+  background: var(--teal-900);
+  color: var(--on-dark);
+  font-size: 0.9375rem;
+  font-weight: 560;
+  white-space: nowrap;
+  box-shadow: 0 16px 32px -18px rgb(11 30 33 / 0.5);
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 360ms var(--ease-out);
+  pointer-events: none;
+}
+.toast[data-show="true"] {
+  opacity: 1;
+  transform: none;
+}
+/* with an undo, the toast is a small control bar the thumb can use */
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+/* a longer confirmation wraps inside the screen's gutters; one line stays a pill */
+.toast {
+  max-width: calc(100% - var(--gutter) * 2);
+  border-radius: 22px;
+  white-space: normal;
+  text-wrap: pretty;
+  line-height: 1.4;
+}
+.toast[data-undo="true"] {
+  padding-block: 0;
+  padding-right: 0;
+}
+.toast[data-undo="true"][data-show="true"] {
+  pointer-events: auto;
+}
+.toastUndo {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(234 242 240 / 0.08);
+  font: inherit;
+  font-weight: 600;
+  color: var(--mint-soft);
+  cursor: pointer;
+}
+
+/* ---------- loading ---------- */
+.skeleton {
+  display: grid;
+  gap: 16px;
+  padding-top: 64px;
+}
+.ghost {
+  display: block;
+  border-radius: var(--r-surface);
+  background: var(--bg-2);
+  animation: breathe 1400ms var(--ease-out) infinite alternate;
+}
+@keyframes breathe {
+  to {
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ghost {
+    animation: none;
+  }
+}
+
+/* the prototype's jump into care, kept quiet beside the honesty line */
+.demoJump {
+  flex-basis: 100%;
+  min-height: 44px;
+  text-wrap: balance;
+}
+
+/* above an open sheet too, so feedback for a tap inside it is always seen */
+.toast {
+  z-index: 80;
+  max-width: calc(100vw - 2 * var(--gutter));
+  white-space: normal;
+  text-wrap: balance;
+  text-align: center;
+  line-height: 1.35;
+}
+
+/* the updates bell, with a count of what is new */
+.bell {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 200ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+.bell:active {
+  transform: scale(0.95);
+}
+@media (hover: hover) and (pointer: fine) {
+  .bell:hover {
+    background: var(--bg-2);
+  }
+}
+/* one badge everywhere: teal-900 with a paper ring, off the bell's glyph so the bell stays a bell */
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 0;
+  display: grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--teal-900);
+  box-shadow: 0 0 0 2px var(--paper);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--mint);
+}
+
+/* help: the chat first, then what is wrong, then guides, then the emergency line */
+.helpSheet {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.helpSheet > a:last-of-type {
+  justify-self: start;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.helpRow {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: var(--r-media);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms var(--ease-out);
+}
+.helpRow:active {
+  transform: scale(0.98);
+}
+.helpRow > svg:first-child {
+  color: var(--teal-700);
+}
+.helpRow > svg:last-child {
+  color: var(--ink-3);
+}
+.helpRow > span {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.helpRow strong {
+  font-size: 0.9375rem;
+  font-weight: 560;
+}
+.helpRow > span > span {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.emergency {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 4px;
+  padding: 14px 16px;
+  border-radius: var(--r-media);
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+.emergency svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--alert);
+}
+.emergency a {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.offline {
+  max-width: calc(1180px + var(--gutter) * 2);
+  margin: 8px auto 0;
+  padding: 10px var(--gutter);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+  text-align: center;
+}
+
+/* prototype: the four points in care, as one row of choices at the foot of Home */
+.stages {
+  display: grid;
+  gap: 10px;
+  flex-basis: 100%;
+  padding-top: 12px;
+}
+.stageList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.stageBtn {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 200ms var(--ease-out),
+    color 200ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+.stageBtn:active {
+  transform: scale(0.97);
+}
+.stageBtn[aria-pressed="true"] {
+  background: var(--teal-900);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+.stageBtn:disabled:not([aria-pressed="true"]) {
+  opacity: 0.6;
+}
+/* phones: two equal columns that can never be wider than the screen */
+@media (max-width: 1023px) {
+  .stageList {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stageBtn {
+    min-width: 0;
+    padding: 6px 12px;
+    white-space: normal;
+    line-height: 1.3;
+  }
+}
+
+/* focus mode: a close button, the task's name centred, nothing else */
+.focusBar .barInner {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+}
+.focusTitle {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+  text-align: center;
+}
+.focusSpacer {
+  width: 44px;
+}
+.helpRow > svg {
+  flex: none;
+}
+.helpRow > svg:first-child {
+  width: 20px;
+  height: 20px;
+}
+.helpRow > svg:last-child {
+  width: 16px;
+  height: 16px;
+}
+
+/* the bar on scroll: a hairline edge, and on a phone the page's name in place of the wordmark */
+.bar {
+  transition: box-shadow 200ms var(--ease-out);
+}
+.bar[data-scrolled="true"] {
+  box-shadow: 0 1px 0 var(--hair);
+}
+.brand {
+  position: relative;
+}
+.brandMark,
+.barTitle {
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 200ms var(--ease-out);
+}
+.barTitle {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  opacity: 0;
+  transform: translateY(calc(-50% + 4px));
+  pointer-events: none;
+}
+@media (max-width: 899px) {
+  .bar[data-scrolled="true"] .brandMark {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  .bar[data-scrolled="true"] .barTitle {
+    opacity: 1;
+    transform: translateY(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .brandMark,
+  .barTitle {
+    transition: opacity 200ms var(--ease-out);
+  }
+}
+.flush {
+  padding-inline: 0;
+}
+
+/* once the page moves, the bar turns solid so text never runs behind the wordmark */
+.bar[data-scrolled="true"] {
+  background: var(--bg);
+}
+
+/* Home on a short phone: the bar gives back 20px (the wordmark and the 44px bell, nothing around
+   them), and Home spends it on its cards' breathing room */
+@media (max-height: 600px) and (max-width: 899px) {
+  .app:has(> main[data-screen="home"]) .barInner {
+    min-height: 44px;
+    padding-block: env(safe-area-inset-top) 0;
+  }
+}

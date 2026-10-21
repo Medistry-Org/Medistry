@@ -1,0 +1,359 @@
+.pharmacy {
+  background: var(--bg);
+}
+
+.head {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 44px;
+}
+
+.specimen {
+  display: grid;
+  gap: 12px;
+}
+
+.photo {
+  --wipe: var(--bg);
+  position: relative;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--r-media);
+  overflow: hidden;
+  background: var(--bg-2);
+}
+.photo img {
+  object-fit: cover;
+}
+
+.panel {
+  display: grid;
+  gap: 12px;
+}
+.flabel {
+  position: absolute;
+  top: 14px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--on-dark-3);
+}
+
+/* The scan: a dark viewfinder over the seal, then the record it matched */
+.verify {
+  display: grid;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  /* inset, so the ring hides under the dark viewfinder instead of rimming it */
+  box-shadow: inset 0 0 0 1px var(--hair);
+  overflow: hidden;
+}
+.finder {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  padding: 40px 20px 28px;
+  background: var(--teal-950);
+}
+/* faint graduations along the viewfinder edges, the brand's measuring edge */
+.finder::before,
+.finder::after {
+  content: "";
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  width: 8px;
+  background: repeating-linear-gradient(to bottom, rgb(238 241 240 / 0.22) 0 1px, transparent 1px 8px);
+}
+.finder::before {
+  left: 14px;
+}
+.finder::after {
+  right: 14px;
+}
+.sticker {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 8px;
+  width: 204px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  box-shadow: 0 18px 40px -18px rgb(0 0 0 / 0.6);
+}
+.stickerMark {
+  margin-bottom: 2px;
+}
+.stickerLabel {
+  font-family: var(--font-display);
+  font-size: 0.5625rem;
+  font-weight: 500;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  line-height: 1;
+  padding-left: 0.22em;
+}
+.target {
+  position: relative;
+  width: 86px;
+  height: 86px;
+  padding: 8px;
+}
+.code {
+  width: 100%;
+  height: 100%;
+  fill: #111;
+}
+.codeBg {
+  fill: #fff;
+}
+.corner {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 0 solid var(--mint-ink);
+}
+.tl {
+  top: 0;
+  left: 0;
+  border-top-width: 2px;
+  border-left-width: 2px;
+  border-top-left-radius: 6px;
+}
+.tr {
+  top: 0;
+  right: 0;
+  border-top-width: 2px;
+  border-right-width: 2px;
+  border-top-right-radius: 6px;
+}
+.bl {
+  bottom: 0;
+  left: 0;
+  border-bottom-width: 2px;
+  border-left-width: 2px;
+  border-bottom-left-radius: 6px;
+}
+.br {
+  bottom: 0;
+  right: 0;
+  border-bottom-width: 2px;
+  border-right-width: 2px;
+  border-bottom-right-radius: 6px;
+}
+.scanLine {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  top: 6px;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--mint);
+  box-shadow: 0 0 12px 1px rgb(70 216 173 / 0.55);
+  opacity: 0;
+}
+:global(.js) .verify:global(.in) .scanLine {
+  animation: scan 5200ms var(--ease-io) 250ms infinite both;
+}
+@keyframes scan {
+  /* one pass, then a long rest: the seal is read now and then, never nervously */
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  4%,
+  24% {
+    opacity: 1;
+  }
+  28%,
+  100% {
+    opacity: 0;
+    transform: translateY(76px);
+  }
+}
+/* brackets close in on the code as it is read */
+:global(.js) .corner {
+  transition: transform 700ms var(--ease-drawer) 1450ms;
+}
+:global(.js) .verify:not(:global(.in)) .tl {
+  transform: translate(-6px, -6px);
+}
+:global(.js) .verify:not(:global(.in)) .tr {
+  transform: translate(6px, -6px);
+}
+:global(.js) .verify:not(:global(.in)) .bl {
+  transform: translate(-6px, 6px);
+}
+:global(.js) .verify:not(:global(.in)) .br {
+  transform: translate(6px, 6px);
+}
+
+.result {
+  display: grid;
+  gap: 18px;
+  padding: 20px;
+}
+.vHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.ok {
+  flex: none;
+  color: var(--mint-ink);
+  margin-top: 1px;
+}
+.vTitle {
+  font-family: var(--font-display);
+  font-weight: 560;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  letter-spacing: -0.014em;
+}
+.vSub {
+  font-size: 0.9rem;
+  color: var(--ink-2);
+}
+:global(.js) .vHead {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 500ms var(--ease-out) 1500ms,
+    transform 700ms var(--ease-soft) 1500ms;
+}
+:global(.js) .verify:global(.in) .vHead {
+  opacity: 1;
+  transform: none;
+}
+.vRows {
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+.vRows > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--hair);
+  font-size: 0.9375rem;
+}
+.vRows dt {
+  color: var(--ink-3);
+}
+.vRows dd {
+  text-align: right;
+  font-weight: 520;
+}
+.intact {
+  color: var(--mint-ink);
+}
+:global(.js) .vRows > div {
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 500ms var(--ease-out),
+    transform 700ms var(--ease-soft);
+  transition-delay: calc(1600ms + var(--r, 0) * 70ms);
+}
+:global(.js) .vRows > div:nth-child(2) { --r: 1; }
+:global(.js) .vRows > div:nth-child(3) { --r: 2; }
+:global(.js) .vRows > div:nth-child(4) { --r: 3; }
+:global(.js) .vRows > div:nth-child(5) { --r: 4; }
+:global(.js) .verify:global(.in) .vRows > div {
+  opacity: 1;
+  transform: none;
+}
+.vNote {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.vNote svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--ink-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  :global(.js) .vRows > div,
+  :global(.js) .vHead,
+  :global(.js) .corner {
+    opacity: 1;
+    transform: none !important;
+    transition: none;
+  }
+  .scanLine {
+    display: none;
+  }
+}
+
+.titleCol {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+}
+
+@media (min-width: 1024px) {
+  .head {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    column-gap: 64px;
+    align-items: end;
+    margin-bottom: 56px;
+  }
+  .specimen {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 16px;
+    align-items: stretch;
+  }
+  .photo {
+    aspect-ratio: auto;
+    min-height: 520px;
+  }
+  .verify {
+    grid-template-rows: 1fr auto;
+  }
+  .finder {
+    padding: 48px 28px 40px;
+  }
+  .flabel {
+    top: 18px;
+  }
+  .sticker {
+    width: 232px;
+  }
+  .target {
+    width: 96px;
+    height: 96px;
+  }
+  .result {
+    padding: 24px 28px 26px;
+  }
+}
+@media (min-width: 1024px) {
+  :global(.js) .verify:global(.in) .scanLine {
+    animation-name: scan-lg;
+  }
+}
+@keyframes scan-lg {
+  /* one pass, then a long rest: the seal is read now and then, never nervously */
+  0% {
+    opacity: 0;
+    transform: translateY(0);
+  }
+  4%,
+  24% {
+    opacity: 1;
+  }
+  28%,
+  100% {
+    opacity: 0;
+    transform: translateY(86px);
+  }
+}

@@ -1,0 +1,381 @@
+/* The logging sheets: a symptom (what, how bad, what happens next) and the one-tap injection. */
+
+.form {
+  display: grid;
+  gap: 20px;
+}
+.group {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.legend {
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.legendNote {
+  margin-left: 4px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+/* the emergency line, first in the sheet, before anything is chosen: a full-width row, outlined in
+   red so it is found at once without shouting over the form; it fills red once "Severe" is chosen.
+   The red flags wrap rather than cut off: every word of them matters. */
+.form .sos {
+  --btn-bg: var(--paper);
+  --btn-fg: var(--alert);
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin-top: -6px;
+  padding: 7px 18px;
+  box-shadow: inset 0 0 0 1.5px var(--alert);
+  font-size: 1rem;
+  white-space: normal;
+  text-decoration: none;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 240ms var(--ease-out),
+    color 240ms var(--ease-out);
+}
+.form .sos[data-severe="true"] {
+  --btn-bg: var(--alert);
+  --btn-fg: #fff;
+  /* a band of the sheet's own ground above and around it, so nothing scrolls into view behind it */
+  box-shadow:
+    0 0 0 6px var(--bg),
+    0 -16px 0 6px var(--bg);
+  /* chosen "Severe" further down the sheet: the line stays in view at the top while the rest is filled in */
+  position: sticky;
+  top: -10px;
+  z-index: 2;
+}
+/* and a short fade under it, so the line below slides away rather than being cut */
+.form .sos[data-severe="true"]::after {
+  content: "";
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: calc(100% + 6px);
+  height: 18px;
+  background: linear-gradient(var(--bg), color-mix(in srgb, var(--bg) 0%, transparent));
+  pointer-events: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .form .sos:hover {
+    --btn-bg: color-mix(in srgb, var(--alert) 6%, var(--paper));
+  }
+  .form .sos[data-severe="true"]:hover {
+    --btn-bg: color-mix(in srgb, var(--alert) 88%, black);
+  }
+}
+.sos strong {
+  font-weight: 600;
+  white-space: nowrap;
+}
+.sos span {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.3;
+  text-align: right;
+  text-wrap: balance;
+}
+.sos svg {
+  flex: none;
+}
+
+/* Chat: who answers, the number, then WhatsApp */
+.chat {
+  display: grid;
+  gap: 16px;
+}
+.chatText {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.chatNumber {
+  display: grid;
+  gap: 2px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: var(--bg-2);
+}
+.chatNumber span {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.chatNumber strong {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* Save, pinned to the bottom of the sheet; the list scrolls under it */
+.dock {
+  position: sticky;
+  bottom: calc(-1 * max(24px, calc(12px + env(safe-area-inset-bottom))));
+  z-index: 1;
+  display: grid;
+  gap: 6px;
+  margin: -8px calc(-1 * var(--gutter)) calc(-1 * max(24px, calc(12px + env(safe-area-inset-bottom))));
+  padding: 12px var(--gutter) max(24px, calc(12px + env(safe-area-inset-bottom)));
+  background: var(--bg);
+  box-shadow: 0 -1px 0 var(--hair);
+}
+.dockHint {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  text-align: center;
+  color: var(--ink-3);
+}
+@media (min-width: 768px) {
+  .dock {
+    bottom: -28px;
+    margin: -8px -28px -28px;
+    padding: 12px 28px 28px;
+  }
+}
+
+/* how bad: three equal choices, nothing chosen until the patient chooses */
+.sev {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.sevBtn {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 2px;
+  min-height: 64px;
+  padding: 8px 4px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--ink);
+  text-align: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out),
+    color 180ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+.sevBtn strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.sevBtn span {
+  font-size: 0.875rem;
+  line-height: 1.25;
+  white-space: nowrap;
+  color: var(--ink-3);
+}
+.sevBtn:active {
+  transform: scale(0.97);
+}
+.sevBtn[aria-checked="true"] {
+  background: var(--teal-900);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+.sevBtn[aria-checked="true"] span {
+  color: var(--on-dark-2);
+}
+
+/* after saving: what happens next, scaled to how bad it is */
+.result {
+  display: grid;
+  gap: 16px;
+}
+.resultHead {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.resultHead strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.012em;
+}
+.resultIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--mint-wash);
+  color: var(--mint-ink);
+}
+.result[data-tone="amber"] .resultIcon {
+  background: var(--bg-2);
+  color: var(--teal-800);
+}
+.result[data-tone="red"] .resultIcon {
+  background: color-mix(in srgb, var(--alert) 12%, transparent);
+  color: var(--alert);
+}
+.resultText {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.resultNote {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.resultNote a {
+  font-weight: 600;
+  color: var(--alert);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.resultActions {
+  display: grid;
+  gap: 10px;
+}
+.resultSmall {
+  margin-top: -4px;
+  font-size: 0.875rem;
+  text-align: center;
+  color: var(--ink-3);
+}
+.danger {
+  --btn-bg: var(--alert);
+  --btn-fg: #fff;
+  --well-bg: #fff;
+  --well-fg: var(--alert);
+}
+@media (hover: hover) and (pointer: fine) {
+  .danger:hover {
+    --btn-bg: color-mix(in srgb, var(--alert) 88%, black);
+  }
+}
+.wide {
+  justify-content: center;
+  width: 100%;
+  min-height: 52px;
+}
+.resultLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--teal-800);
+  text-decoration: underline;
+  text-decoration-color: var(--hair-2);
+}
+.done {
+  min-height: 52px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--ink);
+  cursor: pointer;
+  transition: transform 160ms var(--ease-out);
+}
+.done:active {
+  transform: scale(0.98);
+}
+
+/* phones: each choice is a full-width row, so its line never squeezes inside a pill */
+@media (max-width: 419px) {
+  .sev {
+    grid-template-columns: 1fr;
+  }
+  .sevBtn {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 48px;
+    padding: 0 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .form .sos,
+  .sevBtn,
+  .done {
+    transition: none;
+  }
+}
+
+/* the weight sheet: when the box shows the last reading, a chip says when it was taken */
+.lastChip {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-bottom: -4px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.lastChip strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+/* the injection spot: one line per pill, the arm note once under the grid */
+.siteName {
+  white-space: nowrap;
+}
+.siteNote {
+  margin-top: -4px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+/* a narrow phone: the emergency line becomes a small card, the red flags first and "Call 112" under
+   them, so neither is squeezed into a three-line column */
+@media (max-width: 389px) {
+  .form .sos {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "flags flags"
+      "icon call";
+    gap: 4px 8px;
+    padding: 12px 16px;
+    border-radius: var(--r-media);
+  }
+  .form .sos span {
+    grid-area: flags;
+    font-size: 0.9375rem;
+    text-align: left;
+    text-wrap: pretty;
+  }
+  .form .sos svg {
+    grid-area: icon;
+  }
+  .form .sos strong {
+    grid-area: call;
+  }
+}

@@ -1,0 +1,1547 @@
+/*
+  Notes: the scribe's drafts and the doctor's review. The note reads as one paper surface cut into
+  hairline bands; the transcript sits beside it on a laptop, in a drawer on a small laptop and in a
+  sheet on a phone. Scribe text is one step lighter than the doctor's own; a section he has checked
+  turns full ink. Mint is evidence and readiness; the alert colour is kept for flags and blockers.
+*/
+
+/* ---------- the list ---------- */
+.listTools {
+  margin-bottom: 14px;
+}
+.list {
+  display: grid;
+  gap: 2px;
+  max-width: 820px;
+  margin: 0 -8px;
+  padding: 0 8px;
+  list-style: none;
+}
+.row {
+  min-height: 64px;
+  text-decoration: none;
+}
+.row [data-quiet] {
+  color: var(--ink-3);
+}
+.rowMeta {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: 0.75rem;
+  font-weight: 560;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.breath {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--teal-600);
+  animation: breathe 1400ms var(--ease-out) infinite alternate;
+}
+@keyframes breathe {
+  to {
+    opacity: 0.3;
+  }
+}
+.empty {
+  max-width: 820px;
+}
+
+/* ---------- the review: layout ---------- */
+.backLink {
+  margin-bottom: 12px;
+}
+.grid {
+  display: grid;
+  gap: 16px;
+  align-items: start;
+}
+@media (min-width: 1280px) {
+  .grid {
+    grid-template-columns: minmax(0, 1fr) 380px;
+  }
+}
+.note {
+  min-width: 0;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+
+/* ---------- header ---------- */
+.head {
+  display: grid;
+  gap: 14px;
+  padding: var(--card-pad);
+}
+.headRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px 16px;
+}
+.who {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+.name {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.2rem + 0.8vw, 2rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.name a,
+.topWho h1 a {
+  color: inherit;
+  text-decoration: none;
+  border-radius: 6px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .name a:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--hair-2);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 5px;
+  }
+}
+.meta {
+  margin-top: 4px;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.cluster:empty {
+  display: none;
+}
+/* the status leads; moving through the queue and the shortcuts sit at the far end */
+.cluster {
+  flex: 1 1 100%;
+}
+.cluster > :nth-child(2) {
+  margin-left: auto;
+}
+.stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+.of {
+  margin-right: 4px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+.iconBtn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .iconBtn:not(:disabled):hover {
+    background: var(--hover-wash);
+    color: var(--ink);
+  }
+}
+.iconBtn[aria-expanded="true"] {
+  background: var(--hover-wash);
+  color: var(--ink);
+}
+.iconBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.ghostSm {
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 16px 0 14px;
+  font-size: 0.875rem;
+}
+.ghostSm[aria-expanded="true"] {
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+
+/* the two facts a doctor checks before agreeing to anything, never folded away */
+.safety {
+  display: grid;
+  gap: 1px;
+  overflow: hidden;
+  border-radius: 12px;
+  background: var(--hair);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+@media (min-width: 640px) {
+  .safety {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  }
+}
+.safety > div {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 10px 14px;
+  background: var(--paper);
+}
+.safety dt {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.safety dd {
+  font-size: 0.9375rem;
+  font-weight: 560;
+  line-height: 1.4;
+}
+.safety > div[data-warn="true"] {
+  background: color-mix(in srgb, var(--alert) 6%, var(--paper));
+}
+.safety > div[data-warn="true"] dd {
+  color: var(--alert);
+}
+.info {
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ---------- sections: hairline bands, never boxes ---------- */
+.sec {
+  padding: 20px var(--card-pad);
+  border-top: 1px solid var(--hair);
+  scroll-margin-top: 80px;
+  scroll-margin-bottom: 100px;
+  transition: box-shadow 160ms var(--ease-out);
+}
+.note .sec:focus-visible {
+  outline: none;
+  box-shadow: inset 3px 0 0 var(--mint-ink);
+}
+.sections[data-fade="true"] > .sec {
+  animation: appear 240ms var(--ease-out) both;
+}
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+.secHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 44px;
+  margin-bottom: 10px;
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+.secMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+.secMeta:empty {
+  display: none;
+}
+.metaTick {
+  color: var(--mint-ink);
+}
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.check {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+.check[aria-pressed="true"] {
+  background: var(--mint-ink);
+  box-shadow: none;
+  color: #fff;
+}
+.editBtn {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--ink-2);
+}
+@media (hover: hover) and (pointer: fine) {
+  /* quiet until the doctor is in the section; never hidden */
+  .sec .tools .editBtn,
+  .sec .tools .iconBtn {
+    color: var(--ink-3);
+  }
+  .sec:hover .tools .editBtn,
+  .sec:focus-within .tools .editBtn,
+  .sec:hover .tools .iconBtn,
+  .sec:focus-within .tools .iconBtn {
+    color: var(--ink);
+  }
+  .editBtn:hover {
+    background: var(--hover-wash);
+    text-decoration: none;
+  }
+  .check:not([aria-pressed="true"]):hover {
+    box-shadow: inset 0 0 0 1.5px var(--ink-3);
+    color: var(--ink);
+  }
+}
+
+/* ---------- prose and sentences ---------- */
+.body {
+  max-width: 68ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.prose {
+  text-wrap: pretty;
+}
+.sent {
+  margin: 0 -2px;
+  padding: 1px 2px;
+  border-radius: 4px;
+  color: inherit;
+  text-decoration: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 200ms var(--ease-out),
+    color 240ms var(--ease-out);
+}
+/* the scribe's words in the second ink until the doctor vouches for the section */
+.body[data-tone="draft"] .sent[data-by="scribe"] {
+  color: var(--ink-2);
+}
+@media (hover: hover) and (pointer: fine) {
+  .sent:hover {
+    background: var(--hover-wash);
+  }
+}
+.sent[data-lit="true"],
+.sent[data-flash="true"] {
+  background: var(--mint-wash);
+}
+.sent[aria-pressed="true"] {
+  background: var(--mint-wash);
+  color: var(--ink);
+}
+.body[data-tone="draft"] .sent[aria-pressed="true"] {
+  color: var(--ink);
+}
+.sent[data-flag="true"] {
+  text-decoration: underline wavy color-mix(in srgb, var(--alert) 70%, transparent);
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 4px;
+}
+.sent:focus-visible {
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+.planList,
+.nextList {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+}
+.planList > li,
+.nextList > li {
+  position: relative;
+  padding-left: 18px;
+}
+.planList > li::before,
+.nextList > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.78em;
+  width: 7px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--teal-600);
+}
+.emptyBox {
+  width: 100%;
+  min-height: 64px;
+  padding: 14px 16px;
+  border: 1px dashed var(--hair-2);
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .emptyBox:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+}
+.none {
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+}
+.skel {
+  display: grid;
+  gap: 10px;
+  padding-block: 4px;
+}
+.skel span {
+  height: 14px;
+  border-radius: 7px;
+  background: var(--bg-2);
+  animation: breathe 1400ms var(--ease-out) infinite alternate;
+}
+
+/* ---------- flags, and what is left of one once settled ---------- */
+.flag {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+  box-shadow: inset 3px 0 0 var(--alert);
+}
+.flagTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--alert);
+}
+.flagWhy {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.flagOpts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+.flagEdit {
+  padding: 0 6px;
+}
+.settled {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.settled svg {
+  color: var(--mint-ink);
+}
+.inlineBtn {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--teal-800);
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .inlineBtn:hover {
+    background: var(--hover-wash);
+  }
+}
+
+/* ---------- evidence, in place ---------- */
+.evidence {
+  scroll-margin-bottom: 150px;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  animation: appear 200ms var(--ease-out);
+}
+.evRow {
+  display: grid;
+  gap: 2px;
+}
+.evWhen {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+.evText {
+  color: var(--ink);
+}
+.evNone {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.en {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.evidence mark,
+.tText mark {
+  border-radius: 3px;
+  background: rgb(70 216 173 / 0.3);
+  color: inherit;
+}
+.unsure {
+  text-decoration: underline dotted var(--alert);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* ---------- for the patient: a preview of what lands in their app ---------- */
+.preview {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+}
+.preview .evidence,
+.preview .flag {
+  background: var(--paper);
+}
+.preview .flag {
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+}
+.previewHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+.nextHead {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.nextList {
+  gap: 4px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ---------- editing in place ---------- */
+.editor {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+.editor .field {
+  max-height: none;
+  overflow: hidden;
+  line-height: 1.6;
+}
+.editFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.hint {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.editActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+.doneBtn {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+.doneBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---------- menus ---------- */
+.moreWrap {
+  position: relative;
+  display: inline-flex;
+}
+.menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  min-width: 224px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 16px 40px -12px rgb(11 30 33 / 0.25);
+  animation: pop 160ms var(--ease-out);
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.menu > button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--ink);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.menu > button:hover:not(:disabled),
+.menu > button:focus-visible {
+  outline: none;
+  background: var(--hover-wash);
+}
+.menu > button:disabled {
+  color: var(--ink-3);
+  opacity: 0.6;
+  cursor: default;
+}
+.keys {
+  min-width: 296px;
+  padding: 12px 14px;
+}
+.keys dl {
+  display: grid;
+  gap: 6px;
+}
+.keys dl > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+.keys dt {
+  display: flex;
+  gap: 4px;
+}
+.keys kbd {
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--bg-2);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+.keys dd {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+/* ---------- medicines, follow-ups, record updates ---------- */
+.rows {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+}
+.medRow {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 4px 12px;
+  padding-block: 6px;
+}
+.act {
+  justify-self: start;
+  margin-top: 1px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.act[data-act="START"],
+.act[data-act="CHANGE"] {
+  background: var(--mint-wash);
+  color: var(--mint-ink);
+}
+.act[data-act="STOP"] {
+  background: color-mix(in srgb, var(--alert) 9%, var(--paper));
+  color: var(--alert);
+}
+.act[data-act="CONTINUE"] {
+  padding-inline: 0;
+  font-weight: 560;
+  color: var(--ink-3);
+}
+.medText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.medText strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.medText span {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+.medText em {
+  font-size: 0.8125rem;
+  font-style: normal;
+  color: var(--ink-3);
+}
+.medRow[data-out="true"] strong,
+.fuRow[data-out="true"] .tick > span:last-child,
+.upRow[data-out="true"] p {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--hair-2);
+}
+.rowTools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: -6px;
+}
+.evBtn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .evBtn:hover {
+    background: var(--hover-wash);
+    color: var(--ink);
+  }
+}
+.evBtn[aria-pressed="true"] {
+  background: var(--mint-wash);
+  color: var(--mint-ink);
+}
+.tick {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+.tick input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+.box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  color: transparent;
+  transition:
+    background-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+.tick input:checked + .box {
+  background: var(--mint-ink);
+  box-shadow: none;
+  color: #fff;
+}
+.tick input:focus-visible + .box {
+  outline: 2px solid var(--mint-ink);
+  outline-offset: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .tick:hover input:not(:checked) + .box {
+    box-shadow: inset 0 0 0 1.5px var(--ink-3);
+  }
+}
+.fuRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0 10px;
+}
+.fuRow .tick {
+  align-items: flex-start;
+  padding-block: 10px;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+.fuRow .box {
+  margin-top: 1px;
+}
+.owner {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.upRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding-block: 4px;
+}
+.upRow p {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.upLabel {
+  margin-right: 6px;
+  font-weight: 600;
+}
+.upRow s {
+  color: var(--ink-3);
+}
+.upArrow {
+  margin: 0 6px;
+  color: var(--ink-3);
+  vertical-align: -2px;
+}
+.foot {
+  margin-top: 10px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+/* ---------- signing ---------- */
+.signBar {
+  position: sticky;
+  z-index: 5;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 4px 16px 16px;
+  padding: 8px 8px 8px 18px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 8px 24px rgb(11 30 33 / 0.08);
+}
+.signText {
+  min-width: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+.statusQuiet {
+  color: var(--ink-3);
+}
+.blockers {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 4px;
+  color: var(--alert);
+}
+.blocker {
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  color: var(--alert);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--alert) 35%, transparent);
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
+.readyText {
+  font-weight: 600;
+  color: var(--mint-ink);
+}
+.readyText > span {
+  font-weight: 450;
+  color: var(--ink-3);
+}
+.signBtn {
+  flex: none;
+  min-height: 48px;
+  padding: 4px 4px 4px 20px;
+}
+.signBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.signBtn:disabled .well {
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .signBtn:disabled:hover {
+    --btn-bg: var(--teal-900);
+  }
+}
+
+/* the sign sheet: what will be written, and where it goes */
+.sList {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+.sRow {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 10px 0;
+}
+.sRow[data-off="true"] {
+  opacity: 0.6;
+}
+.sIcon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--teal-700);
+}
+.sText {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+}
+.sText strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+.sText > span {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink);
+  cursor: pointer;
+}
+.knob {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--hair-2);
+  transition: background-color 200ms var(--ease-out);
+}
+.knob::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(11 30 33 / 0.2);
+  transition: transform 200ms var(--ease-out);
+}
+.switch[aria-checked="true"] .knob {
+  background: var(--mint-ink);
+}
+.switch[aria-checked="true"] .knob::after {
+  transform: translateX(16px);
+}
+.sNote {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--paper);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.sig {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hair);
+  font-size: 0.875rem;
+  font-weight: 560;
+}
+.sig .num {
+  font-weight: 450;
+  color: var(--ink-3);
+}
+.sActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+/* after signing: the attestation, then anything added since */
+.signedFoot {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 20px var(--card-pad) var(--card-pad);
+  border-top: 1px solid var(--hair);
+}
+.signedFoot > div {
+  justify-self: stretch;
+}
+.signedBy {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.signedBy svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--mint-ink);
+}
+.addenda {
+  display: grid;
+  justify-self: stretch;
+  gap: 8px;
+  list-style: none;
+}
+.addenda li {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.addHead {
+  margin-bottom: 2px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+.signedFoot form {
+  justify-self: stretch;
+}
+.log {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 6px;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+.nextLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--teal-800);
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .nextLink:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ---------- the transcript: panel, drawer or sheet ---------- */
+.tPanel,
+.drawer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+}
+.tPanel {
+  position: sticky;
+  top: 16px;
+  height: calc(100vh - 32px);
+  height: calc(100dvh - 32px);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.drawer {
+  position: fixed;
+  z-index: 50;
+  inset: 16px 16px 16px auto;
+  width: min(400px, 42vw);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 24px 60px rgb(11 30 33 / 0.18);
+  animation: appear 200ms var(--ease-out);
+}
+.transcript {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  outline: none;
+}
+.tHead {
+  display: grid;
+  flex: none;
+  justify-items: start;
+  gap: 10px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--hair);
+}
+.tTitle {
+  display: flex;
+  align-items: center;
+  justify-self: stretch;
+  gap: 8px 10px;
+  min-height: 40px;
+}
+.tTitle > button {
+  margin-left: auto;
+}
+.moments {
+  display: flex;
+  align-items: center;
+  justify-self: stretch;
+  gap: 2px;
+  padding: 2px 2px 2px 12px;
+  border-radius: 999px;
+  background: var(--mint-wash);
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--mint-ink);
+}
+.moments > .num {
+  margin-right: auto;
+}
+.moments .iconBtn {
+  width: 36px;
+  height: 36px;
+  color: var(--mint-ink);
+}
+.tList {
+  display: grid;
+  flex: 1;
+  align-content: start;
+  gap: 2px;
+  min-height: 0;
+  padding: 8px 8px 16px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  list-style: none;
+}
+.tRow {
+  border-radius: 10px;
+  scroll-margin: 16px;
+  transition:
+    background-color 200ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.tRow[data-preview="true"] {
+  background: var(--hover-wash);
+}
+.tRow[data-lit="true"] {
+  background: var(--mint-wash);
+  box-shadow: inset 3px 0 0 var(--mint-ink);
+}
+.tBtn {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: start;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 160ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .tRow:not([data-lit]) .tBtn:hover {
+    background: var(--hover-wash);
+  }
+}
+.tTime {
+  padding-top: 2px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+.tBody {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.tWho {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+.tText {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.notUsed {
+  font-size: 0.75rem;
+  font-weight: 560;
+  color: var(--ink-3);
+  animation: appear 160ms var(--ease-out);
+}
+.missed {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  padding: 0 10px 8px 54px;
+}
+.tNone {
+  padding: 16px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+/* ---------- a phone: a pushed screen with its own top and bottom bars ---------- */
+.topBar,
+.bottomBar {
+  display: none;
+}
+@media (max-width: 1023px) {
+  .topBar {
+    position: sticky;
+    z-index: 20;
+    top: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: calc(8px + env(safe-area-inset-top)) 14px 8px;
+    border-bottom: 1px solid var(--hair);
+    background: var(--chrome-bg);
+    --chrome-blur: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: var(--chrome-blur);
+    backdrop-filter: var(--chrome-blur);
+  }
+  .topBar > a:first-child {
+    display: grid;
+  }
+  .topWho {
+    display: grid;
+    flex: 1;
+    min-width: 0;
+  }
+  .topWho h1 {
+    overflow: hidden;
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 520;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .topWho > span {
+    overflow: hidden;
+    font-size: 0.8125rem;
+    color: var(--ink-3);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .page {
+    padding-bottom: calc(150px + env(safe-area-inset-bottom));
+  }
+  .backLink,
+  .who > :first-child,
+  .name,
+  .pillWide,
+  .signBar {
+    display: none;
+  }
+  .meta {
+    margin-top: 0;
+  }
+  .head {
+    padding-top: 16px;
+  }
+  .bottomBar {
+    position: fixed;
+    z-index: 30;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: grid;
+    gap: 6px;
+    padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--hair);
+    background: var(--chrome-bg);
+    --chrome-blur: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: var(--chrome-blur);
+    backdrop-filter: var(--chrome-blur);
+  }
+  .bottomStatus {
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+  .bottomStatus .blocker {
+    min-height: 32px;
+  }
+  .bottomRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .bottomRow .ghostSm {
+    min-height: 44px;
+  }
+  /* on touch, every tool is full ink and a full thumb wide */
+  .check,
+  .iconBtn,
+  .evBtn {
+    width: 44px;
+    height: 44px;
+  }
+  .editBtn,
+  .inlineBtn {
+    min-height: 44px;
+  }
+  .medRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .act {
+    grid-column: 1 / -1;
+  }
+  .rowTools {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    margin-left: -10px;
+  }
+  .fuRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .fuRow .tick {
+    grid-column: 1 / -1;
+    padding-bottom: 0;
+  }
+  .fuRow .owner {
+    padding-left: 30px;
+  }
+  .missed {
+    padding-left: 10px;
+  }
+  /* a section head: the title and its tools on one line, who wrote it beneath */
+  .secHead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "title tools"
+      "meta meta";
+    gap: 0 8px;
+  }
+  .secHead .h2 {
+    grid-area: title;
+  }
+  .secHead .secMeta {
+    grid-area: meta;
+    margin-top: -4px;
+  }
+  .secHead .tools {
+    grid-area: tools;
+  }
+  /* inside the sheet, the sheet scrolls and carries the title; the filter stays in reach */
+  .tHead {
+    position: sticky;
+    z-index: 1;
+    top: -16px;
+    padding: 16px 0 12px;
+    margin-top: -16px;
+    background: var(--bg);
+  }
+  .tTitle .h2 {
+    display: none;
+  }
+  .tTitle:has(> :only-child:not(.h2)),
+  .tTitle:not(:has(> :not(.h2))) {
+    min-height: 0;
+  }
+  .tList {
+    overflow: visible;
+    padding: 8px 0 0;
+    margin-inline: -10px;
+  }
+  .stepper {
+    margin-left: -10px;
+  }
+}
+
+/* ---------- the patient record's visits ---------- */
+.visitWhen {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 12px;
+}
+.visitNote {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--teal-800);
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .visitNote:hover {
+    text-decoration: underline;
+  }
+}
+.visitAssess span {
+  margin-right: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breath,
+  .skel span,
+  .sections[data-fade="true"] > .sec,
+  .evidence,
+  .menu,
+  .drawer,
+  .notUsed {
+    animation: none;
+  }
+}
+
+/* "To sign 4 · 1 being written": the count is what can be signed now; the rest is said quietly */
+.writingCount {
+  font-weight: 450;
+  color: var(--ink-3);
+}
+.pillCount {
+  font-weight: 500;
+  opacity: 0.8;
+}
+/* the phone's top bar keeps room for the name: just "Ready to sign" there */
+.topBar .pillCount {
+  display: none;
+}
