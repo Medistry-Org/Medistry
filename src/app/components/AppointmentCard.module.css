@@ -1,0 +1,276 @@
+/* Card Container */
+.cardContainer {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1rem;
+  padding: 1.25rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.cardContainer:hover {
+  box-shadow:
+    0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  border-color: #cbd5e1;
+}
+
+/* Header Section */
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  gap: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .cardHeader {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.appointmentBadge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #334155;
+  background-color: #f1f5f9;
+  padding: 0.25rem 0.625rem;
+  border-radius: 0.375rem;
+}
+
+.statusBadge {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.125rem 0.625rem;
+  border-radius: 9999px;
+  text-transform: capitalize;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.statusCompleted {
+  background-color: #ecfdf5;
+  color: #047857;
+  border: 1px solid #a7f3d0;
+}
+
+.statusCancelled {
+  background-color: #fff1f2;
+  color: #be123c;
+  border: 1px solid #fecdd3;
+}
+
+.statusUpcoming {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.consultationType {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.bookedAtText {
+  font-size: 0.6875rem;
+  color: #94a3b8;
+}
+
+/* Doctor & Schedule Body */
+.cardBody {
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .cardBody {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.doctorSection {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.avatarContainer {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatarFallback {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.doctorDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.doctorName {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.doctorMeta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  margin-top: 0.25rem;
+}
+
+.specializationText {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  color: #2563eb;
+  font-weight: 500;
+}
+
+/* Schedule Pills */
+.scheduleSection {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.625rem;
+  background-color: #f8fafc;
+  border: 1px solid #f1f5f9;
+  padding: 0.625rem;
+  border-radius: 0.75rem;
+}
+
+.pillItem {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  color: #334155;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  background-color: #ffffff;
+  border-radius: 0.5rem;
+  border: 1px solid #f1f5f9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+}
+
+.pillIcon {
+  color: #2563eb;
+}
+
+/* Reason Alert */
+.reasonBox {
+  margin-bottom: 1rem;
+  padding: 0.625rem 0.75rem;
+  background-color: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #92400e;
+}
+
+.reasonIcon {
+  color: #d97706;
+  flex-shrink: 0;
+}
+
+.reasonText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Action Buttons */
+.cardActions {
+  padding-top: 0.75rem;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.625rem;
+}
+
+.chatButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.55rem 0.95rem;
+  background-color: #ffffff;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.chatButton:hover {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.videoButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.75rem;
+  color: #ffffff;
+  border: none;
+  cursor: pointer;
+  background-color: #059669;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.videoButton:hover:not(:disabled) {
+  background-color: #047857;
+}
+
+.videoButtonDisabled {
+  background-color: #cbd5e1;
+  color: #64748b;
+  cursor: not-allowed;
+  box-shadow: none;
+}

@@ -65,6 +65,13 @@ const NAV: { id: Section; href: string; label: string; icon: typeof Users }[] =
       label: "Messages",
       icon: ChatsCircle,
     },
+
+    {
+      id: "consultation",
+      href: "/DoctorDasboard/clinician/consultation",
+      label: "Consultation",
+      icon: ChatsCircle,
+    },
   ];
 
 const Toast = createContext<(m: string, undo?: () => void) => void>(() => {});
@@ -144,7 +151,7 @@ export default function ClinicShell({
       <div className={c.app} data-bare={bare || undefined}>
         <aside className={c.rail}>
           <Link
-            href="/clinician"
+            href="/DoctorDasboard/clinician"
             className={c.brand}
             aria-label="Medistry clinician portal"
           >
@@ -196,7 +203,7 @@ export default function ClinicShell({
 
         <header className={c.top}>
           <Link
-            href="/clinician"
+            href="/DoctorDasboard/clinician"
             className={c.brand}
             aria-label="Medistry clinician portal"
           >

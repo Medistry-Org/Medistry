@@ -1,7 +1,14 @@
 "use client";
 
-import { CalendarBlank, Flask, Package, Prescription, Receipt, Syringe } from "@phosphor-icons/react";
-import type { Dashboard } from "./api";
+import {
+  CalendarBlank,
+  Flask,
+  Package,
+  Prescription,
+  Receipt,
+  Syringe,
+} from "@phosphor-icons/react";
+//import type { Dashboard } from "./api";
 import type { CareRecord } from "./care";
 import type { AppData } from "./Shell";
 import { when } from "./Booking";
@@ -28,7 +35,8 @@ export const ICON = {
 };
 
 const DAY = 864e5;
-const newest = (list: (Update | false | null | undefined)[]) => list.filter((u): u is Update => !!u).sort((p, q) => q.at.localeCompare(p.at));
+const newest = (list: (Update | false | null | undefined)[]) =>
+  list.filter((u): u is Update => !!u).sort((p, q) => q.at.localeCompare(p.at));
 
 /**
  * What changed, newest first: built from the record so it can never disagree with it. In the
@@ -37,10 +45,21 @@ const newest = (list: (Update | false | null | undefined)[]) => list.filter((u):
 export function updatesOf(care: CareRecord, now: number): Update[] {
   const rx = care.prescriptions.find((r) => r.status === "SIGNED");
   const lab = care.labs.find((l) => l.status === "REVIEWED");
-  const pending = care.labs.find((l) => ["SAMPLE_COLLECTED", "PROCESSING", "REPORT_READY", "DOCTOR_REVIEW_PENDING"].includes(l.status));
+  const pending = care.labs.find((l) =>
+    [
+      "SAMPLE_COLLECTED",
+      "PROCESSING",
+      "REPORT_READY",
+      "DOCTOR_REVIEW_PENDING",
+    ].includes(l.status),
+  );
   const order = care.orders[0];
   const pen = rx?.items.find((i) => i.form === "PEN");
-  const penDone = pen && care.medication.some((m) => m.item === pen.medicine_name && m.status === "TAKEN");
+  const penDone =
+    pen &&
+    care.medication.some(
+      (m) => m.item === pen.medicine_name && m.status === "TAKEN",
+    );
   const lastVisit = care.consultations[0];
   const next = care.next && new Date(care.next.at);
   const end = new Date(care.programme.end_at);
@@ -78,9 +97,14 @@ export function updatesOf(care: CareRecord, now: number): Update[] {
       id: `lab-${pending.id}-${pending.status}`,
       at: pending.slot_at,
       kind: "lab",
-      title: pending.status === "REPORT_READY" || pending.status === "DOCTOR_REVIEW_PENDING" ? "Blood test report ready" : "Blood samples at the lab",
+      title:
+        pending.status === "REPORT_READY" ||
+        pending.status === "DOCTOR_REVIEW_PENDING"
+          ? "Blood test report ready"
+          : "Blood samples at the lab",
       text:
-        pending.status === "REPORT_READY" || pending.status === "DOCTOR_REVIEW_PENDING"
+        pending.status === "REPORT_READY" ||
+        pending.status === "DOCTOR_REVIEW_PENDING"
           ? "Your doctor adds a note soon."
           : "Results in a day or two.",
       href: "/dashboard/care?open=report",
@@ -106,13 +130,23 @@ export function updatesOf(care: CareRecord, now: number): Update[] {
         id: `order-${order.id}-${order.status}`,
         at: orderStep.at,
         kind: "order",
-        title: order.status === "DELIVERED" ? "Medicines delivered" : order.status === "DISPATCHED" ? "Medicines on the way" : "Order being packed",
-        text: order.status === "DELIVERED" ? "Scan the QR seal on each pack." : `Tracking number ${order.tracking_no}.`,
+        title:
+          order.status === "DELIVERED"
+            ? "Medicines delivered"
+            : order.status === "DISPATCHED"
+              ? "Medicines on the way"
+              : "Order being packed",
+        text:
+          order.status === "DELIVERED"
+            ? "Scan the QR seal on each pack."
+            : `Tracking number ${order.tracking_no}.`,
         href: "/dashboard/care#orders",
       },
     // a home test the patient booked themselves, so the bell confirms what they just did
     ...care.labs
-      .filter((l) => l.status === "SLOT_CONFIRMED" && l.package.startsWith("Packet"))
+      .filter(
+        (l) => l.status === "SLOT_CONFIRMED" && l.package.startsWith("Packet"),
+      )
       .map((l) => ({
         id: `lab-booked-${l.id}`,
         at: new Date(now - 30e3).toISOString(),
@@ -134,16 +168,25 @@ export function updatesOf(care: CareRecord, now: number): Update[] {
       id: `plan-${care.plan_change.kind}-${care.plan_change.requested_at}`,
       at: care.plan_change.requested_at,
       kind: "pay",
-      title: care.plan_change.kind === "PAUSE" ? "Pause requested" : "Cancellation requested",
+      title:
+        care.plan_change.kind === "PAUSE"
+          ? "Pause requested"
+          : "Cancellation requested",
       text: "Your care team confirms it with you on WhatsApp before anything changes.",
       href: "/dashboard/profile?open=plan",
     },
     // the stage 3 demo shows it early so the state can be reviewed; the copy names the real date
     care.programme.status === "ACTIVE" &&
-      ((end.getTime() - now < 14 * DAY && end.getTime() > now) || care.stage === 3) && {
+      ((end.getTime() - now < 14 * DAY && end.getTime() > now) ||
+        care.stage === 3) && {
         id: `renew-${care.programme.end_at}`,
         // a weekday morning in clinic hours, never in the future
-        at: new Date(Math.min(clinicTime(now, 0, 10), clinicTime(end.getTime() - 14 * DAY, 0, 10))).toISOString(),
+        at: new Date(
+          Math.min(
+            clinicTime(now, 0, 10),
+            clinicTime(end.getTime() - 14 * DAY, 0, 10),
+          ),
+        ).toISOString(),
         kind: "pay",
         title: `Programme ends ${short(care.programme.end_at)}`,
         text: "Renew only if you want to.",
@@ -172,9 +215,15 @@ export function welcomeUpdates(dash: Dashboard, now: number): Update[] {
     at
       ? {
           id: `first-${appt!.scheduled_at}`,
-          at: at.getTime() - now < 2 * DAY ? new Date(now - 60e3).toISOString() : dash.user.created_at,
+          at:
+            at.getTime() - now < 2 * DAY
+              ? new Date(now - 60e3).toISOString()
+              : dash.user.created_at,
           kind: "visit",
-          title: at.getTime() - now < 2 * DAY ? "Your first consultation is coming up" : "First consultation booked",
+          title:
+            at.getTime() - now < 2 * DAY
+              ? "Your first consultation is coming up"
+              : "First consultation booked",
           text: `${when(at)}, ${time(at)}, 30 min by video with a doctor.`,
           href: "/dashboard/appointments",
         }
@@ -190,13 +239,18 @@ export function welcomeUpdates(dash: Dashboard, now: number): Update[] {
 }
 
 /** The right list for where the patient is: the care record's updates, or the first consultation before it exists. */
-export const allUpdates = (data: Pick<AppData, "dash" | "care">, now: number) => (data.care ? updatesOf(data.care, now) : welcomeUpdates(data.dash, now));
+export const allUpdates = (
+  data: Pick<AppData, "dash" | "care">,
+  now: number,
+) => (data.care ? updatesOf(data.care, now) : welcomeUpdates(data.dash, now));
 
 /**
  * Unread means one thing everywhere: an update from the care record whose id is not in
  * prefs.read. The bell (Shell) and the inbox both count it this way, so they always agree. Before
  * the first consultation there is no record, so those notes are shown but never counted.
  */
-export const isUnread = (u: Update, read: string[], counted: boolean) => counted && !read.includes(u.id);
+export const isUnread = (u: Update, read: string[], counted: boolean) =>
+  counted && !read.includes(u.id);
 
-export const markRead = (ids: string[]) => setPrefs((p) => ({ ...p, read: [...new Set([...p.read, ...ids])] }));
+export const markRead = (ids: string[]) =>
+  setPrefs((p) => ({ ...p, read: [...new Set([...p.read, ...ids])] }));

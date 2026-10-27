@@ -1,15 +1,8 @@
-import type { Metadata } from "next";
-import { notFound } from "next/navigation";
-import ClinicApp from "../../components/clinician/ClinicApp";
-import { ACCOUNT_PREVIEW } from "../../components/account/config";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Schedule | Medistry clinician",
-  robots: { index: false, follow: false },
-  alternates: { canonical: null },
-};
+import ClinicShell from "../../components/clinician/ClinicShell";
+import Schedule from "../../components/clinician/Schedule";
 
-export default function Page() {
-  if (!ACCOUNT_PREVIEW) notFound();
-  return <ClinicApp section="schedule" />;
+export default function SchedulePage() {
+  return <ClinicShell section="schedule">{() => <Schedule />}</ClinicShell>;
 }

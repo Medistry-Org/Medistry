@@ -1635,6 +1635,8 @@ import { ArrowRight, X } from "@phosphor-icons/react";
 import { ASSESSMENT_URL, Wordmark } from "./ui";
 import s from "./Nav.module.css";
 import { AUTH_ENDPOINTS } from "@/config/env";
+import App from "next/app";
+import Pricing from "./Pricing";
 
 /*
 |--------------------------------------------------------------------------
@@ -2164,6 +2166,290 @@ export default function Nav() {
   |--------------------------------------------------------------------------
   */
 
+  // const handleVerifyOtp = async (event?: FormEvent<HTMLFormElement>) => {
+  //   event?.preventDefault();
+
+  //   setAuthError("");
+  //   setAuthMessage("");
+
+  //   if (otp.length !== 4) {
+  //     setAuthError("Please enter the 4-digit OTP.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setAuthLoading(true);
+
+  //     const response = await fetch(AUTH_ENDPOINTS.VERIFY_OTP, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         mobile,
+  //         otp,
+  //       }),
+  //     });
+
+  //     const data = await parseApiResponse(response);
+  //     console.log("OTP VERIFY RESPONSE:", data);
+
+  //     if (!response.ok) {
+  //       throw new Error(
+  //         data?.message ||
+  //           data?.error ||
+  //           data?.data?.message ||
+  //           "Invalid OTP. Please try again.",
+  //       );
+  //     }
+
+  //     const accessToken =
+  //       data?.data?.accessToken ||
+  //       data?.data?.access_token ||
+  //       data?.accessToken ||
+  //       data?.access_token ||
+  //       data?.token ||
+  //       data?.authToken;
+
+  //     const refreshToken =
+  //       data?.data?.refreshToken ||
+  //       data?.data?.refresh_token ||
+  //       data?.refreshToken ||
+  //       data?.refresh_token;
+
+  //     if (!accessToken) {
+  //       console.error(
+  //         "OTP verification succeeded but no access token was found:",
+  //         data,
+  //       );
+
+  //       throw new Error(
+  //         "Login succeeded, but the authentication token was not returned by the backend.",
+  //       );
+  //     }
+
+  //     localStorage.setItem("medistry_auth_token", accessToken);
+
+  //     if (refreshToken) {
+  //       localStorage.setItem("medistry_refresh_token", refreshToken);
+  //     }
+
+  //     localStorage.setItem("medistry_onboarding_mobile", mobile);
+  //     localStorage.setItem("medistry_auth_response", JSON.stringify(data));
+
+  //     if (data?.user) {
+  //       localStorage.setItem("medistry_user", JSON.stringify(data.user));
+  //     }
+
+  //     if (data?.data?.user) {
+  //       localStorage.setItem("medistry_user", JSON.stringify(data.data.user));
+  //     }
+
+  //     if (data?.customer) {
+  //       localStorage.setItem(
+  //         "medistry_customer",
+  //         JSON.stringify(data.customer),
+  //       );
+  //     }
+
+  //     if (data?.data?.customer) {
+  //       localStorage.setItem(
+  //         "medistry_customer",
+  //         JSON.stringify(data.data.customer),
+  //       );
+  //     }
+
+  //     const nextScreen = data?.data?.nextScreen || data?.nextScreen || "";
+
+  //     localStorage.setItem("medistry_next_screen", nextScreen);
+
+  //     console.log("Access token saved successfully.");
+  //     console.log("Next screen:", nextScreen);
+
+  //     setLoginOpen(false);
+  //     setAuthStep("mobile");
+  //     setOtp("");
+  //     setAuthError("");
+  //     setAuthMessage("");
+
+  //     const normalizedNextScreen = String(nextScreen).trim().toUpperCase();
+
+  //     // if (normalizedNextScreen === "ONBOARDING") {
+  //     //   router.replace("/onboarding");
+  //     // } else {
+  //     //   router.replace("/dashboard");
+  //     // }
+  //     if (normalizedNextScreen === "ONBOARDING") {
+  //       router.replace("/onboarding");
+  //     } else if (
+  //       normalizedNextScreen === "DOCTOR_DASHBOARD" ||
+  //       normalizedNextScreen === "DOCTORDASHBOARD" ||
+  //       normalizedNextScreen === "CLINICIAN"
+  //     ) {
+  //       router.replace("/DoctorDasboard/clinician");
+  //     } else {
+  //       router.replace("/dashboard");
+  //     }
+
+  //     setMobile("");
+  //   } catch (error) {
+  //     console.error("OTP verification error:", error);
+
+  //     setAuthError(
+  //       error instanceof Error
+  //         ? error.message
+  //         : "OTP verification failed. Please try again.",
+  //     );
+  //   } finally {
+  //     setAuthLoading(false);
+  //   }
+  // };
+
+  // const handleVerifyOtp = async (event?: FormEvent<HTMLFormElement>) => {
+  //   event?.preventDefault();
+
+  //   setAuthError("");
+  //   setAuthMessage("");
+
+  //   if (otp.length !== 4) {
+  //     setAuthError("Please enter the 4-digit OTP.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setAuthLoading(true);
+
+  //     const response = await fetch(AUTH_ENDPOINTS.VERIFY_OTP, {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify({
+  //         mobile,
+  //         otp,
+  //       }),
+  //     });
+
+  //     const data = await parseApiResponse(response);
+  //     console.log("OTP VERIFY RESPONSE:", data);
+
+  //     if (!response.ok) {
+  //       throw new Error(
+  //         data?.message ||
+  //           data?.error ||
+  //           data?.data?.message ||
+  //           "Invalid OTP. Please try again.",
+  //       );
+  //     }
+
+  //     const accessToken =
+  //       data?.data?.accessToken ||
+  //       data?.data?.access_token ||
+  //       data?.accessToken ||
+  //       data?.access_token ||
+  //       data?.token ||
+  //       data?.authToken;
+
+  //     const refreshToken =
+  //       data?.data?.refreshToken ||
+  //       data?.data?.refresh_token ||
+  //       data?.refreshToken ||
+  //       data?.refresh_token;
+
+  //     if (!accessToken) {
+  //       console.error(
+  //         "OTP verification succeeded but no access token was found:",
+  //         data,
+  //       );
+
+  //       throw new Error(
+  //         "Login succeeded, but the authentication token was not returned by the backend.",
+  //       );
+  //     }
+
+  //     localStorage.setItem("medistry_auth_token", accessToken);
+
+  //     if (refreshToken) {
+  //       localStorage.setItem("medistry_refresh_token", refreshToken);
+  //     }
+
+  //     localStorage.setItem("medistry_onboarding_mobile", mobile);
+  //     localStorage.setItem("medistry_auth_response", JSON.stringify(data));
+
+  //     if (data?.user) {
+  //       localStorage.setItem("medistry_user", JSON.stringify(data.user));
+  //     }
+
+  //     if (data?.data?.user) {
+  //       localStorage.setItem("medistry_user", JSON.stringify(data.data.user));
+  //     }
+
+  //     if (data?.customer) {
+  //       localStorage.setItem(
+  //         "medistry_customer",
+  //         JSON.stringify(data.customer),
+  //       );
+  //     }
+
+  //     if (data?.data?.customer) {
+  //       localStorage.setItem(
+  //         "medistry_customer",
+  //         JSON.stringify(data.data.customer),
+  //       );
+  //     }
+
+  //     const nextScreen = data?.data?.nextScreen || data?.nextScreen || "";
+
+  //     localStorage.setItem("medistry_next_screen", nextScreen);
+
+  //     console.log("Access token saved successfully.");
+  //     console.log("Next screen:", nextScreen);
+
+  //     setLoginOpen(false);
+  //     setAuthStep("mobile");
+  //     setOtp("");
+  //     setAuthError("");
+  //     setAuthMessage("");
+
+  //     // --- TOKEN SE ROLE NIKALNE KA LOGIC ---
+  //     let userRole = "";
+  //     try {
+  //       const payloadBase64 = accessToken.split(".")[1];
+  //       const decodedPayload = JSON.parse(atob(payloadBase64));
+  //       userRole = String(decodedPayload?.role || "")
+  //         .trim()
+  //         .toUpperCase();
+  //     } catch (err) {
+  //       console.error("Token decode karne me error:", err);
+  //     }
+
+  //     const normalizedNextScreen = String(nextScreen).trim().toUpperCase();
+
+  //     // --- ROLE & ONBOARDING BASED ROUTING ---
+  //     if (userRole === "DOCTOR") {
+  //       router.replace("/DoctorDasboard/clinician");
+  //     } else if (normalizedNextScreen === "ONBOARDING") {
+  //       // Naya user hai toh onboarding page
+  //       router.replace("/onboarding");
+  //     } else {
+  //       // Patient dashboard (jab onboarding already ho chuki ho)
+  //       router.replace("/dashboard");
+  //     }
+
+  //     setMobile("");
+  //   } catch (error) {
+  //     console.error("OTP verification error:", error);
+
+  //     setAuthError(
+  //       error instanceof Error
+  //         ? error.message
+  //         : "OTP verification failed. Please try again.",
+  //     );
+  //   } finally {
+  //     setAuthLoading(false);
+  //   }
+  // };
+
   const handleVerifyOtp = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
 
@@ -2220,7 +2506,6 @@ export default function Nav() {
           "OTP verification succeeded but no access token was found:",
           data,
         );
-
         throw new Error(
           "Login succeeded, but the authentication token was not returned by the backend.",
         );
@@ -2235,34 +2520,50 @@ export default function Nav() {
       localStorage.setItem("medistry_onboarding_mobile", mobile);
       localStorage.setItem("medistry_auth_response", JSON.stringify(data));
 
-      if (data?.user) {
-        localStorage.setItem("medistry_user", JSON.stringify(data.user));
+      // User / Customer payload save karna
+      const userObj =
+        data?.user ||
+        data?.data?.user ||
+        data?.customer ||
+        data?.data?.customer;
+      if (userObj) {
+        localStorage.setItem("medistry_user", JSON.stringify(userObj));
       }
 
-      if (data?.data?.user) {
-        localStorage.setItem("medistry_user", JSON.stringify(data.data.user));
+      // --- TOKEN PAYLOAD DECODE KARNA ---
+      let userRole = "";
+      let tokenName = "";
+      try {
+        const payloadBase64 = accessToken.split(".")[1];
+        const decodedPayload = JSON.parse(atob(payloadBase64));
+        userRole = String(decodedPayload?.role || "")
+          .trim()
+          .toUpperCase(); //[cite: 1]
+        tokenName =
+          decodedPayload?.name ||
+          decodedPayload?.fullName ||
+          decodedPayload?.userName ||
+          "";
+      } catch (err) {
+        console.error("Token decode karne me error:", err);
       }
 
-      if (data?.customer) {
-        localStorage.setItem(
-          "medistry_customer",
-          JSON.stringify(data.customer),
-        );
-      }
+      // --- USER YA DOCTOR KA NAAM EXTRACT KARNA ---
+      const resolvedName =
+        userObj?.name ||
+        userObj?.fullName ||
+        (userObj?.firstName
+          ? `${userObj.firstName} ${userObj.lastName || ""}`.trim()
+          : "") ||
+        tokenName ||
+        "";
 
-      if (data?.data?.customer) {
-        localStorage.setItem(
-          "medistry_customer",
-          JSON.stringify(data.data.customer),
-        );
+      if (resolvedName) {
+        localStorage.setItem("medistry_user_name", resolvedName);
       }
 
       const nextScreen = data?.data?.nextScreen || data?.nextScreen || "";
-
       localStorage.setItem("medistry_next_screen", nextScreen);
-
-      console.log("Access token saved successfully.");
-      console.log("Next screen:", nextScreen);
 
       setLoginOpen(false);
       setAuthStep("mobile");
@@ -2272,19 +2573,12 @@ export default function Nav() {
 
       const normalizedNextScreen = String(nextScreen).trim().toUpperCase();
 
-      // if (normalizedNextScreen === "ONBOARDING") {
-      //   router.replace("/onboarding");
-      // } else {
-      //   router.replace("/dashboard");
-      // }
-      if (normalizedNextScreen === "ONBOARDING") {
-        router.replace("/onboarding");
-      } else if (
-        normalizedNextScreen === "DOCTOR_DASHBOARD" ||
-        normalizedNextScreen === "DOCTORDASHBOARD" ||
-        normalizedNextScreen === "CLINICIAN"
-      ) {
+      // --- REDIRECTION LOGIC ---
+      if (userRole === "DOCTOR") {
+        //[cite: 1]
         router.replace("/DoctorDasboard/clinician");
+      } else if (normalizedNextScreen === "ONBOARDING") {
+        router.replace("/onboarding");
       } else {
         router.replace("/dashboard");
       }
@@ -2292,7 +2586,6 @@ export default function Nav() {
       setMobile("");
     } catch (error) {
       console.error("OTP verification error:", error);
-
       setAuthError(
         error instanceof Error
           ? error.message
@@ -2304,6 +2597,7 @@ export default function Nav() {
   };
 
   /*
+  
   |--------------------------------------------------------------------------
   | Resend OTP
   |--------------------------------------------------------------------------
@@ -2377,16 +2671,21 @@ export default function Nav() {
           </nav>
 
           {/* DESKTOP ACTIONS */}
+          {/* DESKTOP ACTIONS */}
           <div className={s.desktopActions}>
             <button type="button" className={s.loginButton} onClick={openLogin}>
               Login
             </button>
 
-            <a href={ASSESSMENT_URL} className={s.cta}>
+            <a
+              className={s.cta}
+              onClick={openLogin}
+              // onClick={() => router.push("/pricing")}
+              style={{ cursor: "pointer" }}
+            >
               Start free check
             </a>
           </div>
-
           {/* MOBILE MENU BUTTON */}
           <button
             ref={burgerRef}
@@ -2441,10 +2740,10 @@ export default function Nav() {
           </button>
 
           <a
-            href={ASSESSMENT_URL}
             className="btn btn--mint"
-            onClick={() => setOpen(false)}
+            onClick={() => router.push("/pricing")}
             tabIndex={open ? 0 : -1}
+            style={{ cursor: "pointer" }}
           >
             <span>Start free check</span>
             <span className="well" aria-hidden="true">
@@ -2471,7 +2770,7 @@ export default function Nav() {
         </p>
 
         <a
-          href={ASSESSMENT_URL}
+          onClick={openLogin}
           className="btn btn--mint"
           tabIndex={dock ? 0 : -1}
         >

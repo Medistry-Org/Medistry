@@ -1,0 +1,299 @@
+.container {
+  min-height: 100vh;
+  background-color: #f8fafc;
+  padding: 3rem 1rem;
+  font-family: inherit;
+}
+
+.wrapper {
+  max-width: 52rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* Toggle Bar */
+.toggleWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.toggleContainer {
+  background-color: #e2e8f0;
+  padding: 0.35rem;
+  border-radius: 1rem;
+  display: flex;
+  gap: 0.25rem;
+  border: 1px solid #cbd5e1;
+}
+
+.toggleBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #475569;
+}
+
+.toggleBtnActiveBlue {
+  background-color: #ffffff;
+  color: #1d4ed8;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.toggleBtnActiveGreen {
+  background-color: #ffffff;
+  color: #047857;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Upload Card */
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  padding: 1.75rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.cardTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.cardSubtitle {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+/* Date Input & Rule Box */
+.validationBox {
+  background-color: #eff6ff;
+  border: 1px solid #bfdbfe;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.inputLabel {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1e3a8a;
+}
+
+.dateInput {
+  padding: 0.6rem 0.85rem;
+  border-radius: 0.5rem;
+  border: 1px solid #93c5fd;
+  font-size: 0.85rem;
+  background: #ffffff;
+  color: #1e293b;
+  outline: none;
+}
+
+.statusMessageValid {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #15803d;
+}
+
+.statusMessageInvalid {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b91c1c;
+}
+
+/* DropZone */
+.dropZone {
+  border: 2px dashed #cbd5e1;
+  border-radius: 0.875rem;
+  padding: 1.75rem;
+  text-align: center;
+  background-color: #f8fafc;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.dropZone:hover {
+  border-color: #2563eb;
+  background-color: #eff6ff;
+}
+
+.dropZoneDisabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+/* File Preview */
+.fileItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  font-size: 0.85rem;
+}
+
+/* Action Button */
+.primaryBtn {
+  width: 100%;
+  padding: 0.95rem;
+  border-radius: 0.875rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  background-color: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.primaryBtn:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* Pricing Grid */
+.planGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .planGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.planCard {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1.25rem;
+  transition: all 0.2s;
+}
+
+.planCardRecommended {
+  border-color: #059669;
+  box-shadow: 0 8px 16px rgba(5, 150, 105, 0.1);
+  outline: 2px solid rgba(5, 150, 105, 0.2);
+}
+
+.badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  width: fit-content;
+}
+
+.planName {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.price {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+.features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #475569;
+}
+
+.features li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* WhatsApp Notice Banner */
+.whatsappNotice {
+  background-color: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 0.875rem;
+  padding: 1rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  color: #14532d;
+}

@@ -325,7 +325,7 @@ function DoctorSelectionContent() {
                       className={s.selectBtn}
                       onClick={() => router.push(`/doctors/${doctor.id}`)}
                     >
-                      Consult Now →
+                      Booked Appointment →
                     </button>
                   </div>
                 </article>

@@ -22,7 +22,10 @@ const INCLUDED: [string, "Free" | "Included" | "Itemised"][] = [
   ["Blood tests at home through partner labs", "Included"],
   ["Your nutrition and strength plan", "Included"],
   ["The Medistry app, with WhatsApp support", "Included"],
-  ["Medicine, only if your doctor prescribes it, sealed and verified", "Itemised"],
+  [
+    "Medicine, only if your doctor prescribes it, sealed and verified",
+    "Itemised",
+  ],
 ];
 
 // The ruler draws the plan the way the Maintenance chart does: a dot for each weekly
@@ -41,7 +44,14 @@ function Ruler({ weeks, months }: { weeks: number; months: number }) {
       <svg className={s.ruler} viewBox="0 0 600 48" aria-hidden="true">
         <line x1={X0} x2={X1} y1="24" y2="24" className={s.base} />
         {Array.from({ length: months + 1 }, (_, i) => (
-          <line key={`m${i}`} x1={monthX(i)} x2={monthX(i)} y1="4" y2="10" className={s.month} />
+          <line
+            key={`m${i}`}
+            x1={monthX(i)}
+            x2={monthX(i)}
+            y1="4"
+            y2="10"
+            className={s.month}
+          />
         ))}
         {Array.from({ length: MAX_WEEKS }, (_, i) => {
           const w = i + 1;
@@ -50,8 +60,20 @@ function Ruler({ weeks, months }: { weeks: number; months: number }) {
           // marks beyond the plan keep their spacing and slide out past the end, so none ever pile up
           const x = X0 + w * step;
           return (
-            <g key={w} className={s.mark} data-on={on} style={{ transform: `translateX(${x}px)`, "--k": i } as React.CSSProperties}>
-              {review && <circle cx="0" cy="24" r={ring} className={s.review} />}
+            <g
+              key={w}
+              className={s.mark}
+              data-on={on}
+              style={
+                {
+                  transform: `translateX(${x}px)`,
+                  "--k": i,
+                } as React.CSSProperties
+              }
+            >
+              {review && (
+                <circle cx="0" cy="24" r={ring} className={s.review} />
+              )}
               <circle cx="0" cy="24" r={dot} className={s.checkin} />
             </g>
           );
@@ -60,7 +82,12 @@ function Ruler({ weeks, months }: { weeks: number; months: number }) {
       </svg>
       <div className={s.months} aria-hidden="true">
         {Array.from({ length: months + 1 }, (_, i) => (
-          <span key={i} style={{ left: `${(monthX(i) / 600) * 100}%` }} data-odd={months >= 6 && i % 2 === 1} data-crowd={months > 6 && i % 2 === 1}>
+          <span
+            key={i}
+            style={{ left: `${(monthX(i) / 600) * 100}%` }}
+            data-odd={months >= 6 && i % 2 === 1}
+            data-crowd={months > 6 && i % 2 === 1}
+          >
             {i === 0 ? "Start" : i === months && months <= 4 ? `Month ${i}` : i}
           </span>
         ))}
@@ -89,20 +116,37 @@ export default function Pricing() {
   );
 
   return (
-    <section id="pricing" className={`section ${s.pricing}`} aria-labelledby="pricing-title">
+    <section
+      id="pricing"
+      className={`section ${s.pricing}`}
+      aria-labelledby="pricing-title"
+    >
       <div className="wrap">
         <div className={s.head}>
           <Tag>Plans</Tag>
-          <Mask id="pricing-title" className="h2" lines={["One plan.", "Four lengths."]} />
-          <p className="lede" data-reveal="rise" style={{ "--d": "160ms" } as React.CSSProperties}>
-            Consultations, reviews, blood tests, your nutrition plan, the app and delivery come in one package. Your
-            check and first consultation are free, and you pay only after your doctor&rsquo;s review.
+          <Mask
+            id="pricing-title"
+            className="h2"
+            lines={["One plan.", "Four lengths."]}
+          />
+          <p
+            className="lede"
+            data-reveal="rise"
+            style={{ "--d": "160ms" } as React.CSSProperties}
+          >
+            Consultations, reviews, blood tests, your nutrition plan, the app
+            and delivery come in one package. Your check and first consultation
+            are free, and you pay only after your doctor&rsquo;s review.
           </p>
         </div>
 
         <Art kind="converge" className={s.flow} />
 
-        <article className={s.planner} data-reveal="rise" data-touched={touched}>
+        <article
+          className={s.planner}
+          data-reveal="rise"
+          data-touched={touched}
+        >
           <div className={s.tool}>
             <div
               className={s.seg}
@@ -110,12 +154,21 @@ export default function Pricing() {
               aria-label="Plan length"
               style={{ "--at": at } as React.CSSProperties}
               onKeyDown={(e) => {
-                const d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+                const d =
+                  e.key === "ArrowRight" || e.key === "ArrowDown"
+                    ? 1
+                    : e.key === "ArrowLeft" || e.key === "ArrowUp"
+                      ? -1
+                      : 0;
                 if (!d) return;
                 e.preventDefault();
                 const next = (at + d + LENGTHS.length) % LENGTHS.length;
                 choose(next);
-                (e.currentTarget.querySelectorAll("button")[next] as HTMLButtonElement | undefined)?.focus();
+                (
+                  e.currentTarget.querySelectorAll("button")[next] as
+                    | HTMLButtonElement
+                    | undefined
+                )?.focus();
               }}
             >
               <span className={s.thumb} aria-hidden="true" />
@@ -161,7 +214,10 @@ export default function Pricing() {
                   </dd>
                 </div>
               </dl>
-              <p className={s.note}>Every 14 days in the active plan. In maintenance, your doctor may space reviews further apart.</p>
+              <p className={s.note}>
+                Every 14 days in the active plan. In maintenance, your doctor
+                may space reviews further apart.
+              </p>
             </div>
 
             <div className={s.rulerWrap}>
@@ -192,19 +248,24 @@ export default function Pricing() {
               <p className={s.totalK}>Your price</p>
               <p className={s.totalV}>Before you pay</p>
             </div>
-            <p className={s.totalNote}>Shown in full, itemised, after your free consultation. Nothing is paid until then.</p>
-            <Cta href={`${ASSESSMENT_URL}?plan=${plan.months}`} variant="mint" className={s.cta}>
+            <p className={s.totalNote}>
+              Shown in full, itemised, after your free consultation. Nothing is
+              paid until then.
+            </p>
+            <Cta href="/pricing" variant="mint" className={s.cta}>
               Start free check
             </Cta>
           </div>
         </article>
 
         <p className={`fineprint ${s.fine}`}>
-          Plans are paid upfront, after your doctor&rsquo;s review. Whether any medicine is suitable is decided by your
-          doctor, and not everyone is prescribed medication. A glucose sensor, if your doctor recommends one, is extra and
-          priced before you agree. Results vary between individuals. For adults aged 18 and over, and not for emergencies.
-          Care is provided by registered medical practitioners, and video consultations follow the Telemedicine Practice
-          Guidelines, 2020.
+          Plans are paid upfront, after your doctor&rsquo;s review. Whether any
+          medicine is suitable is decided by your doctor, and not everyone is
+          prescribed medication. A glucose sensor, if your doctor recommends
+          one, is extra and priced before you agree. Results vary between
+          individuals. For adults aged 18 and over, and not for emergencies.
+          Care is provided by registered medical practitioners, and video
+          consultations follow the Telemedicine Practice Guidelines, 2020.
         </p>
       </div>
     </section>
