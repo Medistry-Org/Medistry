@@ -1,17 +1,10 @@
-"use client";
-import Link from "next/link";
-import styles from "../dashboard.module.css";
+/* /dashboard/resources: short videos and reads for where the patient is in care. */
+
+import type { Metadata } from "next";
+import ResourcesView from "./components/ResourcesView";
+
+export const metadata: Metadata = { title: "Resources | Medistry" };
 
 export default function ResourcesPage() {
-  return (
-    <main className={styles.page}>
-      <section className={styles.container}>
-        <h1>Health resources</h1>
-        <p>Helpful health guides and programme resources will appear here.</p>
-        <p>
-          <Link href="/dashboard">Return to dashboard</Link>
-        </p>
-      </section>
-    </main>
-  );
+  return <ResourcesView />;
 }

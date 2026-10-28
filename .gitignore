@@ -42,3 +42,5 @@ next-env.d.ts
 
 # raw generated photography masters (optimised copies live in public/img)
 /art
+
+!.env.example

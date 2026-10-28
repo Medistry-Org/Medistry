@@ -1,0 +1,163 @@
+"use client";
+
+/*
+  The signed-in patient app around every /dashboard page (Arhaan's account/Shell.tsx): a thin bar
+  with the wordmark, the four sections (centred pills on a laptop, a dock on a phone), an offline
+  line and the toast. Only signed-in patients get past it: anyone signed out goes to /sign-in and a
+  doctor goes to their own dashboard.
+
+  The chat thread (/dashboard/messages/<doctorId>) brings its own bar, so the shell draws neither
+  the bar nor the dock there, as in Arhaan's design.
+*/
+
+import { useEffect, useState, useSyncExternalStore, type ReactNode } from "react";
+import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { BookOpenText, FirstAidKit, House, UserCircle } from "@phosphor-icons/react";
+import AppTheme from "@/components/ui/AppTheme";
+import { Wordmark } from "@/components/ui/Brand";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import ToastProvider from "@/components/ui/ToastProvider";
+import { getSessionUser, isSignedIn } from "@/lib/session/authSession";
+import layoutStyles from "@/components/ui/styles/AppLayout.module.css";
+import styles from "./PatientShell.module.css";
+
+type Section = "home" | "care" | "resources" | "profile";
+
+const SECTIONS: { id: Section; href: string; label: string; icon: typeof House }[] = [
+  { id: "home", href: "/dashboard", label: "Home", icon: House },
+  { id: "care", href: "/dashboard/care", label: "Care", icon: FirstAidKit },
+  { id: "resources", href: "/dashboard/resources", label: "Resources", icon: BookOpenText },
+  { id: "profile", href: "/dashboard/profile", label: "Profile", icon: UserCircle },
+];
+
+/** Which section lights up for a page: the four sections, and the pages that sit under them. */
+const SECTION_OF_FOLDER: Record<string, Section> = {
+  messages: "home",
+  care: "care",
+  appointments: "care",
+  "lab-tests": "care",
+  reports: "care",
+  plans: "care",
+  checkout: "care",
+  resources: "resources",
+  profile: "profile",
+};
+
+function sectionFor(pathname: string): Section | null {
+  const folder = pathname.split("/")[2];
+  if (!folder) return "home";
+  return SECTION_OF_FOLDER[folder] ?? null;
+}
+
+const noSubscription = () => () => {};
+
+/** "OUT", "DOCTOR" or "PATIENT" in the browser; null on the server, before the session is read. */
+function useSessionRole() {
+  return useSyncExternalStore(
+    noSubscription,
+    () => (isSignedIn() ? (getSessionUser()?.role ?? "PATIENT") : "OUT"),
+    () => null,
+  );
+}
+
+/** Whether the phone is online; true on the server. */
+function useOnline() {
+  return useSyncExternalStore(
+    (onChange) => {
+      window.addEventListener("online", onChange);
+      window.addEventListener("offline", onChange);
+      return () => {
+        window.removeEventListener("online", onChange);
+        window.removeEventListener("offline", onChange);
+      };
+    },
+    () => navigator.onLine,
+    () => true,
+  );
+}
+
+export default function PatientShell({ children }: { children: ReactNode }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const role = useSessionRole();
+  const online = useOnline();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    if (role === "OUT") router.replace("/sign-in");
+    if (role === "DOCTOR") router.replace("/doctor-dashboard");
+  }, [role, router]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const current = sectionFor(pathname);
+  const bare = /^\/dashboard\/messages\/[^/]+/.test(pathname);
+
+  if (role !== "PATIENT") {
+    return (
+      <AppTheme>
+        <div className={layoutStyles.app}>
+          <main className={layoutStyles.page}>
+            <LoadingSkeleton />
+          </main>
+        </div>
+      </AppTheme>
+    );
+  }
+
+  return (
+    <AppTheme>
+      <ToastProvider className={bare ? styles.toastChat : styles.toastUp}>
+        <div className={`${layoutStyles.app} ${bare ? "" : styles.withTabs}`}>
+          {!bare && (
+            <header className={layoutStyles.bar} data-scrolled={scrolled}>
+              <div className={`${layoutStyles.barInner} ${styles.barTabs}`}>
+                <Link href="/dashboard" className={layoutStyles.brand} aria-label="Medistry, home">
+                  <Wordmark height={24} />
+                </Link>
+                <nav className={styles.tabs} aria-label="Sections">
+                  {SECTIONS.map((section) => (
+                    <Link key={section.id} href={section.href} className={styles.tab} aria-current={section.id === current ? "page" : undefined}>
+                      {section.label}
+                    </Link>
+                  ))}
+                </nav>
+                {/* the bar's third column keeps the sections centred */}
+                <div className={layoutStyles.barEnd} />
+              </div>
+            </header>
+          )}
+
+          {!online && (
+            <p className={layoutStyles.offline} role="status">
+              You are offline. Check your connection.
+            </p>
+          )}
+
+          {children}
+
+          {!bare && (
+            <nav className={styles.dock} aria-label="Sections">
+              {SECTIONS.map((section) => {
+                const Icon = section.icon;
+                const on = section.id === current;
+                return (
+                  <Link key={section.id} href={section.href} className={styles.dockTab} aria-current={on ? "page" : undefined}>
+                    <Icon size={22} weight={on ? "fill" : "regular"} />
+                    <span>{section.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
+          )}
+        </div>
+      </ToastProvider>
+    </AppTheme>
+  );
+}

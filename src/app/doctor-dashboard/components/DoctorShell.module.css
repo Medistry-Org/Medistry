@@ -1,0 +1,283 @@
+/*
+  The doctor dashboard's frame (Arhaan's clinician ClinicShell): a quiet rail of five places on a
+  laptop, a top bar and a dock on a phone. Denser than the patient app, never louder.
+*/
+.app {
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg);
+}
+
+/* ---------- the rail (laptop) ---------- */
+.rail {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .app {
+    display: grid;
+    grid-template-columns: 248px minmax(0, 1fr);
+  }
+  .rail {
+    position: sticky;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    height: 100vh;
+    height: 100dvh;
+    padding: 24px 16px 20px;
+    border-right: 1px solid var(--hair);
+    background: var(--bg-2);
+  }
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding-inline: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.portal {
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: var(--hover-wash);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--slate-800);
+}
+
+.nav {
+  display: grid;
+  gap: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 44px;
+  padding: 0 12px;
+  border-radius: 999px;
+  font-family: var(--font-display);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .navItem:not([aria-current]):hover {
+    background: var(--hover-wash);
+    color: var(--ink);
+  }
+}
+
+.navItem[aria-current="page"] {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+
+.navItem svg {
+  color: var(--slate-700);
+}
+
+.badge {
+  margin-left: auto;
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--slate-900);
+  color: var(--signal);
+  font-family: var(--font-text);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.me {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding: 12px;
+  border-radius: var(--r-media);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+
+.me div {
+  display: grid;
+  min-width: 0;
+}
+
+.me strong {
+  font-size: 0.875rem;
+  font-weight: 560;
+}
+
+.me span {
+  font-size: 0.75rem;
+  line-height: 1.35;
+  color: var(--ink-3);
+}
+
+/* ---------- phone chrome ---------- */
+.top {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: calc(8px + env(safe-area-inset-top)) var(--gutter) 8px;
+  background: var(--chrome-bg);
+  --chrome-blur: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: var(--chrome-blur);
+  backdrop-filter: var(--chrome-blur);
+}
+
+@media (min-width: 1024px) {
+  .top {
+    display: none;
+  }
+}
+
+.dock {
+  position: fixed;
+  z-index: 40;
+  left: 10px;
+  right: 10px;
+  bottom: calc(10px + env(safe-area-inset-bottom));
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  padding: 6px;
+  border-radius: 999px;
+  background: rgb(10 11 12 / 0.92);
+  --chrome-blur: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: var(--chrome-blur);
+  backdrop-filter: var(--chrome-blur);
+  box-shadow:
+    inset 0 0 0 1px rgb(255 255 255 / 0.06),
+    0 18px 40px -20px rgb(0 0 0 / 0.45);
+}
+
+@media (min-width: 1024px) {
+  .dock {
+    display: none;
+  }
+}
+
+.dockTab {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 7px 0 6px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 560;
+  color: var(--on-dark-3);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    color 200ms var(--ease-out),
+    background-color 200ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.dockTab:active {
+  transform: scale(0.95);
+}
+
+.dockTab[aria-current="page"] {
+  background: rgb(236 237 239 / 0.08);
+  color: var(--signal);
+}
+
+.dockTab:focus-visible {
+  outline-color: var(--signal);
+}
+
+.dockIcon {
+  position: relative;
+}
+
+.dockBadge {
+  position: absolute;
+  top: -4px;
+  right: -12px;
+  min-width: 18px;
+  padding: 1px 5px;
+  border-radius: 999px;
+  background: var(--signal);
+  color: var(--slate-950);
+  font-size: 0.625rem;
+  font-style: normal;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.main {
+  min-width: 0;
+  padding-bottom: calc(100px + env(safe-area-inset-bottom));
+}
+
+@media (min-width: 1024px) {
+  .main {
+    padding-bottom: 32px;
+  }
+}
+
+/* on the rail the focus ring takes the signal ink */
+.rail :focus-visible {
+  outline-color: var(--signal-ink);
+}
+
+@media (min-width: 768px) {
+  .dock {
+    max-width: 420px;
+    margin-inline: auto;
+  }
+}
+
+/* five places in the dock: the smallest phones take a smaller label */
+@media (max-width: 359px) {
+  .dockTab {
+    font-size: 0.625rem;
+  }
+}
+
+/* a pushed screen (a call note under review): below a laptop it brings its own top and bottom bars */
+@media (max-width: 1023px) {
+  .app[data-bare="true"] .top,
+  .app[data-bare="true"] .dock {
+    display: none;
+  }
+  .app[data-bare="true"] .main {
+    padding-bottom: 0;
+  }
+}
+
+/* the toast sits above the dock on a phone, and above a pushed screen's sign bar */
+.toastLift {
+  bottom: calc(96px + env(safe-area-inset-bottom));
+}
+.toastBare {
+  bottom: calc(132px + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  .toastLift {
+    bottom: 24px;
+  }
+  .toastBare {
+    bottom: 96px;
+  }
+}

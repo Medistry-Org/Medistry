@@ -1,0 +1,497 @@
+/*
+  Profile (Arhaan account/Profile.module.css): settings-style rows on paper surfaces, each opening
+  one sheet, and the sheets' own pieces. Same tokens, radii and easing as the rest of the app.
+*/
+
+/* ---------- profile ---------- */
+/* the avatar is the brand's dot: an ink dot on white (brand kit) */
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: var(--slate-900);
+  color: var(--on-dark);
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.name {
+  overflow-wrap: anywhere;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.group {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+.rows {
+  display: grid;
+  padding: 0 16px;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.rows li + li .row {
+  border-top: 1px solid var(--hair);
+}
+.row {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 60px;
+  padding: 9px 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:active .rowIcon {
+  transform: scale(0.94);
+}
+.rowIcon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: var(--signal-wash);
+  color: var(--slate-800);
+  transition: transform 160ms var(--ease-out);
+}
+.rowText {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+.rowText strong {
+  font-size: 1.0625rem;
+  font-weight: 560;
+  line-height: 1.3;
+}
+.rowText > span {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  color: var(--ink-3);
+}
+.rowGo {
+  color: var(--ink-3);
+}
+@media (hover: hover) and (pointer: fine) {
+  .row:hover strong {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* sign out closes the page: one full-width red button, the version quietly under it */
+.foot {
+  display: grid;
+  gap: 10px;
+  margin-top: 10px;
+}
+.signOut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+  min-height: 52px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--alert);
+  box-shadow: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--paper);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    filter 160ms var(--ease-out);
+}
+.signOut:active {
+  transform: scale(0.98);
+  filter: brightness(0.92);
+}
+@media (hover: hover) and (pointer: fine) {
+  .signOut:hover {
+    filter: brightness(0.92);
+  }
+}
+.signOut:focus-visible {
+  outline: 2px solid var(--slate-700);
+  outline-offset: 3px;
+}
+.signOut:disabled {
+  opacity: 0.72;
+}
+/* signing out asks once, in place: stay (quiet) and sign out (red), side by side */
+.outAsk {
+  display: grid;
+  gap: 12px;
+  width: 100%;
+}
+.outAsk p {
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--ink);
+}
+.outBtns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.outBtns .signOut:not(.signOutGo) {
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair-2, var(--hair));
+  color: var(--ink);
+}
+.outBtns .signOut:not(.signOutGo):disabled {
+  color: var(--ink-3);
+}
+.signOutGo {
+  background: var(--alert);
+  color: var(--paper);
+}
+@media (max-width: 389px) {
+  .outBtns .signOut {
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+}
+.version {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  text-align: center;
+  text-wrap: pretty;
+  color: var(--ink-3);
+}
+
+/* sheets */
+.dl {
+  display: grid;
+}
+.dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.dl div:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.dl dt {
+  flex: none;
+  color: var(--ink-3);
+}
+.dl dd {
+  display: grid;
+  gap: 4px;
+  font-weight: 560;
+  text-align: right;
+}
+.ddNote {
+  font-size: 0.875rem;
+  font-weight: 450;
+  color: var(--ink-3);
+}
+/* the list's own last row needs no space under it; the group gap that follows is the space */
+@media (max-width: 767px) {
+  .dl div:last-child {
+    padding-bottom: 0;
+  }
+}
+/* a narrow phone: each value under its label, left-aligned, so a long value is one calm line */
+@media (max-width: 389px) {
+  .dl div {
+    display: grid;
+    gap: 2px;
+    padding: 11px 0;
+  }
+  .dl dd {
+    justify-items: start;
+    text-align: left;
+  }
+}
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.pairFields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 12px;
+}
+.planNone {
+  display: grid;
+  gap: 10px;
+}
+.planNone strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 520;
+}
+.planNone > p:first-of-type {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.planNone > a {
+  justify-self: start;
+}
+.consents {
+  display: grid;
+  gap: 12px;
+}
+.consents li {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+.consents svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--signal-ink);
+}
+.consents li > span {
+  display: grid;
+  gap: 2px;
+}
+.consents strong {
+  font-size: 1rem;
+  font-weight: 560;
+}
+.consents li > span > span {
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+/* privacy: each consent is its title and tick; a tap opens what it covers */
+.consents li:has(> .consent) {
+  display: block;
+}
+.consents:has(.consent) {
+  gap: 0;
+}
+.consents:has(.consent) li + li {
+  border-top: 1px solid var(--hair);
+}
+.consent summary {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) 16px;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.consent summary::-webkit-details-marker {
+  display: none;
+}
+.consent summary svg {
+  margin-top: 0;
+}
+.consents .consentCaret {
+  color: var(--ink-3);
+  transition: transform 200ms var(--ease-out);
+}
+.consent[open] .consentCaret {
+  transform: rotate(180deg);
+}
+.consent p {
+  padding: 0 28px 12px 32px;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+@media (prefers-reduced-motion: reduce) {
+  .consentCaret {
+    transition: none;
+  }
+}
+.faq {
+  display: grid;
+  margin-top: -8px;
+}
+.faq summary {
+  font-size: 1rem;
+}
+.faq p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.faq p a {
+  position: relative;
+}
+.faq p a {
+  min-height: 0;
+  display: inline-flex;
+  margin-top: 6px;
+}
+/* inline links keep their line but get a full-size target */
+.faq p a::after {
+  content: "";
+  position: absolute;
+  inset: -12px -8px;
+}
+
+/* help: the emergency line as words, then one full-width call row in the alert red */
+.sos {
+  display: grid;
+  gap: 12px;
+  padding: 14px 16px 16px;
+  border-radius: var(--r-media);
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+}
+.sos p {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink);
+}
+.sosCall {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 44px;
+  border-radius: 999px;
+  background: var(--alert);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--paper);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms var(--ease-out);
+}
+.sosCall:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .sosCall:hover {
+    background: color-mix(in srgb, var(--alert) 88%, black);
+  }
+}
+
+/* a confirmation that is not an emergency: ink, never the alert red */
+.calm {
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair-2, var(--hair));
+}
+.calm p {
+  font-size: 1rem;
+}
+.calmGo {
+  background: var(--ink);
+  color: var(--paper);
+}
+.calmLink {
+  color: var(--ink-2);
+}
+
+/* a reminder's time, right under its switch */
+.timeRow {
+  padding: 0 0 12px;
+}
+
+/* help: the two things people look for, as rows that go straight there */
+.helpLinks {
+  display: grid;
+  padding: 0 16px;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.helpLinks li + li .row {
+  border-top: 1px solid var(--hair);
+}
+.helpLinks .row {
+  color: var(--ink);
+  text-decoration: none;
+}
+.chat {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+
+/* a phone with little height: tighter rows and header */
+@media (max-height: 700px) and (max-width: 899px) {
+  .avatar {
+    width: 48px;
+    height: 48px;
+  }
+  .row {
+    min-height: 54px;
+    padding: 6px 0;
+  }
+  .layout {
+    gap: 12px;
+  }
+}
+
+/* laptops: account and settings side by side, sign out below */
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px 24px;
+    align-items: start;
+  }
+  .rows {
+    padding: 0 var(--card-pad);
+  }
+  /* the foot keeps the two-column rhythm: sign out fills the left column, the version sits beside it */
+  .foot {
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: center;
+    gap: 10px 24px;
+    margin-top: 4px;
+  }
+  .foot .version {
+    text-align: left;
+  }
+  .foot .outAsk {
+    grid-column: 1;
+  }
+}
+
+/* help: the support message box, a surface rather than a pill so several lines read well */
+.form .message {
+  min-height: 128px;
+  padding: 14px 22px;
+  border-radius: var(--r-surface);
+  font: inherit;
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  resize: vertical;
+}

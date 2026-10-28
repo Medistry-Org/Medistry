@@ -1,0 +1,27 @@
+/* Arhaan's Profile facts list: label on the left, value on the right, hairlines between rows. */
+.dl {
+  display: grid;
+}
+.dl div {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 1rem;
+  line-height: 1.45;
+}
+.dl div:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+.dl dt {
+  flex: none;
+  color: var(--ink-3);
+}
+.dl dd {
+  display: grid;
+  gap: 4px;
+  font-weight: 560;
+  text-align: right;
+}

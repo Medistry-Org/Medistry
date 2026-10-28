@@ -113,7 +113,6 @@ import type { Metadata, Viewport } from "next";
 import { Jost, Wix_Madefor_Text } from "next/font/google";
 import Script from "next/script";
 import "./globals.css";
-import ComboBanner from "@/components/ComboBanner";
 // import Nav from "@/components/Nav";
 
 const display = Jost({
@@ -160,7 +159,6 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <ComboBanner />
         {/* <Nav /> */}
         {children}
       </body>

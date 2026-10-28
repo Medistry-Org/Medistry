@@ -1,0 +1,73 @@
+/* The doctor's Notes list: drafts to sign and signed notes (from Arhaan's clinician Notes.module.css). */
+
+.listTools {
+  margin-bottom: 14px;
+}
+
+.list {
+  display: grid;
+  gap: 2px;
+  max-width: 820px;
+  margin: 0 -8px;
+  padding: 0 8px;
+  list-style: none;
+}
+
+.row {
+  min-height: 64px;
+  text-decoration: none;
+}
+
+.row [data-quiet] {
+  color: var(--ink-3);
+}
+
+.rowMeta {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: 0.75rem;
+  font-weight: 560;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.breath {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--slate-600);
+  animation: breathe 1400ms var(--ease-out) infinite alternate;
+}
+
+.empty {
+  max-width: 820px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .breath {
+    animation: none;
+  }
+}
+
+/* "To sign 4 · 1 being written": the count is what can be signed now; the rest is said quietly */
+.writingCount {
+  font-weight: 450;
+  color: var(--ink-3);
+}
+
+@keyframes breathe {
+  to {
+    opacity: 0.3;
+  }
+}

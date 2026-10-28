@@ -1,0 +1,393 @@
+/*
+  The doctor's messages: a list of patients and one open conversation.
+  Laptop: side by side, each scrolling on its own. Phone: the list, then the thread over everything.
+*/
+
+.page {
+  padding-bottom: 0;
+}
+
+.split {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .split {
+    grid-template-columns: minmax(300px, 360px) minmax(0, 1fr);
+    height: calc(100dvh - clamp(16px, 3vw, 36px) - 24px);
+    min-height: 560px;
+  }
+}
+
+/* ---------- list ---------- */
+.listPane {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.listHead {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.listHead > :last-child {
+  justify-self: start;
+  margin-top: 6px;
+}
+
+.list {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  margin: 0 -8px;
+  padding: 0 8px 8px;
+  list-style: none;
+}
+
+@media (min-width: 1024px) {
+  .list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* ---------- thread ---------- */
+.threadPane {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .threadPane {
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    border-radius: var(--r-surface);
+    background: var(--paper);
+    box-shadow: 0 0 0 1px var(--hair);
+    overflow: hidden;
+  }
+}
+
+/* a phone: the open thread takes the whole screen, above the dock */
+@media (max-width: 1023px) {
+  .split[data-open="thread"] .threadPane {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: flex;
+    flex-direction: column;
+    height: 100dvh;
+    background: var(--bg);
+  }
+}
+
+.threadHead {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: calc(10px + env(safe-area-inset-top)) 14px 10px;
+  border-bottom: 1px solid var(--hair);
+  background: var(--chrome-bg);
+}
+
+@media (min-width: 1024px) {
+  .threadHead {
+    padding: 14px 20px;
+    background: var(--paper);
+  }
+}
+
+.threadWho {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.threadWho strong {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+
+.threadWho span {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 359px) {
+  .threadHead > :nth-child(2) {
+    display: none;
+  }
+}
+
+.record {
+  flex: none;
+  min-height: 40px;
+  padding-inline: 14px;
+  font-size: 0.875rem;
+}
+
+@media (max-width: 479px) {
+  .record {
+    padding-inline: 10px;
+    font-size: 0.8125rem;
+  }
+}
+
+.thread {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+  padding: 16px 16px 12px;
+}
+
+@media (min-width: 1024px) {
+  .inner {
+    padding: 20px 28px 12px;
+  }
+}
+
+.day {
+  align-self: center;
+  margin: 14px 0 4px;
+  font-size: 0.75rem;
+  font-weight: 560;
+  color: var(--ink-3);
+}
+
+.row {
+  display: flex;
+  margin-top: 4px;
+}
+
+.row[data-opens="true"] {
+  margin-top: 12px;
+}
+
+.row[data-ours="true"] {
+  justify-content: flex-end;
+}
+
+.stack {
+  display: grid;
+  justify-items: start;
+  max-width: min(80%, 560px);
+}
+
+.row[data-ours="true"] .stack {
+  justify-items: end;
+}
+
+.name {
+  margin: 0 4px 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.name span {
+  font-weight: 450;
+  color: var(--ink-3);
+}
+
+.bubble {
+  padding: 9px 13px 10px;
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 1023px) {
+  .bubble {
+    background: var(--paper);
+  }
+}
+
+/* what is waiting on the doctor carries a signal edge; urgent words carry the alert colour */
+.bubble[data-open="true"] {
+  box-shadow:
+    inset 0 0 0 1px var(--hair),
+    inset 3px 0 0 var(--signal);
+}
+
+.bubble[data-urgent="true"] {
+  box-shadow:
+    inset 0 0 0 1px rgb(180 68 43 / 0.3),
+    inset 3px 0 0 var(--alert);
+}
+
+/* the doctor's own words in the darkest ink */
+.row[data-ours="true"] .bubble {
+  background: var(--slate-700);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+
+.row[data-you="true"] .bubble {
+  background: var(--slate-900);
+}
+
+.photoNote {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--ink-2);
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 4px 0;
+  font-size: 0.6875rem;
+  color: var(--ink-3);
+}
+
+.urgentWord {
+  color: var(--alert);
+  font-weight: 600;
+}
+
+/* ---------- reply ---------- */
+.composer {
+  flex: none;
+  display: grid;
+  gap: 8px;
+  padding: 10px 14px calc(12px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--hair);
+  background: var(--chrome-bg);
+}
+
+@media (min-width: 1024px) {
+  .composer {
+    padding: 12px 20px 16px;
+    background: var(--paper);
+  }
+}
+
+.quick {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.quick::-webkit-scrollbar {
+  display: none;
+}
+
+.quick button {
+  flex: none;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg-2);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .quick button:hover {
+    background: var(--hair);
+    color: var(--ink);
+  }
+}
+
+.boxFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.as {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.send {
+  min-height: 40px;
+  padding: 0 16px;
+  gap: 6px;
+  font-size: 0.875rem;
+}
+
+.send:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* a reply about a flagged symptom can close it too: one tick, on by default */
+.ack {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 2px;
+  padding-top: 6px;
+  border-top: 1px solid var(--hair);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.ack input {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  accent-color: var(--slate-700);
+}
+
+.ack em {
+  font-style: normal;
+  color: var(--ink-3);
+}

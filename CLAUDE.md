@@ -1,3 +1,5 @@
+> **Code structure (signed-in app):** read `ARCHITECTURE.md` first. It says where every kind of code goes and which rules `npm run lint` enforces.
+
 @AGENTS.md
 
 # Medistry landing page

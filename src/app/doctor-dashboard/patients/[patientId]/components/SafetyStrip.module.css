@@ -1,0 +1,88 @@
+/* Safety facts that are never folded away, and flagged symptoms until the doctor acts on them. */
+
+.safety {
+  display: grid;
+  gap: 1px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  border-radius: var(--r-surface);
+  background: var(--hair);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+
+@media (min-width: 768px) {
+  .safety {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.safety > div {
+  display: grid;
+  gap: 4px;
+  padding: 14px 18px;
+  background: var(--paper);
+}
+
+.safety > div[data-warn="true"] {
+  background: color-mix(in srgb, var(--alert) 6%, var(--paper));
+}
+
+.safety strong {
+  font-size: 0.9375rem;
+  font-weight: 560;
+  line-height: 1.4;
+}
+
+.safety > div[data-warn="true"] strong {
+  color: var(--alert);
+}
+
+.safetyLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+/* a flagged symptom sits in the safety strip until the doctor records what they did */
+.safetyWide {
+  grid-column: 1 / -1;
+}
+
+/* safety values share one top line, whatever the label carries */
+.safety > div {
+  align-content: start;
+}
+
+.safetyNote {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+/* four safety facts: two by two on a tablet, one row of four on a laptop */
+@media (min-width: 768px) {
+  .safety {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1280px) {
+  .safety {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+/* a severe flag: the same filled red as the queue */
+.safety > div[data-severity="Severe"] {
+  background: color-mix(in srgb, var(--alert) 11%, var(--paper));
+  box-shadow: inset 3px 0 0 var(--alert);
+}
+
+.safety > div[data-severity="Severe"] .safetyLabel {
+  color: var(--alert);
+}

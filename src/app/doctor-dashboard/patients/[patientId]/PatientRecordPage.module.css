@@ -1,0 +1,101 @@
+/* The patient record page: its grid and the tiles, quotes and full-width panels its sections share. */
+
+.recGrid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .recGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* two cards in a row share one top and one bottom edge */
+    align-items: stretch;
+    gap: 20px;
+  }
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.concern {
+  display: grid;
+  gap: 2px;
+  max-width: 70ch;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 8px;
+}
+
+.tile {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding: 16px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+}
+
+.tile > span {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.tile strong {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 520;
+  letter-spacing: -0.02em;
+}
+
+.tile em {
+  font-size: 0.75rem;
+  font-style: normal;
+  color: var(--ink-3);
+}
+
+/* what the patient said reads as their words, set apart from the doctor's */
+.voice {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.voice::before {
+  content: "\201C";
+}
+
+.voice::after {
+  content: "\201D";
+}
+
+.voiceBy {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+/* an empty value reads quietly, never as loud as a real reading */
+.tile strong[data-empty="true"] {
+  font-family: var(--font-text);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+
+@container (max-width: 560px) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .tiles > :last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}

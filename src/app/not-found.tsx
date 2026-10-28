@@ -1,6 +1,6 @@
 import Link from "next/link";
-import ContourField from "@/components/ContourField";
-import { Wordmark } from "@/components/ui";
+import ContourField from "@/components/landing/ContourField";
+import { Wordmark } from "@/components/landing/ui";
 import s from "./not-found.module.css";
 
 export default function NotFound() {

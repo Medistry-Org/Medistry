@@ -1,0 +1,126 @@
+/* The sign sheet: what signing writes, and where each piece goes. */
+
+/* the sign sheet: what will be written, and where it goes */
+.sList {
+  display: grid;
+  gap: 2px;
+  list-style: none;
+}
+
+.sRow {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.sRow[data-off="true"] {
+  opacity: 0.6;
+}
+
+.sIcon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--slate-700);
+}
+
+.sText {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sText strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.sText > span {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-top: 2px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.knob {
+  position: relative;
+  flex: none;
+  width: 40px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--hair-2);
+  transition: background-color 200ms var(--ease-out);
+}
+
+.knob::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(10 11 12 / 0.2);
+  transition: transform 200ms var(--ease-out);
+}
+
+.switch[aria-checked="true"] .knob {
+  background: var(--signal-ink);
+}
+
+.switch[aria-checked="true"] .knob::after {
+  transform: translateX(16px);
+}
+
+.sNote {
+  margin-top: 8px;
+  padding: 10px 14px;
+  border-radius: 12px;
+  background: var(--paper);
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.sig {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--hair);
+  font-size: 0.875rem;
+  font-weight: 560;
+}
+
+.sActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
