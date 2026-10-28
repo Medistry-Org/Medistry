@@ -24,6 +24,7 @@ import { isUpcomingConsultation } from "@/lib/consultations/consultationTime";
 import { getSessionUser } from "@/lib/session/authSession";
 import { listMyAppointments } from "@/services/appointmentService";
 import { loadCarePlan } from "@/services/carePlanService";
+import { getMyEligibility } from "@/services/eligibilityService";
 import {
   getSubscriptionStatus,
   listPlans,
@@ -59,6 +60,7 @@ export default function CareView() {
   const programme = useApiResource("my-programme", loadProgramme);
   const carePlan = useApiResource("care-plan", loadCarePlan);
   const team = useApiResource("care-team", loadCareTeamDoctors);
+  const eligibility = useApiResource("eligibility", getMyEligibility);
   const [doctor, setDoctor] = useState<CareTeamDoctor | null>(null);
   const [sheet, setSheet] = useState<SheetName>(null);
 
@@ -119,7 +121,10 @@ export default function CareView() {
             onOpenPrescription={() => setSheet("rx")}
             onOpenDelivery={() => setSheet("delivery")}
           />
-          <BloodTestsCard hasTeam={hasTeam} />
+          <BloodTestsCard
+            hasTeam={hasTeam}
+            hasTestsOrReport={Boolean(eligibility.data?.path)}
+          />
           {hasTeam && (
             <AppointmentsCard
               next={next}

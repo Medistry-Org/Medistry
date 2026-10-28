@@ -9,7 +9,7 @@
 import { useState } from "react";
 import { CaretRight, FileText, Flask } from "@phosphor-icons/react";
 import { useToast } from "@/components/ui/ToastProvider";
-import { longDate } from "@/lib/format/dateTime";
+import { longDate, shortDate } from "@/lib/format/dateTime";
 import { errorMessage } from "@/lib/http/apiClient";
 import { getLabReportUrl } from "@/services/labTestService";
 import type { MedicalReport } from "@/types/report";
@@ -39,11 +39,19 @@ export default function ReportRow({ report }: { report: MedicalReport }) {
       </span>
       <span className={styles.rowText}>
         <strong>{report.title}</strong>
+        {/* the report's own date first; for uploads, also when it was uploaded */}
         <span>
           {report.source === "LAB_BOOKING"
             ? "From your home blood test"
-            : "Uploaded"}
-          , <span className="num">{longDate(report.reportDate)}</span>
+            : "Dated"}
+          {report.source === "LAB_BOOKING" ? ", " : " "}
+          <span className="num">{longDate(report.reportDate)}</span>
+          {report.source === "UPLOADED" && (
+            <>
+              {" · uploaded "}
+              <span className="num">{shortDate(report.addedAt)}</span>
+            </>
+          )}
         </span>
         {report.reviewStatus && (
           <span className={styles.review} data-review={report.reviewStatus}>

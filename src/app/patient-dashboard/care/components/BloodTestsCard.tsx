@@ -1,7 +1,7 @@
 /**
  * Blood tests on Care: the way into home tests and reports, which live on their own pages
- * (/patient-dashboard/lab-tests and /patient-dashboard/reports). Before the first consultation it suggests sharing
- * a recent report or booking a home test.
+ * (/patient-dashboard/lab-tests and /patient-dashboard/reports). Until the patient has shared a
+ * report or booked tests (no eligibility path yet, no care team), it suggests doing one of them.
  */
 
 import Link from "next/link";
@@ -11,7 +11,15 @@ import formStyles from "@/components/ui/styles/FormControls.module.css";
 import pageStyles from "../CarePage.module.css";
 import styles from "./BloodTestsCard.module.css";
 
-export default function BloodTestsCard({ hasTeam }: { hasTeam: boolean }) {
+export default function BloodTestsCard({
+  hasTeam,
+  hasTestsOrReport,
+}: {
+  hasTeam: boolean;
+  /** the patient already shared a report or booked home tests */
+  hasTestsOrReport: boolean;
+}) {
+  const showRecords = hasTeam || hasTestsOrReport;
   return (
     <Card
       title="Blood tests"
@@ -27,7 +35,7 @@ export default function BloodTestsCard({ hasTeam }: { hasTeam: boolean }) {
         )
       }
     >
-      {hasTeam ? (
+      {showRecords ? (
         <>
           <ul className={pageStyles.people}>
             <li>

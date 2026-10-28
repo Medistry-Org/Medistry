@@ -38,8 +38,11 @@ const DAY_PARTS = [
   { name: "Evening", contains: (hour: number) => hour >= 17 },
 ];
 
-/** "6:30" on a time chip: the Morning/Afternoon/Evening label above it already says am or pm. */
-const chipTime = (date: Date) => clockTime(date).replace(/ [ap]m$/, "");
+/** "7:00", "6:30" on a time chip: the Morning/Afternoon/Evening label above it already says am or pm. */
+const chipTime = (date: Date) => {
+  const time = clockTime(date).replace(/ [ap]m$/, "");
+  return time.includes(":") ? time : `${time}:00`;
+};
 
 export default function SlotPicker({
   loadSlots,

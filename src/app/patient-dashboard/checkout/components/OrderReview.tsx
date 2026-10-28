@@ -3,7 +3,9 @@
 /**
  * The order as the backend priced it: its title, line items and total (never added up here), a
  * note on who processes the payment, and one pay button styled as Arhaan's primary action.
- * `onPay` receives the button's resolved colour so Razorpay's window matches it.
+ * `onPay` receives the button's resolved colour so Razorpay's window matches it. When online
+ * payment is not switched on (no real Razorpay key yet), the review still shows and the button
+ * says so instead of opening Razorpay.
  */
 
 import { ArrowRight, LockSimple } from "@phosphor-icons/react";
@@ -22,12 +24,14 @@ export default function OrderReview({
   busyLabel,
   notice,
   awaitingConfirmation,
+  paymentReady,
   onPay,
 }: {
   order: PaymentOrder;
   busyLabel: string | null;
   notice: CheckoutNotice;
   awaitingConfirmation: boolean;
+  paymentReady: boolean;
   onPay: (themeColour: string) => void;
 }) {
   const total = formatRupees(order.amountPaise / 100);
@@ -53,8 +57,16 @@ export default function OrderReview({
         />
         <p className={styles.secure}>
           <LockSimple size={16} weight="bold" aria-hidden="true" />
-          <span>Payments are processed securely by Razorpay.</span>
+          <span>
+            Pay by UPI, card, net banking or wallet. Payments are processed
+            securely by Razorpay.
+          </span>
         </p>
+        {!paymentReady && (
+          <p className={styles.calm} role="status">
+            Online payment is not switched on yet. Nothing has been charged.
+          </p>
+        )}
         {notice &&
           (notice.tone === "error" ? (
             <ErrorNotice message={notice.text} />
@@ -68,6 +80,7 @@ export default function OrderReview({
           className={`btn ${formStyles.go}`}
           data-busy={busyLabel !== null}
           aria-busy={busyLabel !== null}
+          disabled={!paymentReady}
           onClick={(event) =>
             busyLabel === null &&
             onPay(
@@ -77,7 +90,10 @@ export default function OrderReview({
             )
           }
         >
-          <span>{busyLabel ?? idleLabel}</span>
+          <span>
+            {busyLabel ??
+              (paymentReady ? idleLabel : "Payment not available yet")}
+          </span>
           <span className="well" aria-hidden="true">
             {busyLabel !== null ? (
               <i className={formStyles.spin} />

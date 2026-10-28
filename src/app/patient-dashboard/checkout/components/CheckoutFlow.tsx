@@ -6,7 +6,8 @@
  *
  * 1. Asks the backend for an order (it decides the amount), and shows it for review.
  * 2. Opens Razorpay Checkout with that order.
- * 3. Paid: the backend verifies the signature and fulfils the purpose, then we go to returnTo.
+ * 3. Paid: the backend verifies the signature and fulfils the purpose; the receipt screen shows
+ *    what was paid and what happens next, then Continue goes to returnTo.
  *    Closed: back to the review with a calm line. Failed: the reason, and the button tries again.
  *    Paid but not yet confirmed: the button retries the confirmation only, never a second payment.
  * Until the backend has /api/payments/*, the order request 404s and the page says payment is not
@@ -14,16 +15,18 @@
  */
 
 import { useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import BackLink from "@/components/ui/BackLink";
 import ErrorNotice from "@/components/ui/ErrorNotice";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 import PageHead from "@/components/ui/PageHead";
-import { useToast } from "@/components/ui/ToastProvider";
 import { useApiResource } from "@/hooks/useApiResource";
 import { takePendingConsultationReason } from "@/lib/consultations/pendingConsultationReason";
 import { ApiError, errorMessage } from "@/lib/http/apiClient";
-import { openRazorpayCheckout } from "@/lib/payments/razorpayCheckout";
+import {
+  openRazorpayCheckout,
+  usableRazorpayKey,
+} from "@/lib/payments/razorpayCheckout";
 import { getSessionUser } from "@/lib/session/authSession";
 import { createPaymentOrder, verifyPayment } from "@/services/paymentService";
 import {
@@ -34,22 +37,27 @@ import {
 } from "@/types/payment";
 import CheckoutMessage from "./CheckoutMessage";
 import OrderReview, { type CheckoutNotice } from "./OrderReview";
+import PaymentReceived, { type PaidOrder } from "./PaymentReceived";
 
 /** The page's own words per purpose; what is bought and its price always come from the order. */
 const PURPOSE_WORDS: Record<
   PaymentPurpose,
   { title: string; sub: string | null; paid: string }
 > = {
-  PLAN: { title: "Checkout", sub: null, paid: "Your payment is confirmed." },
+  PLAN: {
+    title: "Checkout",
+    sub: null,
+    paid: "Your plan is active. Your care team will be in touch about your next review.",
+  },
   LAB_BOOKING: {
     title: "Pay for your home test",
     sub: "Your collection time is held while you pay.",
-    paid: "Your home collection is confirmed.",
+    paid: "Your home collection is confirmed. The lab's collector comes at the time you chose.",
   },
   CONSULTATION_FEE: {
     title: "Pay for your consultation",
     sub: "Your consultation time is held while you pay.",
-    paid: "Your consultation is booked.",
+    paid: "Your consultation is booked. You can join from Appointments 10 minutes before it starts.",
   },
 };
 
@@ -81,8 +89,6 @@ async function loadOrder(
 
 export default function CheckoutFlow() {
   const params = useSearchParams();
-  const router = useRouter();
-  const toast = useToast();
   const purpose = asPurpose(params.get("purpose"));
   const referenceId = params.get("referenceId") ?? "";
   const returnTo = safeReturnPath(params.get("returnTo"));
@@ -108,21 +114,22 @@ export default function CheckoutFlow() {
   const [unconfirmed, setUnconfirmed] = useState<RazorpayPaymentResult | null>(
     null,
   );
-  const [paid, setPaid] = useState(false);
+  const [paid, setPaid] = useState<PaidOrder | null>(null);
 
-  const confirm = async (result: RazorpayPaymentResult) => {
+  const confirm = async (
+    current: PaymentOrder,
+    result: RazorpayPaymentResult,
+  ) => {
     setBusyLabel("Confirming payment");
     setNotice(null);
     try {
       await verifyPayment(result);
       setUnconfirmed(null);
-      setPaid(true);
-      toast(
-        purpose === "CONSULTATION_FEE"
-          ? "Payment received. Your consultation is booked."
-          : "Payment received.",
-      );
-      router.replace(returnTo);
+      setPaid({
+        title: current.title,
+        amountPaise: current.amountPaise,
+        paymentReference: result.razorpayPaymentId,
+      });
     } catch (error) {
       setUnconfirmed(result);
       setNotice({
@@ -138,7 +145,7 @@ export default function CheckoutFlow() {
   };
 
   const pay = async (current: PaymentOrder, themeColour: string) => {
-    if (unconfirmed) return confirm(unconfirmed);
+    if (unconfirmed) return confirm(current, unconfirmed);
     setBusyLabel("Paying");
     setNotice(null);
     const user = getSessionUser();
@@ -153,7 +160,7 @@ export default function CheckoutFlow() {
         customerMobile: user?.mobile ?? "",
         themeColour,
       });
-      if (outcome.kind === "paid") return confirm(outcome.result);
+      if (outcome.kind === "paid") return confirm(current, outcome.result);
       setNotice(
         outcome.failureMessage
           ? { tone: "error", text: outcome.failureMessage }
@@ -180,11 +187,10 @@ export default function CheckoutFlow() {
       );
     if (paid)
       return (
-        <CheckoutMessage
-          title="Payment received"
-          text={words.paid}
-          returnTo={returnTo}
-          actionLabel="Continue"
+        <PaymentReceived
+          paid={paid}
+          nextStep={words.paid}
+          continueTo={returnTo}
         />
       );
     if (order.error)
@@ -206,6 +212,7 @@ export default function CheckoutFlow() {
         busyLabel={busyLabel}
         notice={notice}
         awaitingConfirmation={unconfirmed !== null}
+        paymentReady={usableRazorpayKey(current.razorpayKeyId) !== null}
         onPay={(themeColour) => pay(current, themeColour)}
       />
     );
@@ -213,11 +220,12 @@ export default function CheckoutFlow() {
 
   return (
     <>
-      {/* one grid row, as on the lab booking page: the back control sits right above the heading */}
+      {/* one grid row, as on the lab booking page: the back control sits right above the heading.
+          Once paid there is no Back: the order is closed, and Continue on the receipt moves on. */}
       <div>
-        <BackLink href={back.href} label={back.label} />
+        {!paid && <BackLink href={back.href} label={back.label} />}
         <PageHead
-          title={words.title}
+          title={paid ? "Payment received" : words.title}
           sub={isComplete && !paid ? words.sub : null}
         />
       </div>
