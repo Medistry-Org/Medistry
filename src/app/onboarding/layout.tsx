@@ -3,6 +3,10 @@
 import type { ReactNode } from "react";
 import AppTheme from "@/components/ui/AppTheme";
 
-export default function OnboardingLayout({ children }: { children: ReactNode }) {
+export default function OnboardingLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <AppTheme>{children}</AppTheme>;
 }

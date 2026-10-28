@@ -1,0 +1,11 @@
+/* Question 7, conditions (ConditionsQuestion): the "Something else" box drops in. */
+
+.reveal {
+  animation: drop 360ms var(--ease-out) both;
+}
+@keyframes drop {
+  from {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0);
+  }
+}

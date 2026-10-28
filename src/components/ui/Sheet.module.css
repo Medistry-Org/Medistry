@@ -1,3 +1,5 @@
+/* Sheet: a bottom sheet on a phone (with a drag handle), a centred panel from 768px, over a scrim. */
+
 .root {
   position: fixed;
   inset: 0;
@@ -18,6 +20,9 @@
 
 /* a phone: rises from the bottom edge, where the thumb is */
 .panel {
+  /* what sits inside reads these: the sheet's own colour, and no dock to clear */
+  --surface-bg: var(--bg);
+  --dock-clearance: 0px;
   position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -64,7 +69,8 @@
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: 16px var(--gutter) max(24px, calc(12px + env(safe-area-inset-bottom)));
+  padding: 16px var(--gutter)
+    max(24px, calc(12px + env(safe-area-inset-bottom)));
 }
 
 /* a laptop: a centred panel that settles into place */

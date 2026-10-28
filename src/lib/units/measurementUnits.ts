@@ -1,37 +1,36 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+/**
+ * Units the visitor chooses, mixed and matched per measure, remembered on this device only
+ * (localStorage "medistry-units"). Every tool keeps its maths in kilograms and centimetres; only
+ * what is shown and typed changes. Defaults follow everyday Indian use: weight in kilograms, height
+ * in feet and inches, and waist in inches (the way a tailor or a jeans size gives it).
+ */
 
-/*
-  Units the visitor chooses, mixed and matched per measure, remembered on this device only.
-  Every tool keeps its maths in kilograms and centimetres; only what is shown and typed changes.
-  Defaults follow everyday Indian use: weight in kilograms, height in feet and inches, and
-  waist in inches (the way a tailor or a jeans size gives it).
-*/
+import { useSyncExternalStore } from "react";
 
 export type WeightUnit = "kg" | "lb";
 export type HeightUnit = "cm" | "ftin";
-export type WaistUnit = "cm" | "in";
-export type Units = { weight: WeightUnit; height: HeightUnit; waist: WaistUnit };
+type WaistUnit = "cm" | "in";
+type Units = { weight: WeightUnit; height: HeightUnit; waist: WaistUnit };
 
-export const DEFAULT_UNITS: Units = { weight: "kg", height: "ftin", waist: "in" };
+const DEFAULT_UNITS: Units = { weight: "kg", height: "ftin", waist: "in" };
+const STORAGE_KEY = "medistry-units";
+const POUNDS_PER_KG = 2.20462;
+const CM_PER_INCH = 2.54;
 
-const KEY = "medistry-units";
-const LB = 2.20462;
-const IN = 2.54;
-
-let state: Units = DEFAULT_UNITS;
+let current: Units = DEFAULT_UNITS;
 let loaded = false;
 const listeners = new Set<() => void>();
 
-function load(): Units {
+function readSaved(): Units {
   try {
-    const v = JSON.parse(localStorage.getItem(KEY) ?? "null");
-    if (v && typeof v === "object") {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "null");
+    if (saved && typeof saved === "object") {
       return {
-        weight: v.weight === "lb" ? "lb" : "kg",
-        height: v.height === "cm" ? "cm" : "ftin",
-        waist: v.waist === "cm" ? "cm" : "in",
+        weight: saved.weight === "lb" ? "lb" : "kg",
+        height: saved.height === "cm" ? "cm" : "ftin",
+        waist: saved.waist === "cm" ? "cm" : "in",
       };
     }
   } catch {
@@ -43,26 +42,26 @@ function load(): Units {
 function snapshot() {
   if (!loaded) {
     loaded = true;
-    state = load();
+    current = readSaved();
   }
-  return state;
+  return current;
 }
 
-function subscribe(fn: () => void) {
-  listeners.add(fn);
+function subscribe(listener: () => void) {
+  listeners.add(listener);
   return () => {
-    listeners.delete(fn);
+    listeners.delete(listener);
   };
 }
 
-export function setUnits(patch: Partial<Units>) {
-  state = { ...snapshot(), ...patch };
+export function setUnits(changes: Partial<Units>) {
+  current = { ...snapshot(), ...changes };
   try {
-    localStorage.setItem(KEY, JSON.stringify(state));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(current));
   } catch {
     // not saved; the choice still holds for this visit
   }
-  listeners.forEach((fn) => fn());
+  listeners.forEach((listener) => listener());
 }
 
 /** The visitor's units. The server renders the defaults, and the browser switches to any saved choice. */
@@ -71,28 +70,26 @@ export function useUnits(): Units {
 }
 
 /* conversions: canonical kg and cm in, display values out */
-export const kgTo = (kg: number, u: WeightUnit) => (u === "lb" ? kg * LB : kg);
-export const toKg = (v: number, u: WeightUnit) => (u === "lb" ? v / LB : v);
-export const cmTo = (cm: number, u: WaistUnit) => (u === "in" ? cm / IN : cm);
-export const toCm = (v: number, u: WaistUnit) => (u === "in" ? v * IN : v);
+export const kgTo = (kg: number, unit: WeightUnit) =>
+  unit === "lb" ? kg * POUNDS_PER_KG : kg;
+export const toKg = (value: number, unit: WeightUnit) =>
+  unit === "lb" ? value / POUNDS_PER_KG : value;
+export const toCm = (value: number, unit: WaistUnit) =>
+  unit === "in" ? value * CM_PER_INCH : value;
 
-const r1 = (n: number) => Math.round(n * 10) / 10;
-const trim = (n: number) => (Number.isInteger(n) ? String(n) : n.toFixed(1));
-
-/** 78 kg, or 172 lb. dp = 1 keeps one decimal (for milestones). */
-export function fmtWeight(kg: number, u: WeightUnit, dp: 0 | 1 = 0) {
-  const v = kgTo(kg, u);
-  return `${dp ? v.toFixed(1) : Math.round(v)} ${u}`;
+/** 78 kg, or 172 lb. decimals = 1 keeps one decimal (for milestones). */
+export function formatWeight(
+  kg: number,
+  unit: WeightUnit,
+  decimals: 0 | 1 = 0,
+) {
+  const value = kgTo(kg, unit);
+  return `${decimals ? value.toFixed(1) : Math.round(value)} ${unit}`;
 }
 
 /** 5′3″, or 160 cm. */
-export function fmtHeight(cm: number, u: HeightUnit) {
-  if (u === "cm") return `${Math.round(cm)} cm`;
-  const total = Math.round(cm / IN);
-  return `${Math.floor(total / 12)}′${total % 12}″`;
-}
-
-/** 92 cm, or 36.2 in. Thresholds keep a decimal in inches so 80 cm reads 31.5 in. */
-export function fmtLength(cm: number, u: WaistUnit) {
-  return u === "in" ? `${trim(r1(cm / IN))} in` : `${trim(r1(cm))} cm`;
+export function formatHeight(cm: number, unit: HeightUnit) {
+  if (unit === "cm") return `${Math.round(cm)} cm`;
+  const inches = Math.round(cm / CM_PER_INCH);
+  return `${Math.floor(inches / 12)}′${inches % 12}″`;
 }

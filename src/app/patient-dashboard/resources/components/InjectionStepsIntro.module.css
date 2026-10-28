@@ -1,0 +1,58 @@
+/* The first injection in brief (InjectionStepsIntro): the outline of the steps and the button into the walk-through. */
+
+/* the first injection's outline: a read-only list, so no rules between its lines */
+ol.outline li {
+  min-height: 40px;
+  border-top: 0;
+}
+
+/* the first injection: the steps in brief, then the walk-through on one screen per step */
+.stepsIntro {
+  display: grid;
+  gap: 16px;
+}
+.stepsIntro > p {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.stepTitles {
+  display: grid;
+  counter-reset: st;
+}
+.stepTitles li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 48px;
+  border-top: 1px solid var(--hair);
+  font-size: 1rem;
+  font-weight: 520;
+  counter-increment: st;
+}
+.stepTitles li:first-child {
+  border-top: 0;
+}
+.stepTitles li::before {
+  content: counter(st);
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: var(--signal-wash);
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--signal-ink);
+}
+.stepsGo {
+  justify-self: stretch;
+}
+
+@media (min-width: 1024px) {
+  .stepsIntro > p {
+    font-size: 1.0625rem;
+  }
+}

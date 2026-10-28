@@ -8,7 +8,7 @@ import { Check, Paperclip, WarningCircle } from "@phosphor-icons/react";
 import Avatar from "@/components/ui/Avatar";
 import SegmentedControl from "@/components/ui/SegmentedControl";
 import { clockTime, shortDate } from "@/lib/format/dateTime";
-import type { DoctorChatSession } from "@/types/doctorChat";
+import type { DoctorChatSession } from "@/types/chat";
 import type { PatientSnapshot } from "@/types/patientRecord";
 import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import conversationStyles from "@/app/doctor-dashboard/styles/ClinicConversations.module.css";
@@ -16,12 +16,13 @@ import styles from "../MessagesPage.module.css";
 
 export type ThreadFilter = "you" | "all";
 
-const sameDay = (a: number, b: number) => new Date(a).toDateString() === new Date(b).toDateString();
+const sameDay = (a: number, b: number) =>
+  new Date(a).toDateString() === new Date(b).toDateString();
 
 function when(iso: string, now: number) {
-  const t = Date.parse(iso);
-  if (sameDay(t, now)) return clockTime(new Date(t));
-  if (sameDay(t, now - 864e5)) return "Yesterday";
+  const at = Date.parse(iso);
+  if (sameDay(at, now)) return clockTime(new Date(at));
+  if (sameDay(at, now - 864e5)) return "Yesterday";
   return shortDate(iso);
 }
 
@@ -87,37 +88,76 @@ export default function ThreadList({
           {sessions.map((session) => {
             const last = session.lastMessage;
             const snapshot = snapshotOf(session.patientId);
-            const care = snapshot ? (snapshot.careWeek ? `Week ${snapshot.careWeek}` : snapshot.programme) : "";
+            const care = snapshot
+              ? snapshot.careWeek
+                ? `Week ${snapshot.careWeek}`
+                : snapshot.programme
+              : "";
             return (
               <li key={session.sessionId}>
-                <button type="button" className={conversationStyles.item} aria-current={currentId === session.sessionId ? "true" : undefined} data-new={session.unread} onClick={() => onChoose(session)}>
+                <button
+                  type="button"
+                  className={conversationStyles.item}
+                  aria-current={
+                    currentId === session.sessionId ? "true" : undefined
+                  }
+                  data-new={session.unread}
+                  onClick={() => onChoose(session)}
+                >
                   <Avatar name={session.patientName} size={40} />
                   <span className={conversationStyles.itemText}>
                     <span className={conversationStyles.itemTop}>
                       <strong>{session.patientName}</strong>
-                      {last && <span className={`${conversationStyles.itemWhen} num`}>{when(last.sentAt, now)}</span>}
+                      {last && (
+                        <span className={`${conversationStyles.itemWhen} num`}>
+                          {when(last.sentAt, now)}
+                        </span>
+                      )}
                     </span>
                     <span className={conversationStyles.snippet}>
-                      {last?.hasFile && <Paperclip size={14} aria-hidden="true" />}
-                      <span>{last ? `${last.fromDoctor ? "You: " : ""}${last.text || (last.hasFile ? "Attachment" : "")}` : "No messages yet"}</span>
+                      {last?.hasFile && (
+                        <Paperclip size={14} aria-hidden="true" />
+                      )}
+                      <span>
+                        {last
+                          ? `${last.fromDoctor ? "You: " : ""}${last.text || (last.hasFile ? "Attachment" : "")}`
+                          : "No messages yet"}
+                      </span>
                     </span>
                     {(session.waitingSince || care) && (
                       <span className={conversationStyles.tags}>
                         {session.urgent && (
-                          <span className={conversationStyles.tag} data-kind="urgent">
-                            <WarningCircle size={13} weight="fill" aria-hidden="true" /> Urgent
+                          <span
+                            className={conversationStyles.tag}
+                            data-kind="urgent"
+                          >
+                            <WarningCircle
+                              size={13}
+                              weight="fill"
+                              aria-hidden="true"
+                            />{" "}
+                            Urgent
                           </span>
                         )}
                         {session.waitingSince && !session.urgent && (
-                          <span className={conversationStyles.tag} data-kind="you">
+                          <span
+                            className={conversationStyles.tag}
+                            data-kind="you"
+                          >
                             For you, {waited(session.waitingSince, now)}
                           </span>
                         )}
-                        {care && <span className={conversationStyles.tagQuiet}>{care}</span>}
+                        {care && (
+                          <span className={conversationStyles.tagQuiet}>
+                            {care}
+                          </span>
+                        )}
                       </span>
                     )}
                   </span>
-                  {session.unread && <i className={conversationStyles.dot} aria-label="New" />}
+                  {session.unread && (
+                    <i className={conversationStyles.dot} aria-label="New" />
+                  )}
                 </button>
               </li>
             );
@@ -127,7 +167,11 @@ export default function ThreadList({
         <div className={conversationStyles.empty}>
           <Check size={22} aria-hidden="true" />
           <p>Nothing needs you.</p>
-          <button type="button" className={conversationStyles.linkBtn} onClick={() => onShow("all")}>
+          <button
+            type="button"
+            className={conversationStyles.linkBtn}
+            onClick={() => onShow("all")}
+          >
             See all messages
           </button>
         </div>

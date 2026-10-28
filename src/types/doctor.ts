@@ -1,4 +1,6 @@
-/** A doctor as patients see them: the directory card and the booking picker. */
+/** Doctors: as patients see them, and the signed-in doctor's own data. */
+
+/** A doctor as patients see them: the care-team card and the doctor sheet on Care. */
 export type DoctorSummary = {
   id: number;
   fullName: string;
@@ -11,6 +13,9 @@ export type DoctorSummary = {
   consultationFee: number | null;
   rating: number | null;
 };
+
+/** The patient's care team (GET /api/care-team). `doctor` is null until the first consultation. */
+export type CareTeam = { doctor: DoctorSummary | null };
 
 /** The signed-in doctor (GET /api/doctor/me). */
 export type DoctorProfile = {

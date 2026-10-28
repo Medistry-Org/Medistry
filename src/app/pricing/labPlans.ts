@@ -21,7 +21,12 @@ export const NO_REPORT_PLANS: LabPlan[] = [
     type: "lab_only",
     badge: "Lab Test Only",
     price: 999,
-    features: ["Home Sample Collection Phlebotomist", "CBC, Blood Sugar & Lipid Profile", "Smart WhatsApp Report in 5 Hours", "NABL Certified Quality Check"],
+    features: [
+      "Home Sample Collection Phlebotomist",
+      "CBC, Blood Sugar & Lipid Profile",
+      "Smart WhatsApp Report in 5 Hours",
+      "NABL Certified Quality Check",
+    ],
     recommended: false,
   },
   {

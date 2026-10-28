@@ -1,0 +1,22 @@
+/* A guide's written version (GuideArticle): the article column and its sections. */
+
+.article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 4px;
+}
+.article > :global(.btn) {
+  margin-top: 16px;
+}
+/* a laptop: reading columns stay at a readable measure */
+@media (min-width: 1024px) {
+  .article {
+    max-width: 680px;
+  }
+}
+.wide {
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 48px;
+}

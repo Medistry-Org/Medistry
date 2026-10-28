@@ -1,0 +1,503 @@
+/*
+  Resources and the guide pages (Arhaan account/Resources.module.css): one pinned video on a dark plate (the only contour field on the
+  page), the rest as rows with drawn thumbnails, then short reads. Same tokens, radii and easing
+  as the rest of the app. This sheet holds the Resources tab's layout and what several pieces share:
+  the contour field (pinned video and guide player), the guide list's rows and thumbnails
+  (ResourcesView with VideoThumb), the guide's dotted lists, and the player inside the guide's top
+  column (.guideTop .player spans GuideView and GuidePlayer, so it stays here). A component's own
+  styles sit beside it in ./components (X.module.css).
+*/
+
+/* a guide's dotted lists (GuideArticle, GuideHelpLevels) */
+.dots {
+  display: grid;
+  gap: 6px;
+}
+.dots li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.dots li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.68em;
+  width: 6px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--slate-600);
+}
+
+/* ---------- resources tab ---------- */
+/* the smallest phones: a 16px inset on every surface, as on Care, Appointments and Progress */
+@media (max-width: 389px) {
+  .page {
+    --card-pad: 16px;
+  }
+}
+.lede {
+  display: block;
+  max-width: 46ch;
+}
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 22px;
+}
+.h2 {
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+
+/* the pinned video: a dark plate, the field moving slowly behind the words */
+.pinned {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  align-content: end;
+  gap: 6px;
+  padding: var(--card-pad);
+  border-radius: var(--r-surface);
+  background: var(--slate-900);
+  color: var(--on-dark);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 220ms var(--ease-out);
+}
+/* a quiet shade under the words, so the moving lines never fight the title */
+.pinned::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    to top,
+    color-mix(in srgb, var(--slate-900) 92%, transparent),
+    color-mix(in srgb, var(--slate-900) 60%, transparent) 45%,
+    transparent 85%
+  );
+  pointer-events: none;
+}
+.pinned:active {
+  transform: scale(0.985);
+}
+.field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.pinWhy {
+  font-size: 0.9375rem;
+  color: var(--on-dark-2);
+}
+.pinTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.3rem + 0.8vw, 2rem);
+  font-weight: 500;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.pinSummary {
+  max-width: 40ch;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--on-dark-2);
+}
+.pinFoot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+.pinFoot > span:last-child {
+  display: grid;
+  gap: 1px;
+}
+.pinFoot strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.pinFoot > span:last-child > span {
+  font-size: 0.875rem;
+  color: var(--on-dark-2);
+}
+.pinPlay {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 999px;
+  background: var(--signal);
+  color: var(--slate-950);
+  transition: transform 220ms var(--ease-out);
+}
+.pinPlay svg {
+  margin-left: 2px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .pinned:hover .pinPlay {
+    transform: scale(1.06);
+  }
+}
+
+/* the video list: rows split by hairlines, straight on the canvas on a phone, on one surface on a laptop */
+.list,
+.readList {
+  display: grid;
+}
+.list li + li,
+.readList li + li {
+  border-top: 1px solid var(--hair);
+}
+.row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  padding: 10px 0;
+  color: var(--ink);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.row:active .thumb {
+  transform: scale(0.97);
+}
+.rowText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.rowText strong {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.rowMeta {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.rowSummary {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+@media (hover: hover) and (pointer: fine) {
+  .row:hover strong {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* the rest of the videos open in place, under the first three */
+@media (max-width: 1023px) {
+  .list[data-all="false"] > li:nth-child(n + 4) {
+    display: none;
+  }
+}
+.more {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  border-top: 1px solid var(--hair);
+  background: none;
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--slate-800);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.more svg {
+  flex: none;
+  transition: transform 200ms var(--ease-out);
+}
+.more[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+@media (hover: hover) and (pointer: fine) {
+  .more:hover span {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+
+/* a drawn thumbnail: isolines on carbon, never stock imagery */
+.thumb {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  aspect-ratio: 16 / 11;
+  max-width: 100%;
+  border-radius: var(--r-media);
+  background: var(--slate-850);
+  transition: transform 220ms var(--ease-out);
+}
+.thumb > svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.thumb > svg path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--signal-soft) 62%, transparent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  vector-effect: non-scaling-stroke;
+}
+.thumb > svg path[data-hi="true"] {
+  stroke: var(--signal);
+}
+
+/* short reads: a hairline list like the videos on a phone, titles and reading time on one line */
+.readList {
+  grid-template-columns: minmax(0, 1fr);
+}
+.read {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 16px;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 12px 0;
+  color: var(--ink);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 200ms var(--ease-out);
+}
+.read:active {
+  transform: scale(0.98);
+}
+.read strong {
+  font-size: 1rem;
+  font-weight: 560;
+  line-height: 1.35;
+}
+.readMin {
+  font-size: 0.875rem;
+  white-space: nowrap;
+  color: var(--ink-3);
+}
+.readGo {
+  flex: none;
+  color: var(--ink-3);
+}
+
+/* the pinned video's heading only shows beside the list on a laptop; the plate says why on a phone */
+.forYou > .h2 {
+  display: none;
+}
+@media (max-width: 380px) {
+  .row {
+    grid-template-columns: 84px minmax(0, 1fr);
+  }
+}
+
+/* a phone with little height: a shorter plate so the list starts sooner */
+@media (max-height: 720px) and (max-width: 899px) {
+  .pinSummary,
+  .lede {
+    display: none;
+  }
+}
+@media (max-height: 600px) and (max-width: 899px) {
+  .layout {
+    gap: 16px;
+  }
+  .pinned {
+    gap: 4px;
+  }
+  .pinTitle {
+    font-size: 1.375rem;
+  }
+  .pinFoot {
+    margin-top: 6px;
+  }
+  .pinPlay {
+    width: 44px;
+    height: 44px;
+  }
+  /* title and length are enough to choose by; the summary is on the video page */
+  .rowSummary {
+    display: none;
+  }
+  .row {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .read {
+    min-height: 48px;
+    padding: 8px 0;
+  }
+}
+
+/* laptops: the pinned video and short reads on the left, the videos on the right */
+@media (min-width: 1024px) {
+  .layout {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, 1fr);
+    grid-template-areas:
+      "pin videos"
+      "reads videos";
+    grid-template-rows: auto 1fr;
+    gap: 24px 32px;
+    align-items: start;
+  }
+  .forYou {
+    grid-area: pin;
+  }
+  .forYou > .h2 {
+    display: block;
+  }
+  .pinned {
+    min-height: 300px;
+  }
+  .list,
+  .readList {
+    padding: 0 var(--card-pad);
+    border-radius: var(--r-surface);
+    background: var(--paper);
+    box-shadow: 0 0 0 1px var(--hair);
+  }
+  .videos {
+    grid-area: videos;
+  }
+  .reads {
+    grid-area: reads;
+  }
+  .row {
+    grid-template-columns: 140px minmax(0, 1fr);
+    gap: 18px;
+  }
+  .more {
+    display: none;
+  }
+  .readList {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 24px;
+  }
+  .readList li + li {
+    border-top: 0;
+  }
+  .readList li:nth-child(n + 3) {
+    border-top: 1px solid var(--hair);
+  }
+  /* one or two videos (before the programme starts): the reads join them on the right, so the
+     pinned video's column and the right column end together instead of leaving a hole */
+  .layout:not(:has(.list > li:nth-child(3))) {
+    grid-template-areas:
+      "pin videos"
+      "pin reads";
+    grid-template-rows: auto 1fr;
+  }
+}
+
+/* ---------- a video page ---------- */
+.player {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  aspect-ratio: 16 / 9;
+  max-height: 46vh;
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: var(--r-surface);
+  background: var(--slate-900);
+  color: var(--on-dark);
+}
+
+@media (max-width: 1023px) {
+  .player {
+    max-height: 25vh;
+  }
+}
+@media (min-width: 1024px) {
+  .guideTop {
+    position: sticky;
+    top: calc(var(--nav-h) + 20px);
+  }
+  .guideTop .player {
+    max-height: none;
+  }
+  /* the video spans both rows too, so it stays in view while a long guide is read, and stops
+     short of the closing line */
+  .guideTop {
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    margin-bottom: 56px;
+  }
+}
+
+/* a short phone: a shorter player, so the words start sooner */
+@media (max-height: 600px) and (max-width: 1023px) {
+  .player {
+    max-height: 20vh;
+    margin-bottom: 16px;
+  }
+}
+
+/* laptops: body text one step up */
+@media (min-width: 1024px) {
+  .rowText strong {
+    font-size: 1.125rem;
+  }
+  .pinSummary,
+  .read strong {
+    font-size: 1.0625rem;
+  }
+}
+
+/* a phone: every section heading sits the same 12px above its first row */
+@media (max-width: 899px) {
+  .h2 {
+    margin-bottom: 8px;
+  }
+  .list li:first-child .row,
+  .readList li:first-child .read {
+    padding-top: 4px;
+  }
+}
+/* a narrow phone: a short read's length goes under its title, so the title keeps the width */
+@media (max-width: 389px) {
+  .read {
+    grid-template-columns: minmax(0, 1fr) 16px;
+    grid-template-areas:
+      "title go"
+      "min go";
+    row-gap: 2px;
+  }
+  .read strong {
+    grid-area: title;
+  }
+  .readMin {
+    grid-area: min;
+  }
+  .readGo {
+    grid-area: go;
+  }
+}

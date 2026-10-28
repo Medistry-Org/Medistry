@@ -1,0 +1,20 @@
+/* Appointments on Care (AppointmentsCard): the booking button before the first consultation. Card, text and grid place come from CarePage.module.css. */
+
+.cta {
+  justify-content: space-between;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.25;
+}
+.cta > span:first-child {
+  min-width: 0;
+}
+@media (min-width: 560px) {
+  .cta {
+    justify-self: start;
+    width: auto;
+  }
+}

@@ -1,0 +1,110 @@
+/* The steps before the first consultation (FirstStepsCard). The card around them is in HomePage.module.css with Home's other cards. */
+
+/* before the first consultation: the three steps on a measured line, the one in hand marked in
+   the signal colour, the ones done ticked in teal */
+.steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+  padding-block: 5px;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+/* the line joining one step to the next */
+.steps li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 10.5px;
+  top: 27px;
+  bottom: -5px;
+  width: 1px;
+  background: var(--hair-2);
+}
+.steps i {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  color: var(--paper);
+}
+.steps li[data-state="now"] {
+  font-weight: 600;
+  color: var(--ink);
+}
+.steps li[data-state="now"] i {
+  background: var(--signal-wash);
+  box-shadow: inset 0 0 0 1.5px var(--signal-ink);
+}
+.steps li[data-state="now"] i::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--signal-ink);
+}
+.steps li[data-state="done"] i {
+  background: var(--slate-600);
+  box-shadow: none;
+}
+.stepDetail {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+/* the same three as one line, for the shortest phones */
+.stepsLine {
+  display: none;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--ink-3);
+}
+.stepsLine [data-state="now"] {
+  font-weight: 600;
+  color: var(--ink);
+}
+.stepsLine [data-state="done"] {
+  color: var(--slate-700);
+}
+.sep {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+@media (max-height: 699px) and (max-width: 1023px) {
+  .steps {
+    display: none;
+  }
+  .stepsLine {
+    display: block;
+  }
+}
+@media (max-width: 339px) {
+  .stepsLine {
+    font-size: 0.875rem;
+  }
+}
+
+/* a link inside a step of a card that is itself a link: it sits above the card's own link */
+.stepLink {
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

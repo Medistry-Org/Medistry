@@ -11,7 +11,15 @@ import type { PrivateNote } from "@/types/patientRecord";
 import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import styles from "./PrivateNotesPanel.module.css";
 
-export default function PrivateNotesPanel({ patientId, notes, onChanged }: { patientId: string; notes: PrivateNote[]; onChanged: () => void }) {
+export default function PrivateNotesPanel({
+  patientId,
+  notes,
+  onChanged,
+}: {
+  patientId: string;
+  notes: PrivateNote[];
+  onChanged: () => void;
+}) {
   const toast = useToast();
   const [text, setText] = useState("");
   const [saving, setSaving] = useState(false);
@@ -32,7 +40,11 @@ export default function PrivateNotesPanel({ patientId, notes, onChanged }: { pat
   };
 
   return (
-    <section id="notes" className={clinicStyles.panel} aria-labelledby="private-notes-heading">
+    <section
+      id="notes"
+      className={clinicStyles.panel}
+      aria-labelledby="private-notes-heading"
+    >
       <div className={clinicStyles.panelHead}>
         <h2 id="private-notes-heading" className={clinicStyles.h2}>
           Private notes
@@ -41,16 +53,27 @@ export default function PrivateNotesPanel({ patientId, notes, onChanged }: { pat
       </div>
       <form
         className={styles.noteForm}
-        onSubmit={(e) => {
-          e.preventDefault();
+        onSubmit={(event) => {
+          event.preventDefault();
           save();
         }}
       >
         <label className="sr-only" htmlFor="private-note">
           New note
         </label>
-        <textarea id="private-note" className={clinicStyles.textarea} rows={3} value={text} onChange={(e) => setText(e.target.value)} placeholder="Never shown to the patient" />
-        <button type="submit" className="btn btn--ghost" disabled={!text.trim() || saving}>
+        <textarea
+          id="private-note"
+          className={clinicStyles.textarea}
+          rows={3}
+          value={text}
+          onChange={(event) => setText(event.target.value)}
+          placeholder="Never shown to the patient"
+        />
+        <button
+          type="submit"
+          className="btn btn--ghost"
+          disabled={!text.trim() || saving}
+        >
           Save note
         </button>
       </form>

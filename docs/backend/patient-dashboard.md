@@ -1,40 +1,54 @@
-# Patient dashboard: shell, Home, Profile, Resources
+# Patient dashboard: Home, Profile, Resources, Plans and eligibility
 
-Screens: `/dashboard` (Home), `/dashboard/profile`, `/dashboard/resources`, `/dashboard/resources/[slug]`,
-and the shell around every `/dashboard/*` page (`src/app/dashboard/components/PatientShell.tsx`).
+## Purpose
 
-All requests send `Authorization: Bearer <accessToken>` and expect `{ success, message, data }`.
+What the patient dashboard's shell, Home, Profile, Resources and Plans call, and the eligibility
+review that decides whether a new patient may book their first consultation.
 
-## Endpoints already on the backend
+- Screens: `/patient-dashboard` (Home), `/patient-dashboard/profile`, `/patient-dashboard/resources`,
+  `/patient-dashboard/resources/[slug]`, `/patient-dashboard/plans`, and the shell
+  (`src/app/patient-dashboard/components/PatientShell.tsx`). Eligibility is also read by Reports,
+  Book a consultation and onboarding.
+- Services: `patientProfileService`, `trackerService`, `eligibilityService`, `subscriptionService`,
+  `authService`.
+- Types: `src/types/patientProfile.ts`, `tracker.ts`, `eligibility.ts`, `subscription.ts`.
 
-| Method | Path | Service | Used by |
-| ------ | ---- | ------- | ------- |
-| GET | `/api/appointments/patient` | `appointmentService.listMyAppointments` | Home: the next consultation, Join, and where the patient is in care |
-| GET | `/api/patient/profile` | `patientProfileService.getMyProfile` | Home (name, weight, plan), Profile, Resources (plan status) |
-| PATCH | `/api/patient/profile` | `updatePersonalDetails` | Profile, Personal details |
-| PATCH | `/api/patient/health-profile` | `updateHealthDetails` | Profile, Health profile |
-| PATCH | `/api/patient/reminders` | `updateReminderSettings` | Profile, Reminders |
-| PATCH | `/api/patient/privacy` | `updatePrivacyConsent` | Profile, Privacy and security |
-| POST | `/api/patient/support` | `contactSupport` | Profile, Help and support |
-| POST | `/api/auth/logout` | `authService.logout` | Profile, Sign out |
+## Endpoints
 
-Home and Resources treat a programme as running when the profile's `planStatus` is `"Active"`
-(case-insensitive). Please confirm that value.
+| Method | Path | Status | Service function | Screen |
+| --- | --- | --- | --- | --- |
+| GET | `/api/patient/profile` | exists | `patientProfileService.getMyProfile` | Home (name, weight, plan), Profile, Resources |
+| PATCH | `/api/patient/profile` | exists | `patientProfileService.updatePersonalDetails` | Profile, Personal details |
+| PATCH | `/api/patient/health-profile` | exists | `patientProfileService.updateHealthDetails` | Profile, Health profile |
+| PATCH | `/api/patient/reminders` | exists | `patientProfileService.updateReminderSettings` | Profile, Reminders |
+| PATCH | `/api/patient/privacy` | exists | `patientProfileService.updatePrivacyConsent` | Profile, Privacy and security |
+| POST | `/api/patient/support` | exists | `patientProfileService.contactSupport` | Profile, Help and support |
+| POST | `/api/auth/logout` | exists | `authService.logout` | Profile, Sign out |
+| GET | `/api/trackers/weight` | PROPOSED | `trackerService.listWeightReadings` | Home, weight card |
+| POST | `/api/trackers/weight` | PROPOSED | `trackerService.logWeight` | Home, "Log weight" |
+| DELETE | `/api/trackers/weight/:id` | PROPOSED | `trackerService.deleteWeightReading` | Home, Undo after logging |
+| GET | `/api/eligibility` | PROPOSED | `eligibilityService.getMyEligibility` | Home status card, Book, Reports, onboarding |
+| GET | `/api/subscriptions/plans` (no auth) | exists | `subscriptionService.listPlans` | Plans, Care |
+| GET | `/api/subscriptions/status?userId=` | exists | `subscriptionService.getSubscriptionStatus` | Plans, Care |
+| GET | `/api/subscriptions/recommended` | PROPOSED | `subscriptionService.getRecommendedPlan` | Plans |
 
-## Proposed endpoints (called by the app, not on the backend yet)
+`GET /api/patient/profile` also reads `gender` (PROPOSED field: `Male`, `Female` or `Other`, the
+onboarding answer, any case). The lab booking's person step prefills Male or Female from it and asks
+otherwise; without it the patient always chooses.
 
-The app calls these paths today. A 404 shows a calm "not available yet" line; nothing is faked.
-Service: `src/services/trackerService.ts`. Types: `src/types/tracker.ts`.
+`GET /api/appointments/patient` (Home's next consultation) is in consultations-and-care.md; the
+Plans page's invoices (`GET /api/payments`) and checkout are in payments-razorpay.md.
 
-### GET /api/trackers/weight
+## Requests and responses
 
-The signed-in patient's weight readings. Used by Home's weight card (latest reading, change since
-the first, the line of past readings). Until it exists, Home shows the weight from the profile.
+### GET `/api/trackers/weight` (PROPOSED)
+
+The signed-in patient's weight readings, in any order (the app sorts oldest first; `data.readings`
+is also accepted). Until it exists, Home shows the weight from the profile.
 
 ```json
 {
   "success": true,
-  "message": "OK",
   "data": [
     { "id": 41, "weightKg": 84.2, "loggedAt": "2026-10-20T07:40:00.000Z" },
     { "id": 57, "weightKg": 83.6, "loggedAt": "2026-10-27T07:35:00.000Z" }
@@ -42,42 +56,77 @@ the first, the line of past readings). Until it exists, Home shows the weight fr
 }
 ```
 
-Any order is fine; the app sorts oldest first. `data.readings` is also accepted.
+### POST `/api/trackers/weight` (PROPOSED)
 
-### POST /api/trackers/weight
-
-Logs one reading from Home's "Log weight" sheet. The app checks 30 to 250 kg before sending; the
-backend should check too.
-
-Request:
+The app checks 30 to 250 kg before sending; check it again.
 
 ```json
 { "weightKg": 83.6 }
 ```
 
-Response:
-
 ```json
 { "success": true, "message": "Weight saved", "data": { "id": 57, "weightKg": 83.6, "loggedAt": "2026-10-27T07:35:00.000Z" } }
 ```
 
-### DELETE /api/trackers/weight/:id
+### DELETE `/api/trackers/weight/:id` (PROPOSED)
 
-The Undo on the "Weight saved" confirmation. Only the patient's own readings.
+Only the patient's own readings. `{ "success": true, "message": "Reading deleted" }`
+
+### GET `/api/eligibility` (PROPOSED)
+
+On 404 Home falls back to the consultations and booking stays open.
 
 ```json
-{ "success": true, "message": "Reading deleted" }
+{
+  "success": true,
+  "data": {
+    "path": "LAB_TEST",
+    "stage": "LAB_SCHEDULED",
+    "reviewNote": null,
+    "labBookingId": "LB-1001",
+    "consultationPaid": true,
+    "updatedAt": "2026-10-28T09:40:00.000Z"
+  }
+}
 ```
 
-## In the design, not built (needs an endpoint first)
+### GET `/api/subscriptions/recommended` (PROPOSED)
 
-These parts of Arhaan's design were left out because the backend has nothing to serve them. Each
-lists the endpoint we would propose.
+The plan the care-team doctor suggested, shown first on Plans with the doctor's note and
+preselected. `data: null` (or a 404) when there is none.
+
+```json
+{
+  "success": true,
+  "data": { "planId": 2, "doctorName": "Dr. Govind Singh", "note": "A four-month plan, with a review every month." }
+}
+```
+
+## Notes
+
+- **Eligibility paths.** Onboarding ends with a report upload (`OWN_REPORT`) or a prepaid lab and
+  consultation package (`LAB_TEST`). The back office reviews the report; once `APPROVED` the patient
+  books a time (never a doctor); that doctor becomes the care-team doctor and may recommend a plan.
+- **Eligibility stages** (`src/types/eligibility.ts`): `NOT_STARTED`, `AWAITING_PAYMENT`,
+  `LAB_SCHEDULED`, `SAMPLE_COLLECTED`, `UNDER_REVIEW`, `APPROVED`, `NOT_APPROVED`. The backend moves
+  them: `POST /api/reports` with `purpose: "ELIGIBILITY"` -> `UNDER_REVIEW`; a paid `LAB_BOOKING` ->
+  `LAB_SCHEDULED`; Redcliffe's sample and report webhooks -> `SAMPLE_COLLECTED`, then `UNDER_REVIEW`;
+  the back office -> `APPROVED` or `NOT_APPROVED` (with `reviewNote`, which the patient reads as is).
+  While `AWAITING_PAYMENT`, `LAB_SCHEDULED` or `SAMPLE_COLLECTED`, Home also calls
+  `GET /api/labs/bookings/:labBookingId` for the collection time.
+- `consultationPaid: true` means the first consultation is prepaid (care package); see
+  consultations-and-care.md, Notes, for how Book uses it.
+- Home and Resources treat a programme as running when the profile's `planStatus` is `"Active"`
+  (case-insensitive). Please confirm that value.
+- Plans start only through a verified `PLAN` payment (payments-razorpay.md). The app does not call
+  `POST /api/subscriptions/activate`.
+
+### In the design, not built (the app does not call these yet)
 
 | Design piece | Proposed endpoint | Notes |
-| ------------ | ----------------- | ----- |
-| Notifications bell in the top bar, with an unread count, and its list page | `GET /api/notifications` -> `{ data: [{ id, title, body, href, createdAt, read }] }`; `PATCH /api/notifications/:id/read` | The bell is omitted until this exists. |
-| "Log a symptom" on Home's weight card | `POST /api/trackers/symptoms` `{ codes: string[], severity: "Mild" \| "Moderate" \| "Severe", note }` -> `{ data: { id, requiresReview } }` | The design turns the sheet into next steps by severity and tells the care team; that rule belongs on the backend. |
-| Weekly medicine card on Home, pen-specific guides, the injection log | `GET /api/patient/prescriptions` (signed items with form, device, strength, weekday) and `POST /api/trackers/medication` | Without it, Home shows the plan card and Resources shows the generic guides. |
-| Plan sheet: start and paid-until dates, invoices, pause or cancel | `GET /api/subscriptions/me` (start, end, invoices); `POST /api/subscriptions/me/change` `{ kind: "PAUSE" \| "CANCEL" }` | Profile shows the plan name and status from the profile for now. |
-| Privacy: download my data, delete my account | `POST /api/patient/data-export`, `POST /api/patient/delete-request` | Left out rather than shown as buttons that do nothing. |
+| --- | --- | --- |
+| Notifications bell and its list | `GET /api/notifications` -> `{ data: [{ id, title, body, href, createdAt, read }] }`; `PATCH /api/notifications/:id/read` | The bell is omitted until this exists. |
+| "Log a symptom" on Home | `POST /api/trackers/symptoms` `{ codes: string[], severity: "Mild" \| "Moderate" \| "Severe", note }` -> `{ data: { id, requiresReview } }` | The next steps by severity belong on the backend. |
+| Weekly medicine card, device guides, the medication log | `GET /api/patient/prescriptions`; `POST /api/trackers/medication` | Home shows the plan card and Resources the generic guides meanwhile. |
+| Plan sheet: dates, pause or cancel | `GET /api/subscriptions/me`; `POST /api/subscriptions/me/change` `{ kind: "PAUSE" \| "CANCEL" }` | Profile shows the plan name and status from the profile for now. |
+| Download my data, delete my account | `POST /api/patient/data-export`; `POST /api/patient/delete-request` | Left out rather than shown as buttons that do nothing. |

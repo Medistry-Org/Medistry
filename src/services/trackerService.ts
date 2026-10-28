@@ -1,15 +1,21 @@
 /**
- * The patient's own trackers. PROPOSED endpoints: the backend does not have them yet
- * (see docs/backend/patient-dashboard.md).
- *   GET    /api/trackers/weight       the patient's weight readings
- *   POST   /api/trackers/weight       { weightKg }  -> the saved reading
- *   DELETE /api/trackers/weight/:id   undo a reading just logged
+ * The patient's own weight log (Home's weight card). Doc: docs/backend/patient-dashboard.md
+ *   GET    /api/trackers/weight       PROPOSED. The patient's weight readings
+ *   POST   /api/trackers/weight       PROPOSED. Logs one { weightKg } -> the saved reading
+ *   DELETE /api/trackers/weight/:id   PROPOSED. Undoes a reading just logged
  */
 
 import { ApiError, apiRequest, listFrom } from "@/lib/http/apiClient";
 import type { WeightReading } from "@/types/tracker";
 
-type RawReading = { id?: number | string; ReadingId?: number | string; weightKg?: number | string; WeightKg?: number | string; loggedAt?: string; LoggedAt?: string };
+type RawReading = {
+  id?: number | string;
+  ReadingId?: number | string;
+  weightKg?: number | string;
+  WeightKg?: number | string;
+  loggedAt?: string;
+  LoggedAt?: string;
+};
 
 function toWeightReading(raw: RawReading): WeightReading {
   return {
@@ -26,18 +32,23 @@ export async function listWeightReadings(): Promise<WeightReading[] | null> {
     return listFrom<RawReading>(body, "readings")
       .map(toWeightReading)
       .filter((reading) => Number.isFinite(reading.weightKg))
-      .sort((a, b) => a.loggedAt.localeCompare(b.loggedAt));
-  } catch (error) {
-    if (error instanceof ApiError && error.isMissingEndpoint) return null;
-    throw error;
+      .sort((first, second) => first.loggedAt.localeCompare(second.loggedAt));
+  } catch (caught) {
+    if (caught instanceof ApiError && caught.isMissingEndpoint) return null;
+    throw caught;
   }
 }
 
 export async function logWeight(weightKg: number): Promise<WeightReading> {
-  const body = await apiRequest<{ data?: RawReading }>("/api/trackers/weight", { method: "POST", body: { weightKg } });
+  const body = await apiRequest<{ data?: RawReading }>("/api/trackers/weight", {
+    method: "POST",
+    body: { weightKg },
+  });
   return toWeightReading(body.data ?? { weightKg });
 }
 
 export async function deleteWeightReading(id: string): Promise<void> {
-  await apiRequest(`/api/trackers/weight/${encodeURIComponent(id)}`, { method: "DELETE" });
+  await apiRequest(`/api/trackers/weight/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
 }

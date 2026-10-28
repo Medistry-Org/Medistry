@@ -1,0 +1,364 @@
+/*
+  The Care tab (the design's Care.module.css, the parts this page uses): the care team, the
+  programme, blood tests and appointments. One column on a phone, a 2 by 2 grid on a laptop.
+  Details live in one sheet each. This sheet holds the page's layout (the grid and where each card
+  sits in it) and the pieces several components share (cards, rows, sheets, steps); a component's
+  own styles sit beside it in ./components (X.module.css).
+*/
+
+/* fill each line: on a phone, WebKit's "pretty" wrapping breaks early and costs a line per paragraph */
+.page :is(p, li, dd),
+.sheetBody :is(p, li, dd) {
+  text-wrap: wrap;
+}
+/* short closing lines never leave one word on a line of its own ("pay.", "fine.") */
+.page p.foot,
+.sheetBody p.foot,
+.sheetBody p.sheetMeta {
+  text-wrap: pretty;
+}
+.grid {
+  display: grid;
+  gap: 12px;
+}
+/* parts that only one layout shows: a phone keeps the next visit inside the care team card */
+.deskOnly {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .deskOnly {
+    display: revert;
+  }
+  .card.deskOnly {
+    display: grid;
+  }
+  .phoneOnly {
+    display: none;
+  }
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-areas:
+      "prog team"
+      "labs visits";
+    align-items: stretch;
+    gap: 20px;
+  }
+  .team {
+    grid-area: team;
+  }
+  .prog {
+    grid-area: prog;
+  }
+  .appt {
+    grid-area: appt;
+  }
+  .labs {
+    grid-area: labs;
+  }
+  .visits {
+    grid-area: visits;
+  }
+  .grid > .card {
+    align-content: start;
+  }
+  /* before the first consultation: booking it across the page, the other two side by side under it */
+  .gridFirst {
+    grid-template-areas:
+      "appt appt"
+      "prog labs";
+  }
+}
+
+/* every card keeps the app's one inset (--card-pad); only the gaps inside are tighter */
+.card {
+  --card-gap: 12px;
+  gap: var(--card-gap);
+  padding: var(--card-pad);
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 768px) {
+  .card {
+    --card-gap: 14px;
+  }
+}
+/* the smallest phones: a 16px inset on every surface, as on Appointments */
+@media (max-width: 389px) {
+  .page {
+    --card-pad: 16px;
+  }
+}
+
+.text {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.pill {
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 18px;
+  font-size: 0.9375rem;
+}
+.go {
+  flex: none;
+  color: var(--ink-3);
+}
+.plate {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--signal-wash);
+  color: var(--signal-ink);
+}
+
+/* ---------- a tappable row: a person, a report ---------- */
+.people {
+  display: grid;
+}
+.people > li + li {
+  border-top: 1px solid var(--hair);
+}
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 64px;
+  padding: 8px 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms var(--ease-out);
+}
+.people > li:first-child .row {
+  padding-top: 0;
+}
+.people > li:last-child .row {
+  padding-bottom: 0;
+}
+.row:active {
+  transform: scale(0.985);
+}
+.rowText {
+  display: grid;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+}
+.rowText strong {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.rowText span {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+.rowText small {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+@media (hover: hover) and (pointer: fine) {
+  .row:hover strong {
+    text-decoration: underline;
+    text-decoration-color: var(--hair-2);
+    text-underline-offset: 3px;
+  }
+}
+.rowText small {
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink-3);
+}
+.foot {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+}
+
+/* the delivery: one line (next or last, with its date) that opens the full status, the steps under it while it moves */
+.delivery {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 6px;
+  padding-top: 4px;
+  border-top: 1px solid var(--hair);
+}
+/* a phone: the delivery is one row; its steps live in the delivery sheet (the programme card's
+   delivery around StepLine's steps: it spans the two, so it stays here) */
+@media (max-width: 767px) {
+  .delivery .steps {
+    display: none;
+  }
+}
+
+/* ---------- steps across: a delivery's status ---------- */
+.steps {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: 4px 8px;
+}
+.steps li {
+  position: relative;
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  padding-top: 18px;
+  min-width: 0;
+}
+.steps i {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--hair);
+}
+.steps li[data-state="done"] i {
+  background: var(--slate-700);
+}
+/* where you are now: a thicker bar in the signal colour, so position never rests on a small hue shift */
+.steps li[data-state="now"] i {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--signal);
+}
+.steps li[data-state="now"] i {
+  top: 2px;
+}
+/*
+  Phones: the last step's label ends flush with its
+  bar and a long one runs leftwards, never past the card.
+*/
+@media (max-width: 767px) {
+  .steps li:last-child > :not(i) {
+    justify-self: end;
+    margin-left: -40px;
+  }
+}
+/* phones under 390px: smaller step labels and dates */
+@media (max-width: 389px) {
+  .steps {
+    gap: 4px 6px;
+  }
+}
+
+/* ---------- sheets ---------- */
+.sheetBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.sheetMeta {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 16px;
+  padding: 14px 0;
+  border-block: 1px solid var(--hair);
+}
+.facts dt {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.facts dd {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.facts > div:last-child:nth-child(odd),
+.facts > .wide {
+  grid-column: 1 / -1;
+}
+
+/* the doctor sheet's actions: the main one, then the quieter one */
+.actions {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+.actions .foot {
+  margin: -2px 0 4px;
+  text-align: center;
+}
+
+/* short laptop screens: the same page, with less air, so it still fits without scrolling */
+@media (min-width: 1024px) and (max-height: 820px) {
+  main.page {
+    padding-top: 8px;
+    padding-bottom: 12px;
+  }
+  .grid {
+    gap: 14px;
+  }
+  .card {
+    --card-gap: 10px;
+  }
+  .row {
+    min-height: 52px;
+  }
+}
+
+/* icons in a pill keep their size when the label is long */
+.pill svg {
+  flex: none;
+}
+
+/* phones: a little less air so the cards hold to well under two screens */
+@media (max-width: 767px) {
+  .grid {
+    gap: 12px;
+  }
+  .card {
+    --card-gap: 12px;
+  }
+  .row {
+    min-height: 52px;
+    padding-block: 4px;
+  }
+  /* a list card: no inset above or below, the rows carry their own */
+  .team {
+    padding-block: 0;
+    --card-gap: 0px;
+  }
+  /* the care team card's rows: the card and the shared rows together, so it stays here */
+  .team .people > li .row {
+    padding-block: 6px;
+  }
+  .team > div:first-child {
+    display: none;
+  }
+}
+
+/* a laptop: body text a step larger */
+@media (min-width: 1024px) {
+  .text,
+  .rowText strong {
+    font-size: 1.0625rem;
+  }
+  .rowText span {
+    font-size: 1rem;
+  }
+}

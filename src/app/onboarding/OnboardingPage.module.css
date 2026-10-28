@@ -1,4 +1,11 @@
-/* Onboarding (from the design repository's Onboarding.module.css, unchanged): one question at a time, a ruler of progress above, the action within thumb reach. One sheet for the whole route because its rules cross components (the bar changes with the phase, the dock with the step); every file in components/ imports it as styles. */
+/* Onboarding's page-level layout (from the design repository's Onboarding.module.css): the page, the
+   question column and its heading, plus the few groups whose selectors cross components, kept here so
+   their class names match: the answer marks (AnswerOptions and ConsentQuestion), the ruler plate
+   (AgeQuestion and MeasureInstrument), the BMI (BmiReadout inside the blood-test screens' bmiCard),
+   the chapter tag inside a step, and the conditions' "Something else" box hiding the step's why.
+   Each component's own rules sit beside it in X.module.css. Spacing and type follow the screen's
+   height as well as its width, so every question and Continue share one screen, even on a short
+   phone in Safari (375 by 553; Arhaan, 2 Oct 2026). */
 
 .page {
   min-height: 100vh;
@@ -9,12 +16,13 @@
 }
 
 /* wide screens only: isolines from the bottom-left corner, in the empty margin beside the question
-   column (kept at least 36px clear of it), the same drawing the FAQ uses */
-.art {
+   column (kept at least 36px clear of it), the same drawing the FAQ uses. `.page .art` outranks the
+   kit's global .art, which would otherwise show it behind the question on a phone */
+.page .art {
   display: none;
 }
 @media (min-width: 1200px) {
-  .art {
+  .page .art {
     position: fixed;
     display: block;
     z-index: 0;
@@ -22,146 +30,28 @@
     bottom: 0;
     width: min(20vw, calc((100vw - 600px) / 2 - 36px));
   }
-  .stage,
-  .bar {
+  .stage {
     position: relative;
     z-index: 1;
   }
-  .bar {
-    position: sticky;
-  }
-}
-
-/* ---------- top bar: back, the progress ruler, save and exit ---------- */
-.bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  display: grid;
-  grid-template-columns: 44px minmax(0, 1fr) 44px;
-  align-items: center;
-  gap: 16px;
-  padding: calc(10px + env(safe-area-inset-top)) var(--gutter) 10px;
-  background: var(--chrome-bg);
-  --chrome-blur: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: var(--chrome-blur);
-  backdrop-filter: var(--chrome-blur);
-}
-@media (prefers-reduced-transparency: reduce) {
-  .bar {
-    background: var(--bg);
-  }
-}
-.barStart {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.barEnd {
-  display: flex;
-  justify-content: flex-end;
-}
-.brand {
-  display: none;
-  color: var(--ink);
-  min-height: 44px;
-  min-width: 44px;
-  align-items: center;
-}
-.exitText {
-  display: none;
-}
-@media (min-width: 768px) {
-  .bar {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 440px) minmax(0, 1fr);
-    gap: 24px;
-    padding-top: 16px;
-    padding-bottom: 16px;
-  }
-  .brand {
-    display: inline-flex;
-  }
-  .exitText {
-    display: inline-flex;
-  }
-  .exitIcon {
-    display: none;
-  }
-}
-
-/* one ruler, graduated by question, with a wider gap between chapters */
-.progress {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 44px;
-}
-/* the booked screen keeps the bar's height so nothing shifts, but drops the finished ruler */
-.progress[hidden] {
-  display: flex;
-  visibility: hidden;
-}
-.chap {
-  display: flex;
-  gap: 3px;
-  flex-basis: 0;
-}
-.chap i {
-  position: relative;
-  flex: 1;
-  height: 4px;
-  border-radius: 999px;
-  background: var(--hair);
-  overflow: hidden;
-}
-.chap i::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--slate-800);
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  transition:
-    transform 560ms var(--ease-drawer),
-    background-color 300ms var(--ease-out);
-}
-.chap i[data-state="done"]::after {
-  transform: none;
-}
-/* the question on screen: the one live mark, in the signal colour */
-.chap i[data-state="now"]::after {
-  transform: none;
-  background: var(--signal-ink);
-}
-@media (prefers-reduced-motion: reduce) {
-  .chap i::after {
-    transition: none;
-  }
-}
-
-/* the return-visit note in the status line: the signal colour, briefly */
-.back {
-  color: var(--signal-ink);
-  font-weight: 560;
-  animation: fade 400ms var(--ease-out) both;
 }
 
 /* ---------- the question ---------- */
 .stage {
   overflow-x: clip;
   display: grid;
-  grid-template-rows: 1fr auto;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 0;
   width: 100%;
   max-width: calc(600px + var(--gutter) * 2);
   margin-inline: auto;
-  padding: clamp(20px, 6vh, 72px) var(--gutter) 0;
+  padding: clamp(8px, 3.2vh, 56px) var(--gutter) 0;
 }
 .step {
   --stack-gap: 28px;
   display: grid;
   align-content: start;
-  gap: 28px;
+  gap: clamp(14px, 2.8vh, 28px);
   min-width: 0;
   animation: arrive 480ms var(--ease-out) both;
 }
@@ -186,12 +76,12 @@
 }
 .head {
   display: grid;
-  gap: 12px;
+  gap: clamp(6px, 1.2vh, 12px);
 }
 .q {
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: clamp(2rem, 1.62rem + 1.2vw, 2.75rem);
+  font-size: min(clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem), 5.4vh);
   line-height: 1.06;
   letter-spacing: -0.022em;
   text-wrap: balance;
@@ -199,34 +89,17 @@
 .q:focus {
   outline: none;
 }
-.soft {
-  color: var(--slate-600);
-}
+
 .why {
   max-width: 46ch;
-  font-size: 1.0625rem;
-  line-height: 1.55;
+  font-size: clamp(0.875rem, 2.9vh, 1.0625rem);
+  line-height: 1.5;
   color: var(--ink-2);
 }
 
 .fields {
   display: grid;
-  gap: 20px;
-}
-.two {
-  display: grid;
-  gap: 20px;
-}
-@media (min-width: 520px) {
-  .two {
-    grid-template-columns: 1fr 1fr;
-  }
-}
-.opt {
-  margin-left: 4px;
-  font-weight: 450;
-  font-size: 0.8125rem;
-  color: var(--ink-3);
+  gap: clamp(12px, 2vh, 20px);
 }
 
 /* ---------- answers: one grouped list, the same as the free tools ---------- */
@@ -243,8 +116,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  min-height: 60px;
-  padding: 14px 18px;
+  min-height: clamp(48px, 7.4vh, 60px);
+  padding: 8px 18px;
   border: 0;
   background: none;
   font-size: 1rem;
@@ -306,7 +179,11 @@
   box-shadow: none;
 }
 .option[aria-checked="true"] .mark[data-multi="false"] {
-  background: radial-gradient(circle, var(--signal) 0 3.5px, var(--slate-900) 4px);
+  background: radial-gradient(
+    circle,
+    var(--signal) 0 3.5px,
+    var(--slate-900) 4px
+  );
 }
 .option[aria-checked="true"] .mark svg,
 .check:checked + .mark svg {
@@ -319,109 +196,6 @@
     transition: none;
   }
 }
-
-.or {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  font-size: 0.8125rem;
-  color: var(--ink-3);
-}
-.or::before,
-.or::after {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background: var(--hair);
-}
-.reveal {
-  animation: drop 360ms var(--ease-out) both;
-}
-@keyframes drop {
-  from {
-    opacity: 0;
-    transform: translate3d(0, -6px, 0);
-  }
-}
-
-/* ---------- age: the same paper plate as height and weight, one large number between minus and plus ---------- */
-.ageWrap {
-  display: grid;
-  gap: 10px;
-}
-.age {
-  gap: clamp(6px, 1.4vh, 14px);
-  transition: box-shadow 200ms var(--ease-out);
-}
-.age:focus-within {
-  box-shadow: 0 0 0 1px var(--ink-3);
-}
-.age[data-invalid="true"] {
-  box-shadow: 0 0 0 1.5px var(--alert);
-}
-.ageHead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.ageHead label {
-  font-size: 0.9375rem;
-  color: var(--ink-2);
-}
-.ageHead span {
-  font-size: 0.8125rem;
-  color: var(--ink-3);
-}
-.ageRow {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 56px;
-  align-items: center;
-  gap: 8px;
-}
-.ageValue {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 8px;
-  min-width: 0;
-}
-.ageStep {
-  display: grid;
-  place-items: center;
-  width: 56px;
-  height: 56px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--hair-2);
-  color: var(--ink);
-  cursor: pointer;
-  touch-action: manipulation;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-touch-callout: none;
-  -webkit-tap-highlight-color: transparent;
-  transition:
-    transform 160ms var(--ease-out),
-    background-color 180ms var(--ease-out);
-}
-.ageStep:active:not(:disabled) {
-  transform: scale(0.94);
-}
-@media (hover: hover) and (pointer: fine) {
-  .ageStep:not(:disabled):hover {
-    background: var(--bg-2);
-  }
-}
-.ageStep:disabled {
-  color: var(--ink-3);
-  opacity: 0.45;
-  cursor: default;
-}
-.ageStep:focus-visible {
-  outline: 2px solid var(--signal-ink);
-  outline-offset: 2px;
-}
 /* a problem, right under the box it is about */
 .fieldErr {
   animation: fade 200ms var(--ease-out) both;
@@ -429,105 +203,26 @@
 .fieldErr svg {
   margin-top: 0.2em;
 }
-.bigInput {
-  font-variant-numeric: tabular-nums;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-family: var(--font-display);
-  font-size: min(clamp(3.5rem, 2.8rem + 3vw, 4.5rem), 10vh);
-  font-weight: 500;
-  line-height: 1;
-  letter-spacing: -0.035em;
-  text-align: center;
-  color: var(--ink);
-  caret-color: var(--signal-ink);
-}
-.bigInput::placeholder {
-  color: var(--hair-2);
-}
-.bigInput:focus,
-.bigInput:focus-visible {
-  outline: none;
-}
-.bigUnit {
-  font-size: 1.125rem;
-  color: var(--ink-3);
-}
 
 /* ---------- height and weight: the tools' ruler on a paper plate ---------- */
 .instrument {
+  position: relative;
   display: grid;
-  gap: 24px;
-  padding: 22px 20px 20px;
+  gap: clamp(12px, 2.4vh, 24px);
+  padding: clamp(14px, 2.4vh, 22px) 20px clamp(12px, 2.2vh, 20px);
   border-radius: var(--r-surface);
   background: var(--paper);
   box-shadow: 0 0 0 1px var(--hair);
-}
-@media (min-width: 768px) {
-  .instrument {
-    padding: 28px 28px 24px;
-  }
 }
 /* the marker's sliding layer is as wide as the track; keep it from widening the page */
 .bmi {
   overflow: clip;
   display: grid;
-  gap: 12px;
-  padding-top: 20px;
+  gap: 8px;
+  padding-top: clamp(10px, 2vh, 20px);
   border-top: 1px solid var(--hair);
 }
-.bmiHead {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-.bmiHead span {
-  font-size: 0.9375rem;
-  color: var(--ink-2);
-}
-.bmiHead strong {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  font-weight: 520;
-  letter-spacing: -0.02em;
-  line-height: 1;
-}
 
-/* ---------- consent ---------- */
-.consents {
-  display: grid;
-  gap: 14px;
-}
-.consentList {
-  display: grid;
-  border-radius: var(--r-media);
-  background: var(--paper);
-  box-shadow: 0 0 0 1px var(--hair);
-  overflow: hidden;
-}
-.consent {
-  transition: background-color 200ms var(--ease-out);
-}
-.consent + .consent {
-  box-shadow: inset 0 1px 0 var(--hair);
-}
-.consent[data-on="true"] {
-  background: color-mix(in srgb, var(--signal-wash) 55%, var(--paper));
-}
-.consentRow {
-  position: relative;
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  align-items: start;
-  gap: 14px;
-  padding: 16px 18px 4px;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.consentRow .mark {
-  margin-top: 1px;
-}
 .check {
   position: absolute;
   top: 16px;
@@ -541,283 +236,30 @@
   outline: 2px solid var(--signal-ink);
   outline-offset: 3px;
 }
-.consentText {
-  display: grid;
-  gap: 3px;
-}
-.consentTitle {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 2px 10px;
-  font-size: 1rem;
-  font-weight: 560;
-  line-height: 1.35;
-}
-.need {
-  font-size: 0.75rem;
-  font-weight: 450;
-  color: var(--ink-3);
-}
-.consentLine {
-  font-size: 0.875rem;
-  line-height: 1.45;
-  color: var(--ink-2);
-}
-.more {
-  padding: 0 18px 12px 54px;
-}
-.more summary {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  font-size: 0.8125rem;
-  font-weight: 560;
-  color: var(--slate-800);
-  list-style: none;
-  cursor: pointer;
-}
-.more summary::-webkit-details-marker {
-  display: none;
-}
-.more summary::after {
-  content: "";
-  width: 5px;
-  height: 5px;
-  margin-left: 8px;
-  border-right: 1.5px solid currentColor;
-  border-bottom: 1.5px solid currentColor;
-  transform: translateY(-2px) rotate(45deg);
-  transition: transform 240ms var(--ease-out);
-}
-.more[open] summary::after {
-  transform: translateY(1px) rotate(-135deg);
-}
-.more p {
-  max-width: 54ch;
-  padding-bottom: 4px;
-  font-size: 0.8125rem;
-  line-height: 1.55;
-  color: var(--ink-2);
-}
-
-/* ---------- the action: pinned within reach on a phone, inline on a laptop ---------- */
-.dock {
-  position: sticky;
-  bottom: 0;
-  z-index: 5;
-  display: grid;
-  gap: 12px;
-  justify-items: center;
-  margin-top: 32px;
-  padding: 16px 0 calc(16px + env(safe-area-inset-bottom));
-  background: var(--bg);
-}
-.dock::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 100%;
-  height: 24px;
-  background: linear-gradient(to top, var(--bg), rgb(241 242 243 / 0));
-  pointer-events: none;
-}
-@media (min-width: 768px) {
-  /* on a laptop the action follows the answer instead of waiting at the bottom of the screen */
-  .stage {
-    grid-template-rows: auto auto;
-    align-content: start;
-  }
-  .dock {
-    position: static;
-    grid-template-columns: auto minmax(0, 1fr);
-    justify-items: start;
-    align-items: center;
-    gap: 24px;
-    margin-top: 40px;
-    padding-bottom: 56px;
-    background: none;
-  }
-  .dock::before {
-    display: none;
-  }
-  .dock :global(.btn) {
-    width: auto;
-    min-width: 232px;
-  }
-}
-
-/* ---------- after the last question ---------- */
-.later {
-  justify-self: start;
-  margin-bottom: 48px;
-}
-.done {
-  padding-bottom: 56px;
-}
-.seal {
-  display: grid;
-  place-items: center;
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: var(--signal-wash);
-  color: var(--signal-ink);
-  animation: seal 520ms var(--ease-out) both;
-}
-.seal svg {
-  clip-path: inset(0 100% 0 0);
-  animation: draw 620ms var(--ease-out) 220ms forwards;
-}
-@keyframes seal {
-  from {
-    opacity: 0;
-    transform: scale(0.86);
-  }
-}
-@keyframes draw {
-  to {
-    clip-path: inset(0 0 0 0);
-  }
-}
-@media (prefers-reduced-motion: reduce) {
-  .seal {
-    animation: none;
-  }
-  .seal svg {
-    animation: none;
-    clip-path: none;
-  }
-}
-.facts {
-  display: grid;
-  gap: 12px;
-  padding-top: 20px;
-  border-top: 1px solid var(--hair);
-}
-.facts li {
-  display: grid;
-  grid-template-columns: 12px minmax(0, 1fr);
-  gap: 12px;
-  font-size: 1rem;
-  line-height: 1.5;
-  color: var(--ink-2);
-}
-/* the brand's measuring tick as the bullet */
-.facts li::before {
-  content: "";
-  width: 2px;
-  height: 12px;
-  margin-top: 6px;
-  border-radius: 1px;
-  background: var(--signal-ink);
-}
-.doneActions {
-  display: grid;
-  gap: 12px;
-}
-.cal {
-  justify-content: center;
-  gap: 10px;
-  min-height: 56px;
-}
-@media (min-width: 560px) {
-  .doneActions {
-    grid-auto-flow: column;
-    justify-content: start;
-  }
-  .doneActions :global(.btn) {
-    width: auto;
-    min-width: 232px;
-  }
-}
-
-/* ---------- no scrolling, on any step (Arhaan, 2 Oct 2026) ----------
-   The question, its answers and Continue share one screen. Spacing and type follow the screen's
-   height as well as its width, so a short phone in Safari (375 by 553) still shows everything. */
 /* the frame is exactly the screen; on a screen too small for it (320 by 480), the page scrolls
    rather than ever cutting off an answer */
 .page:has(> form) {
   min-height: 100vh;
   min-height: 100dvh;
 }
-.bar {
-  padding-top: calc(6px + env(safe-area-inset-top));
-  padding-bottom: 6px;
-}
-.stage {
-  grid-template-rows: minmax(0, 1fr) auto;
-  min-height: 0;
-  padding-top: clamp(8px, 3.2vh, 56px);
-}
-.step {
-  gap: clamp(14px, 2.8vh, 28px);
-}
-.head {
-  gap: clamp(6px, 1.2vh, 12px);
-}
-.q {
-  font-size: min(clamp(1.75rem, 1.5rem + 1.2vw, 2.75rem), 5.4vh);
-}
-.why {
-  font-size: min(1.0625rem, 2.9vh);
-  line-height: 1.5;
-}
-.option {
-  min-height: clamp(48px, 7.4vh, 60px);
-  padding-block: 8px;
-}
-.dock {
-  position: static;
-  margin-top: 0;
-  padding: clamp(10px, 2vh, 20px) 0 max(12px, env(safe-area-inset-bottom));
-}
-.dock::before {
-  display: none;
-}
+/* on a laptop the action follows the answer instead of waiting at the bottom of the screen */
 @media (min-width: 768px) {
   .stage {
     grid-template-rows: auto auto;
     align-content: start;
   }
-  .dock {
-    margin-top: clamp(16px, 3vh, 40px);
-    padding-bottom: 24px;
-  }
 }
-/* short screens drop the extras first: the chapter tag (the ruler above names it) and the
-   reassurance line under Continue */
+/* short screens drop the extras first: the chapter tag (the ruler above names it; the line under
+   Continue goes in QuestionScreen.module.css) */
 @media (max-height: 760px) {
   .tag {
     display: none;
   }
 }
-@media (max-height: 700px) {
-  .dock > p {
-    display: none;
-  }
-}
-.two {
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.fields {
-  gap: clamp(12px, 2vh, 20px);
-}
 .fields :global(input) {
   min-height: clamp(48px, 7.4vh, 56px);
 }
 
-/* height and weight: a tighter plate on short screens */
-.instrument {
-  gap: clamp(12px, 2.4vh, 24px);
-  padding: clamp(14px, 2.4vh, 22px) 20px clamp(12px, 2.2vh, 20px);
-}
-.bmi {
-  gap: 8px;
-  padding-top: clamp(10px, 2vh, 20px);
-}
 @media (max-height: 640px) {
   .bmiHint {
     display: none;
@@ -854,7 +296,8 @@
 }
 .grid .option[aria-checked="true"] {
   background: var(--signal-wash);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--signal-ink) 40%, transparent);
+  box-shadow: inset 0 0 0 1px
+    color-mix(in srgb, var(--signal-ink) 40%, transparent);
 }
 .grid .option:focus-visible {
   border-radius: 999px;
@@ -870,11 +313,6 @@
 }
 .otherInput {
   min-height: 48px !important;
-}
-
-/* consent: one tick for everything care needs, the optional assistant as its own switch */
-.consents {
-  gap: 12px;
 }
 .agree {
   position: relative;
@@ -895,7 +333,9 @@
 /* the optional choice reads quieter than the one the care needs */
 .agree[data-optional="true"] {
   background: transparent;
-  box-shadow: 0 0 0 1px var(--hair), inset 0 0 0 0 transparent;
+  box-shadow:
+    0 0 0 1px var(--hair),
+    inset 0 0 0 0 transparent;
 }
 .agree[data-optional="true"] .agreeText {
   font-size: 0.875rem;
@@ -916,126 +356,7 @@
   font-weight: 600;
   color: var(--ink);
 }
-/* the four documents, named inside the one sentence: underlined, with padding that widens the tap
-   target without moving the lines apart */
-.docLink {
-  position: relative;
-  padding: 12.5px 2px;
-  margin: -12.5px -2px;
-  color: var(--ink);
-  font-weight: 560;
-  text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--slate-800) 45%, transparent);
-  text-decoration-thickness: 1.5px;
-  text-underline-offset: 3px;
-  border-radius: 7px;
-  -webkit-tap-highlight-color: transparent;
-  transition: text-decoration-color 180ms var(--ease-out);
-}
-@media (hover: hover) and (pointer: fine) {
-  .docLink:hover {
-    text-decoration-color: var(--slate-800);
-  }
-}
-.docLink:focus-visible {
-  outline: 2px solid var(--signal-ink);
-  outline-offset: -4px;
-}
-/* "Read them": the four documents behind one quiet disclosure, under the tick they belong to */
-.readDocs {
-  margin-top: -4px;
-}
-.readDocs summary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  min-height: 44px;
-  padding: 0 4px;
-  list-style: none;
-  font-size: 0.9375rem;
-  font-weight: 560;
-  color: var(--slate-800);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.readDocs summary::-webkit-details-marker {
-  display: none;
-}
-.readDocs summary:focus-visible {
-  border-radius: 7px;
-  outline: 2px solid var(--signal-ink);
-  outline-offset: 0;
-}
-.readCaret {
-  transition: transform 200ms var(--ease-out);
-}
-.readDocs[open] .readCaret {
-  transform: rotate(180deg);
-}
-.readDocs ul {
-  display: grid;
-  margin: 0 0 4px;
-  padding: 0 18px;
-  border-radius: var(--r-media);
-  background: var(--paper);
-  box-shadow: 0 0 0 1px var(--hair);
-  list-style: none;
-}
-.readDocs li + li {
-  border-top: 1px solid var(--hair);
-}
-.readDocs button {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  width: 100%;
-  min-height: 48px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 0.9375rem;
-  font-weight: 560;
-  text-align: left;
-  color: var(--ink);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-.readDocs button svg {
-  flex: none;
-  color: var(--ink-3);
-}
-.readDocs button:focus-visible {
-  border-radius: 7px;
-  outline: 2px solid var(--signal-ink);
-  outline-offset: -2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .readCaret {
-    transition: none;
-  }
-}
-.docs {
-  display: grid;
-  gap: 12px;
-  max-width: 52ch;
-  padding-bottom: 8px;
-  font-size: 1rem;
-  line-height: 1.6;
-  color: var(--ink-2);
-}
-.docLead {
-  font-weight: 560;
-  color: var(--ink);
-}
 
-/* the booking phase: wider on a laptop, so day and time sit side by side and the page does not scroll */
-@media (min-width: 1024px) {
-  .wide {
-    max-width: calc(940px + var(--gutter) * 2);
-  }
-}
 /* very short screens: the gaps close up before anything is hidden */
 @media (max-height: 600px) {
   .stage {
@@ -1047,9 +368,6 @@
   .why {
     font-size: 0.875rem;
     line-height: 1.45;
-  }
-  .dock {
-    padding-top: 8px;
   }
   .grid {
     gap: 4px 6px;
@@ -1064,24 +382,6 @@
   border-radius: 7px;
 }
 
-/* booking: the bar goes solid, so nothing reads through it under the progress ruler, and the
-   isolines step aside on a short laptop where they would reach the way out under the days */
-.page[data-phase="book"] .bar {
-  background: var(--bg);
-  -webkit-backdrop-filter: none;
-  backdrop-filter: none;
-}
-@media (max-height: 760px) {
-  .page[data-phase="book"] .art {
-    display: none;
-  }
-}
-/* a very short phone keeps the heading and the times; the length and the video are said again once booked */
-@media (max-height: 600px) {
-  .page[data-phase="book"] .why {
-    display: none;
-  }
-}
 /* the unit switch inside the ruler plate, drawn as the app's one segmented control: a 44px track
    with a white thumb (the switch itself comes from the tools kit) */
 .instrument [role="radiogroup"] {
@@ -1163,31 +463,13 @@
   }
 }
 
-/* booking: the way out is a word, said plainly, on every screen */
-.bookLater {
-  min-height: 44px;
-  padding-inline: 4px;
-  white-space: nowrap;
-  color: var(--ink-2);
-}
-.page[data-phase="book"] .bar {
-  grid-template-columns: auto minmax(0, 1fr) auto;
-}
-@media (min-width: 768px) {
-  .page[data-phase="book"] .bar {
-    grid-template-columns: minmax(0, 1fr) minmax(280px, 440px) minmax(0, 1fr);
-  }
-}
-
 /* height, weight and age before they are answered: a quiet hint where the number goes, never a
    number at full size that reads as an answer. The ruler rests, faded, until the first touch. */
-.instrument {
-  position: relative;
-}
 .instrument[data-empty="true"] span:has(> input[type="number"]) {
   position: relative;
 }
-.instrument[data-empty="true"] span:has(> input[type="number"]):not(:focus-within)::after {
+.instrument[data-empty="true"]
+  span:has(> input[type="number"]):not(:focus-within)::after {
   content: var(--hint);
   position: absolute;
   /* the boxes reach 6px past the row for their tap height, dashed rule included */
@@ -1207,69 +489,6 @@
 .instrument[data-empty="true"] div:has(> input[type="range"]) {
   opacity: 0.5;
   transition: opacity 200ms var(--ease-out);
-}
-.bmiHead {
-  min-height: 1.75rem;
-}
-/* the box keeps the number's height, so the plate does not grow when the first digit lands */
-.bigInput[data-empty="true"]::placeholder {
-  font-family: var(--font-text);
-  font-size: 1.0625rem;
-  font-weight: 450;
-  letter-spacing: 0;
-  color: var(--ink-3);
-}
-.bigInput[data-empty="true"]:focus::placeholder {
-  color: var(--hair-2);
-}
-
-/* Continue before the answer is complete: it looks unavailable, and a tap says what is missing */
-.dock button[aria-disabled="true"] {
-  cursor: default;
-  --btn-bg: var(--bg-2);
-  --btn-fg: var(--ink-3);
-  --well-bg: var(--hair);
-  --well-fg: var(--ink-3);
-}
-.dock button[aria-disabled="true"]:active {
-  transform: none;
-}
-@media (hover: hover) and (pointer: fine) {
-  .dock button[aria-disabled="true"]:hover {
-    --btn-bg: var(--bg-2);
-  }
-  .dock button[aria-disabled="true"]:hover :global(.well) {
-    transform: none;
-  }
-}
-
-/* booking: the full line on a tall phone or a laptop; under 760px tall the counsellor's call gives
-   way (the booked screen says it), and under 600px the fee too, so the times still fit */
-.bookWhy {
-  font-size: min(1rem, 2.9vh);
-}
-@media (max-height: 759px) and (max-width: 1023px) {
-  .whyMore {
-    display: none;
-  }
-}
-@media (max-height: 600px) {
-  .page[data-phase="book"] .why.bookWhy {
-    display: block;
-  }
-  .whyFee {
-    display: none;
-  }
-  /* the line costs 20px; the space around the heading gives it back */
-  .page[data-phase="book"] .stage {
-    padding-top: 2px;
-  }
-  .page[data-phase="book"] .step {
-    gap: 10px;
-  }
-  .page[data-phase="book"] .head {
-    gap: 2px;
-  }
 }
 
 /* the smallest screens (a 320 by 480 phone): the question keeps one short line and the answers
@@ -1291,36 +510,8 @@
     line-height: 1.15;
   }
 }
-
-/* booked, on a shorter phone: the same facts, closer together, so the way on stays in view */
-@media (max-height: 760px) and (max-width: 767px) {
-  .done {
-    gap: 14px;
-    padding-bottom: 24px;
-  }
-  .seal {
-    width: 48px;
-    height: 48px;
-  }
-  .facts {
-    gap: 8px;
-    padding-top: 12px;
-  }
-  .facts li {
-    font-size: 0.9375rem;
-    line-height: 1.45;
-  }
-}
-@media (max-height: 600px) and (max-width: 767px) {
-  .seal {
-    display: none;
-  }
-}
 /* the smallest phones: both consent cards and Finish on one screen */
 @media (max-height: 520px) {
-  .consents {
-    gap: 8px;
-  }
   .agree {
     padding: 10px 14px;
     gap: 12px;
@@ -1328,4 +519,38 @@
   .agree[data-optional="true"] .agreeText {
     font-size: 0.8125rem;
   }
+}
+
+/* ---------- the blood test screens (upload, report sent, the home test booking) ---------- */
+/* not a docked form: the content runs down the page and scrolls when it is longer than the screen */
+.screen {
+  --plate-bg: var(--paper);
+  --plate-ring: 0 0 0 1px var(--hair);
+  grid-template-rows: auto;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom));
+}
+/* the BMI on the last screen of either path: the same paper plate as the rulers */
+.bmiCard {
+  padding: 20px;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.bmiCard .bmi {
+  padding-top: 0;
+  border-top: 0;
+}
+
+/* ---------- readable small type: nothing under 13px, hints and labels near 14px ---------- */
+/* doubled classes outrank the kit's own (.tag, the form hint and the "saved as you go" line) */
+.step .tag {
+  font-size: 0.875rem;
+}
+.bmi .bmiHint {
+  font-size: 0.875rem;
+}
+/* the BMI track's cut-off numbers (BandTrack draws them at 13px) */
+.bmi [aria-hidden="true"] > :last-child {
+  height: 20px;
+  font-size: 0.875rem;
 }

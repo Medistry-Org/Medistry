@@ -11,8 +11,6 @@
 import { RAZORPAY_KEY_ID } from "@/config/env";
 import type { RazorpayPaymentResult } from "@/types/payment";
 
-const CHECKOUT_SCRIPT_URL = "https://checkout.razorpay.com/v1/checkout.js";
-
 type RazorpaySuccessResponse = {
   razorpay_payment_id: string;
   razorpay_order_id: string;
@@ -34,7 +32,10 @@ type RazorpayOptions = {
 
 type RazorpayInstance = {
   open: () => void;
-  on: (event: "payment.failed", callback: (response: { error?: { description?: string } }) => void) => void;
+  on: (
+    event: "payment.failed",
+    callback: (response: { error?: { description?: string } }) => void,
+  ) => void;
 };
 
 type RazorpayConstructor = new (options: RazorpayOptions) => RazorpayInstance;
@@ -45,7 +46,7 @@ declare global {
   }
 }
 
-export type CheckoutRequest = {
+type CheckoutRequest = {
   orderId: string;
   amountPaise: number;
   currency: string;
@@ -57,9 +58,11 @@ export type CheckoutRequest = {
   themeColour: string;
 };
 
-export type CheckoutOutcome =
+type CheckoutOutcome =
   | { kind: "paid"; result: RazorpayPaymentResult }
   | { kind: "closed"; failureMessage: string | null };
+
+const CHECKOUT_SCRIPT_URL = "https://checkout.razorpay.com/v1/checkout.js";
 
 let scriptLoading: Promise<RazorpayConstructor> | null = null;
 
@@ -69,18 +72,29 @@ function loadCheckoutScript(): Promise<RazorpayConstructor> {
     const script = document.createElement("script");
     script.src = CHECKOUT_SCRIPT_URL;
     script.async = true;
-    script.onload = () => (window.Razorpay ? resolve(window.Razorpay) : reject(new Error("The payment window could not start. Please try again.")));
+    script.onload = () =>
+      window.Razorpay
+        ? resolve(window.Razorpay)
+        : reject(
+            new Error("The payment window could not start. Please try again."),
+          );
     script.onerror = () => {
       scriptLoading = null;
       script.remove();
-      reject(new Error("The payment window could not load. Check your connection and try again."));
+      reject(
+        new Error(
+          "The payment window could not load. Check your connection and try again.",
+        ),
+      );
     };
     document.head.appendChild(script);
   });
   return scriptLoading;
 }
 
-export async function openRazorpayCheckout(request: CheckoutRequest): Promise<CheckoutOutcome> {
+export async function openRazorpayCheckout(
+  request: CheckoutRequest,
+): Promise<CheckoutOutcome> {
   const key = request.keyId || RAZORPAY_KEY_ID;
   if (!key) throw new Error("Online payment is not set up yet.");
   const Razorpay = await loadCheckoutScript();
@@ -94,17 +108,25 @@ export async function openRazorpayCheckout(request: CheckoutRequest): Promise<Ch
       order_id: request.orderId,
       name: "Medistry",
       description: request.description,
-      prefill: { name: request.customerName || undefined, contact: request.customerMobile || undefined },
+      prefill: {
+        name: request.customerName || undefined,
+        contact: request.customerMobile || undefined,
+      },
       theme: { color: request.themeColour || undefined },
       handler: (response) =>
         resolve({
           kind: "paid",
-          result: { orderId: response.razorpay_order_id, razorpayPaymentId: response.razorpay_payment_id, razorpaySignature: response.razorpay_signature },
+          result: {
+            orderId: response.razorpay_order_id,
+            razorpayPaymentId: response.razorpay_payment_id,
+            razorpaySignature: response.razorpay_signature,
+          },
         }),
       modal: { ondismiss: () => resolve({ kind: "closed", failureMessage }) },
     });
     checkout.on("payment.failed", (response) => {
-      failureMessage = response.error?.description || "The payment did not go through.";
+      failureMessage =
+        response.error?.description || "The payment did not go through.";
     });
     checkout.open();
   });

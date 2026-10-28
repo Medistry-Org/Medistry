@@ -1,0 +1,61 @@
+/* UnitSwitch: two units on a sliding plate; its 44px targets are pulled back so the label row keeps its height. */
+
+.units {
+  position: relative;
+  display: inline-flex;
+  margin-block: -12px;
+  isolation: isolate;
+}
+.units::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 11px 0;
+  border-radius: 999px;
+  background: var(--bg-2);
+}
+.unitBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink-2);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 180ms var(--ease-out);
+}
+.units::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  top: 13px;
+  bottom: 13px;
+  left: 2px;
+  width: calc(50% - 4px);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow:
+    0 1px 2px rgb(14 15 16 / 0.08),
+    0 0 0 1px var(--hair);
+  transform: translateX(calc(var(--at) * (100% + 4px)));
+  transition: transform 320ms var(--ease-drawer);
+}
+.unitBtn[aria-checked="true"] {
+  color: var(--ink);
+}
+.unitBtn:focus-visible {
+  outline: 2px solid var(--signal-ink);
+  outline-offset: -6px;
+  border-radius: 999px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .units::after {
+    transition: none;
+  }
+}

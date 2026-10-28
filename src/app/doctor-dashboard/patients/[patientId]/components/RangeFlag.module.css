@@ -1,0 +1,25 @@
+/* RangeFlag: a lab value against its range, in words and a short tick; out of range takes the alert colour. */
+
+.flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--ink-2);
+}
+.flag i {
+  width: 2px;
+  height: 12px;
+  border-radius: 1px;
+  background: var(--signal-ink);
+}
+.flag[data-flag="HIGH"],
+.flag[data-flag="LOW"] {
+  color: var(--alert);
+}
+.flag[data-flag="HIGH"] i,
+.flag[data-flag="LOW"] i {
+  background: var(--alert);
+}

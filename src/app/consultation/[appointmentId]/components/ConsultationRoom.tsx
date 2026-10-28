@@ -3,44 +3,68 @@
 /**
  * The consultation room for both roles. Before joining: a camera and microphone check, then Join,
  * which asks the backend for the 100ms room (GET /api/video/appointments/:id/join) and embeds it
- * full screen. Leave goes back to the person's home; a doctor can also end the consultation for
- * everyone (POST /api/video/appointments/:id/end), confirmed in a sheet.
+ * full screen. Leave goes back to the person's home (the doctor's Today, the patient's Home); a
+ * doctor can also end the consultation for everyone (POST /api/video/appointments/:id/end),
+ * confirmed in a sheet. Signed out, it sends the person to sign in and back here; a failed join and the
+ * ended call each offer a way out.
  */
 
-import { useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { PhoneDisconnect, SignOut } from "@phosphor-icons/react";
-import { endVideoConsultation, joinVideoConsultation, type VideoRoom } from "@/services/videoConsultationService";
+import {
+  endVideoConsultation,
+  joinVideoConsultation,
+} from "@/services/videoConsultationService";
+import type { VideoRoom } from "@/types/appointment";
 import { errorMessage } from "@/lib/http/apiClient";
-import { getSessionUser, homePathFor } from "@/lib/session/authSession";
-import { Wordmark } from "@/components/ui/Brand";
+import { useSessionUser } from "@/hooks/useSessionUser";
+import { signInHrefFor } from "@/lib/navigation/signInReturn";
+import { homePathFor } from "@/lib/session/authSession";
+import Wordmark from "@/components/ui/Wordmark";
 import ErrorNotice from "@/components/ui/ErrorNotice";
 import PreJoin from "./PreJoin";
 import EndConsultationSheet from "./EndConsultationSheet";
 import CallEnded from "./CallEnded";
 import styles from "./ConsultationRoom.module.css";
 
-type Stage = { name: "before" } | { name: "live"; room: VideoRoom } | { name: "ended" };
+type Stage =
+  | { name: "before" }
+  | { name: "live"; room: VideoRoom }
+  | { name: "ended" };
 
-const subscribeToNothing = () => () => {};
-
-export default function ConsultationRoom({ appointmentId }: { appointmentId: string }) {
+export default function ConsultationRoom({
+  appointmentId,
+}: {
+  appointmentId: string;
+}) {
   const router = useRouter();
-  // the session lives on this device: read it only once hydrated, so the server and first paint agree
-  const hydrated = useSyncExternalStore(subscribeToNothing, () => true, () => false);
-  const user = hydrated ? getSessionUser() : null;
+  const { status } = useSessionUser();
+  const isDoctor = status === "DOCTOR";
+  const signedOut = status === "OUT";
+  const signInHref = signInHrefFor(`/consultation/${appointmentId}`);
   const [stage, setStage] = useState<Stage>({ name: "before" });
   const [joining, setJoining] = useState(false);
   const [joinError, setJoinError] = useState<string | null>(null);
   const [confirmingEnd, setConfirmingEnd] = useState(false);
-  const home = homePathFor(user?.role ?? "PATIENT");
+  const home = homePathFor(isDoctor ? "DOCTOR" : "PATIENT");
+  // each dashboard's first section: the doctor's Today, the patient's Home
+  const homeLabel = isDoctor ? "Today" : "Home";
+
+  // signed out: sign in, then come straight back to this call (replace, so Back skips the guard)
+  useEffect(() => {
+    if (signedOut) router.replace(signInHref);
+  }, [signedOut, signInHref, router]);
 
   const join = async () => {
     setJoining(true);
     setJoinError(null);
     try {
-      setStage({ name: "live", room: await joinVideoConsultation(appointmentId) });
+      setStage({
+        name: "live",
+        room: await joinVideoConsultation(appointmentId),
+      });
     } catch (caught) {
       setJoinError(errorMessage(caught));
     } finally {
@@ -67,28 +91,44 @@ export default function ConsultationRoom({ appointmentId }: { appointmentId: str
         {live && (
           <div className={styles.headerActions}>
             {stage.room.role === "doctor" && (
-              <button type="button" className={styles.endButton} onClick={() => setConfirmingEnd(true)}>
-                <PhoneDisconnect size={18} aria-hidden="true" /> End consultation
+              <button
+                type="button"
+                className={styles.endButton}
+                onClick={() => setConfirmingEnd(true)}
+              >
+                <PhoneDisconnect size={18} aria-hidden="true" /> End
+                consultation
               </button>
             )}
-            <button type="button" className={styles.secondaryButton} onClick={() => router.push(home)}>
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={() => router.push(home)}
+            >
               <SignOut size={18} aria-hidden="true" /> Leave
             </button>
           </div>
         )}
       </header>
 
-      {hydrated && !user && (
+      {signedOut && (
         <div className={styles.prejoin}>
+          <h1 className="sr-only">Sign in to join your consultation</h1>
           <ErrorNotice message="Sign in to join your consultation." />
-          <Link href="/sign-in" className={styles.secondaryButton}>
+          <Link href={signInHref} className={styles.secondaryButton}>
             Sign in
           </Link>
         </div>
       )}
 
-      {user && stage.name === "before" && (
-        <PreJoin seenBy={user.role === "DOCTOR" ? "your patient" : "your doctor"} joining={joining} error={joinError} home={home} onJoin={join} />
+      {status && !signedOut && stage.name === "before" && (
+        <PreJoin
+          seenBy={isDoctor ? "your patient" : "your doctor"}
+          joining={joining}
+          error={joinError}
+          home={home}
+          onJoin={join}
+        />
       )}
 
       {live && (
@@ -102,9 +142,15 @@ export default function ConsultationRoom({ appointmentId }: { appointmentId: str
         </div>
       )}
 
-      {stage.name === "ended" && <CallEnded home={home} />}
+      {stage.name === "ended" && (
+        <CallEnded home={home} homeLabel={homeLabel} />
+      )}
 
-      <EndConsultationSheet open={confirmingEnd} onClose={() => setConfirmingEnd(false)} onEnd={endForEveryone} />
+      <EndConsultationSheet
+        open={confirmingEnd}
+        onClose={() => setConfirmingEnd(false)}
+        onEnd={endForEveryone}
+      />
     </main>
   );
 }

@@ -1,0 +1,219 @@
+/* The code step (CodeStep): one real input under four round cells, the resend line. */
+
+.inline {
+  min-height: 0;
+  display: inline-block;
+  padding: 10px 4px;
+  margin: -10px -4px;
+  font-size: inherit;
+}
+.hint {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--on-dark-2);
+}
+
+/* ---------- the code: one real input under four round cells ---------- */
+.otpWrap {
+  display: grid;
+  gap: 14px;
+}
+.otp {
+  position: relative;
+  justify-self: center;
+  display: grid;
+  --c: min(64px, 16vw, 9.5vh);
+  grid-template-columns: repeat(4, var(--c));
+  gap: clamp(8px, 2.6vw, 12px);
+  width: fit-content;
+}
+/* the input covers the cells, so taps, paste and the keyboard's code suggestion all land in it */
+.otpInput {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  caret-color: transparent;
+  font-size: 16px;
+  letter-spacing: -0.5em;
+  cursor: text;
+}
+.otpInput:focus,
+.otpInput:focus-visible {
+  outline: none;
+}
+.otpInput::selection {
+  background: transparent;
+}
+.cell {
+  color: var(--ink);
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: var(--c);
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair-2);
+  transition:
+    box-shadow 180ms var(--ease-out),
+    background-color 260ms var(--ease-out);
+}
+.cell[data-filled="true"] {
+  box-shadow: inset 0 0 0 1px var(--ink-3);
+}
+/* where the next digit goes: the same mint ring as the focused phone field */
+.otp:focus-within .cell[data-active="true"] {
+  box-shadow:
+    0 0 0 2px var(--signal),
+    inset 0 0 0 1px var(--hair-2);
+}
+.digit {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 520;
+  letter-spacing: -0.02em;
+}
+.digit:not(:empty) {
+  animation: pop 260ms var(--ease-out) both;
+}
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.9);
+  }
+}
+.caret {
+  position: absolute;
+  width: 2px;
+  height: 24px;
+  border-radius: 2px;
+  background: var(--ink);
+  opacity: 0;
+}
+.otp:focus-within .caret {
+  animation: blink 1100ms var(--ease-out) infinite;
+}
+@keyframes blink {
+  0%,
+  45% {
+    opacity: 1;
+  }
+  55%,
+  100% {
+    opacity: 0;
+  }
+}
+.otp[data-state="err"] .cell {
+  box-shadow: inset 0 0 0 1.5px var(--alert);
+}
+/* two identical shakes, alternated, so every wrong code replays it without remounting the input */
+.otp[data-shake="1"] {
+  animation: shakeA 380ms var(--ease-out);
+}
+@keyframes shakeA {
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+.otp[data-shake="2"] {
+  animation: shakeB 380ms var(--ease-out);
+}
+@keyframes shakeB {
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(2px);
+  }
+}
+/* verified: the cells fill with the signal colour one after another */
+.otp[data-state="ok"] .cell {
+  transition-delay: calc(var(--i, 0) * 60ms);
+  background: var(--signal-wash);
+  box-shadow: inset 0 0 0 1.5px var(--signal-ink);
+}
+.otp[data-state="ok"] .digit {
+  transition: color 260ms var(--ease-out) calc(var(--i, 0) * 60ms);
+  color: var(--signal-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .otp[data-shake] {
+    animation: none;
+  }
+  .digit:not(:empty) {
+    animation: none;
+  }
+  .otp:focus-within .caret {
+    animation: none;
+    opacity: 1;
+  }
+}
+
+.resend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0 24px;
+  min-height: 44px;
+  margin-top: -8px;
+}
+
+/* a wrong code turns every cell red, including the one with focus */
+.otp[data-state="err"] .cell[data-active="true"] {
+  box-shadow: inset 0 0 0 2px var(--alert);
+}
+
+/* the code step's first line, while the text is still arriving: a quiet live dot */
+.onWay {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.onWay i {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--signal);
+  animation: on-way 900ms var(--ease-out) infinite alternate;
+}
+@keyframes on-way {
+  to {
+    opacity: 0.3;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .onWay i {
+    animation: none;
+  }
+}
+/* the inline Edit link keeps its size but takes a bigger tap target */
+.inline {
+  position: relative;
+}
+.inline::after {
+  content: "";
+  position: absolute;
+  inset: -2px -6px;
+}

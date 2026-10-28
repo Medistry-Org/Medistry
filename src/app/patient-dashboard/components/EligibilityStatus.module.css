@@ -1,0 +1,52 @@
+/* The status before the first consultation: headline, line, tracker, action, on one measured stack. */
+
+.status {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  min-width: 0;
+}
+.words {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3vh, 1.5rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.text {
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+.link {
+  justify-self: start;
+  /* the 44px tap target, without adding air under the tracker */
+  margin-block: -10px;
+}
+/* the StatusTracker stacks on a phone with room under every step; the last needs none here */
+@media (max-width: 559px) {
+  .status > ol > li:last-child {
+    padding-bottom: 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .status {
+    gap: 20px;
+  }
+  .title {
+    font-size: 1.75rem;
+  }
+  .text {
+    font-size: 1.0625rem;
+  }
+}

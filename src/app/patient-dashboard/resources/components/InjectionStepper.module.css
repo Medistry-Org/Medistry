@@ -1,0 +1,312 @@
+/* The first injection walk-through (InjectionStepper, with its HoldTimer and InjectionStepArt): one step a screen, controls at the thumb. */
+
+.pairBtn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.pairBtn:active {
+  transform: scale(0.95);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pairBtn:hover {
+    background: var(--bg-2);
+  }
+}
+.stepper {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 20px;
+}
+.stepProgress {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 4px;
+}
+.stepProgress i {
+  height: 3px;
+  border-radius: 2px;
+  background: var(--hair);
+  transition: background-color 320ms var(--ease-out);
+}
+.stepProgress i[data-on="true"] {
+  background: var(--slate-800);
+}
+.stepBody {
+  display: grid;
+  gap: 16px;
+  /* the last line clears the fade above the pinned Next bar */
+  padding-bottom: 16px;
+  outline: none;
+}
+@media (max-height: 700px) {
+  .stepper {
+    gap: 14px;
+  }
+  .stepBody {
+    gap: 12px;
+  }
+}
+.stepCount {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.stepTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.875rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+/* the drawing never pushes the step's words below the fold: it gives way to them on a short phone */
+.stepArt {
+  width: 100%;
+  max-width: 360px;
+  height: min(24svh, 160px);
+  justify-self: center;
+  padding: 4px 0;
+}
+@media (max-height: 700px) {
+  .stepArt {
+    height: 110px;
+  }
+}
+@media (max-height: 600px) {
+  .stepArt {
+    height: 88px;
+  }
+}
+.artLine {
+  stroke: var(--slate-700);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.artInk {
+  stroke: var(--ink);
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+.artDash {
+  stroke: var(--slate-600);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.artZone {
+  stroke: var(--signal);
+  stroke-width: 10;
+  stroke-linecap: round;
+  opacity: 0.55;
+}
+.artDim {
+  stroke: var(--ink-3);
+  stroke-width: 1;
+}
+.artDrop {
+  fill: var(--signal-ink);
+}
+.artText {
+  fill: var(--ink-3);
+  font-family: var(--font-text);
+  font-size: 0.8125rem;
+  font-weight: 560;
+}
+.stepLines {
+  display: grid;
+  gap: 12px;
+  counter-reset: line;
+}
+.stepLines li {
+  position: relative;
+  padding-left: 34px;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  counter-increment: line;
+}
+.stepLines li::before {
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: var(--signal-wash);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 24px;
+  text-align: center;
+  color: var(--signal-ink);
+}
+.stepNote {
+  padding: 14px 16px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.stepNav {
+  position: sticky;
+  bottom: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  margin-inline: calc(var(--card-pad) * -1);
+  padding: 12px var(--card-pad) max(12px, env(safe-area-inset-bottom));
+  background: var(--paper);
+}
+.stepNav::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  height: 24px;
+  background: linear-gradient(to bottom, rgb(251 251 252 / 0), var(--paper));
+  pointer-events: none;
+}
+/* a phone held sideways has no room for a pinned bar: the controls follow the text */
+@media (max-height: 500px) {
+  .stepNav {
+    position: static;
+  }
+}
+.stepNav .pairBtn {
+  width: 52px;
+  height: 52px;
+}
+.stepNav .pairBtn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.stepNext {
+  justify-content: space-between;
+}
+.timer {
+  display: grid;
+  grid-template-columns: 64px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 16px;
+  padding: 16px;
+  border-radius: var(--r-media);
+  background: var(--signal-wash);
+}
+.timer p {
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--slate-950);
+}
+.timer .pairBtn {
+  grid-column: 2;
+  justify-self: start;
+  background: var(--paper);
+}
+.timerRing {
+  position: relative;
+  grid-row: span 2;
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+}
+.timerRing svg {
+  position: absolute;
+  inset: 0;
+  transform: rotate(-90deg);
+}
+.timerRing circle {
+  fill: none;
+  stroke-width: 3;
+  stroke: rgb(24 25 27 / 0.18);
+}
+.timerRing circle + circle {
+  stroke: var(--signal-ink);
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+}
+/* a clock runs at a constant rate, so this one transition is linear */
+.timerRing[data-running="true"] circle + circle {
+  animation: count var(--count, 10s) linear forwards;
+}
+@keyframes count {
+  to {
+    stroke-dashoffset: 1;
+  }
+}
+.timerRing b {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 520;
+  color: var(--slate-950);
+}
+@media (prefers-reduced-motion: reduce) {
+  .timerRing[data-running="true"] circle + circle {
+    animation: none;
+  }
+}
+.stepDone {
+  display: grid;
+  justify-items: start;
+  gap: 14px;
+}
+/* the finished moment: the tick opens out from its centre, once */
+.stepDoneIcon {
+  color: var(--signal-ink);
+  animation: doneIn 520ms var(--ease-out) both;
+}
+@keyframes doneIn {
+  from {
+    clip-path: circle(0 at 50% 50%);
+    transform: scale(0.9);
+  }
+  to {
+    clip-path: circle(75% at 50% 50%);
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .stepDoneIcon {
+    animation: none;
+  }
+}
+.stepLead {
+  max-width: 52ch;
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.stepEnd {
+  justify-self: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  margin-top: 8px;
+}
+/* nothing may set a width wider than its column */
+.stepEnd :global(.btn) {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+}

@@ -1,0 +1,165 @@
+/* MeasureField: the height or weight ruler, its label row and its marks (from the design repository's tools kit). */
+
+.field {
+  display: grid;
+  gap: 10px;
+}
+.fieldHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+/* if the label and the number cannot share a line, the number keeps to the right on its own */
+.fieldHead > :last-child {
+  margin-left: auto;
+}
+.fieldHead label {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+.rangeWrap {
+  --inset: 13px; /* half the thumb: ticks run from thumb centre at min to thumb centre at max */
+  position: relative;
+  height: 44px;
+}
+/* A real measuring edge: a major tick every 10 units, a minor tick every 2 */
+.rangeWrap::before {
+  content: "";
+  position: absolute;
+  left: var(--inset);
+  right: calc(var(--inset) - 1px);
+  top: 32px;
+  height: 11px;
+  background:
+    linear-gradient(90deg, transparent calc(100% - 1px), var(--hair-2) 0) 0 0 /
+      100% 11px no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        var(--hair-2) 0 1px,
+        transparent 1px calc((100% - 1px) / var(--major))
+      )
+      0 0 / 100% 11px no-repeat,
+    repeating-linear-gradient(
+        90deg,
+        var(--hair) 0 1px,
+        transparent 1px calc((100% - 1px) / var(--minor))
+      )
+      0 5px / 100% 6px no-repeat;
+  pointer-events: none;
+}
+.rangeWrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 21px;
+  height: 2px;
+  /* the filled line stops at the thumb's outer ring, so it reads as running behind the thumb
+     and never crosses its face */
+  width: max(0px, calc((100% - var(--inset) * 2) * var(--fill) - 5px));
+  border-radius: 2px;
+  background: var(--slate-700);
+  pointer-events: none;
+}
+.range {
+  -webkit-appearance: none;
+  appearance: none;
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  cursor: grab;
+  touch-action: pan-y;
+}
+.range:active {
+  cursor: grabbing;
+}
+.range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: var(--hair);
+  border-radius: 2px;
+}
+.range::-moz-range-track {
+  height: 2px;
+  background: var(--hair);
+  border-radius: 2px;
+}
+.range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 26px;
+  height: 26px;
+  margin-top: -12px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--signal) 0 3.5px,
+    var(--slate-900) 4px
+  );
+  box-shadow:
+    0 0 0 4px var(--paper),
+    0 0 0 5px var(--hair-2);
+  transition: transform 200ms var(--ease-out);
+}
+.range::-moz-range-thumb {
+  width: 26px;
+  height: 26px;
+  border: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    var(--signal) 0 3.5px,
+    var(--slate-900) 4px
+  );
+  box-shadow:
+    0 0 0 4px var(--paper),
+    0 0 0 5px var(--hair-2);
+}
+.range:active::-webkit-slider-thumb {
+  transform: scale(1.12);
+}
+.range:focus-visible {
+  outline: none;
+}
+.range:focus-visible::-webkit-slider-thumb {
+  box-shadow:
+    0 0 0 4px var(--paper),
+    0 0 0 6px var(--signal-ink);
+}
+
+/* labelled marks at round values, each with its own tick, centred on its place on the ruler */
+.scaleMarks {
+  position: relative;
+  height: 28px;
+  /* the ruler's ticks run from thumb centre to thumb centre, 13px in from each side */
+  margin-inline: 13px;
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+.scaleMarks > * {
+  position: absolute;
+  top: 6px;
+  left: calc(var(--at) * 100%);
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+.scaleMarks > *::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 100%;
+  width: 1px;
+  height: 7px;
+  background: var(--ink-3);
+}
+
+/* the label with its unit switch beside it */
+.labelRow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}

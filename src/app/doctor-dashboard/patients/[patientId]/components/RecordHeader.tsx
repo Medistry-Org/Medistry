@@ -5,16 +5,16 @@
 */
 
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, IdentificationBadge } from "@phosphor-icons/react";
+import { ArrowRight, IdentificationBadge } from "@phosphor-icons/react";
 import Avatar from "@/components/ui/Avatar";
+import BackLink from "@/components/ui/BackLink";
 import { clockTime, shortDate } from "@/lib/format/dateTime";
+import type { BackDestination } from "@/lib/navigation/backDestination";
 import type { Appointment } from "@/types/appointment";
 import type { DoctorPatient } from "@/types/doctor";
 import type { PatientRecord, WaitingItem } from "@/types/patientRecord";
 import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import styles from "./RecordHeader.module.css";
-
-export type RecordOrigin = { label: string; href: string };
 
 export default function RecordHeader({
   patient,
@@ -26,23 +26,28 @@ export default function RecordHeader({
 }: {
   patient: DoctorPatient;
   record: PatientRecord | null;
-  origin: RecordOrigin;
+  origin: BackDestination;
   nextVisit?: Appointment;
   message?: WaitingItem;
   now: number;
 }) {
   const startsAt = nextVisit ? Date.parse(nextVisit.startsAt) : 0;
-  const live = !!nextVisit && now >= startsAt - 10 * 6e4 && now < startsAt + 30 * 6e4;
+  const live =
+    !!nextVisit && now >= startsAt - 10 * 6e4 && now < startsAt + 30 * 6e4;
   const startMain = live && !message;
   const facts = [patient.age, patient.sex].filter(Boolean).join(", ");
-  const care = record ? [record.programme, record.careWeek ? `week ${record.careWeek}` : ""].filter(Boolean).join(", ") : "";
+  const care = record
+    ? [record.programme, record.careWeek ? `week ${record.careWeek}` : ""]
+        .filter(Boolean)
+        .join(", ")
+    : "";
   const messagesHref = `/doctor-dashboard/messages?p=${patient.id}`;
 
   return (
     <>
-      <Link href={origin.href} className={clinicStyles.back}>
-        <ArrowLeft size={14} weight="bold" aria-hidden="true" /> {origin.label}
-      </Link>
+      <div className={styles.back}>
+        <BackLink href={origin.href} label={origin.label} />
+      </div>
 
       <header className={styles.recHead}>
         <div className={styles.recWho}>
@@ -59,10 +64,20 @@ export default function RecordHeader({
             )}
             <p className={styles.recIds}>
               {patient.mobile && <span className="num">{patient.mobile}</span>}
-              <span>{nextVisit ? `Next visit ${shortDate(nextVisit.startsAt)}, ${clockTime(new Date(nextVisit.startsAt))}` : "No visit booked"}</span>
+              <span>
+                {nextVisit
+                  ? `Next visit ${shortDate(nextVisit.startsAt)}, ${clockTime(new Date(nextVisit.startsAt))}`
+                  : "No visit booked"}
+              </span>
               {record && (
-                <span className={clinicStyles.pill} data-tone={record.identityVerified ? "ok" : "warn"}>
-                  <IdentificationBadge size={14} /> {record.identityVerified ? "Identity verified" : "Verify identity at start"}
+                <span
+                  className={clinicStyles.pill}
+                  data-tone={record.identityVerified ? "ok" : "warn"}
+                >
+                  <IdentificationBadge size={14} />{" "}
+                  {record.identityVerified
+                    ? "Identity verified"
+                    : "Verify identity at start"}
                 </span>
               )}
             </p>
@@ -78,7 +93,10 @@ export default function RecordHeader({
             </Link>
           )}
           {nextVisit && (
-            <Link href={`/consultation/${nextVisit.id}`} className={startMain ? "btn btn--signal" : "btn btn--ghost"}>
+            <Link
+              href={`/consultation/${nextVisit.id}`}
+              className={startMain ? "btn btn--signal" : "btn btn--ghost"}
+            >
               <span>Start consultation</span>
               {startMain && (
                 <span className="well" aria-hidden="true">

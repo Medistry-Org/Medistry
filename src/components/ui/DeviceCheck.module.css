@@ -1,0 +1,88 @@
+/* DeviceCheck: the camera preview, the microphone meter and the blocked-access alert. */
+
+.alert {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: var(--r-media);
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--alert) 25%, transparent);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.alert svg {
+  flex: none;
+  margin-top: 1px;
+  color: var(--alert);
+}
+.check {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.checkStage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: var(--r-media);
+  background: var(--slate-950);
+}
+.checkVideo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scaleX(-1);
+}
+.checkGlyph {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: rgb(236 237 239 / 0.08);
+  color: var(--signal);
+}
+.checkRows {
+  display: grid;
+  gap: 12px;
+}
+.checkRows > p:first-child {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  font-weight: 560;
+}
+.checkRows > p:first-child svg {
+  color: var(--signal-ink);
+}
+.mic {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  color: var(--slate-800);
+}
+.micTrack {
+  height: 6px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--bg-2);
+}
+.micTrack span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--signal-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.micLabel {
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--ink-2);
+}

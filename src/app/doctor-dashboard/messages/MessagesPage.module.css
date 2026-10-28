@@ -173,7 +173,7 @@
 .day {
   align-self: center;
   margin: 14px 0 4px;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 560;
   color: var(--ink-3);
 }
@@ -203,7 +203,7 @@
 
 .name {
   margin: 0 4px 4px;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--ink-2);
 }
@@ -256,6 +256,7 @@
 }
 
 .photoNote {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -269,7 +270,7 @@
   flex-wrap: wrap;
   gap: 4px;
   margin: 4px 4px 0;
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   color: var(--ink-3);
 }
 
@@ -341,7 +342,7 @@
   align-items: center;
   gap: 6px;
   min-width: 0;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--ink-3);
 }
 
@@ -390,4 +391,18 @@
 .ack em {
   font-style: normal;
   color: var(--ink-3);
+}
+
+/* a 44px tap area around the small attachment link */
+.photoNote::after {
+  content: "";
+  position: absolute;
+  inset: -12px -8px;
+}
+
+/* below a laptop (touch): quick replies are full 44px taps */
+@media (max-width: 1023px) {
+  .quick button {
+    min-height: 44px;
+  }
 }

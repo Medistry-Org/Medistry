@@ -1,0 +1,5 @@
+/* Try again keeps its 44px tap target but sits on the message's first line: the negative margins
+   centre the button on that line (0.875rem text at line-height 1.45, as in formStyles.err) */
+.retry {
+  margin-block: calc((0.875rem * 1.45 - 44px) / 2);
+}

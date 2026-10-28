@@ -1,0 +1,78 @@
+/* Question 3, age (AgeQuestion): the same paper plate as height and weight (the page sheet's
+   .instrument), one large number between minus and plus. */
+
+.ageWrap {
+  display: grid;
+  gap: 10px;
+}
+.age {
+  transition: box-shadow 200ms var(--ease-out);
+}
+.age:focus-within {
+  box-shadow: 0 0 0 1px var(--ink-3);
+}
+.age[data-invalid="true"] {
+  box-shadow: 0 0 0 1.5px var(--alert);
+}
+.ageHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.ageHead label {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.ageHead span {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.ageRow {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) 56px;
+  align-items: center;
+  gap: 8px;
+}
+.ageValue {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+}
+.bigInput {
+  font-variant-numeric: tabular-nums;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-display);
+  font-size: min(clamp(3.5rem, 2.8rem + 3vw, 4.5rem), 10vh);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  text-align: center;
+  color: var(--ink);
+  caret-color: var(--signal-ink);
+}
+.bigInput::placeholder {
+  color: var(--hair-2);
+}
+.bigInput:focus,
+.bigInput:focus-visible {
+  outline: none;
+}
+.bigUnit {
+  font-size: 1.125rem;
+  color: var(--ink-3);
+}
+/* the box keeps the number's height, so the plate does not grow when the first digit lands */
+.bigInput[data-empty="true"]::placeholder {
+  font-family: var(--font-text);
+  font-size: 1.0625rem;
+  font-weight: 450;
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+.bigInput[data-empty="true"]:focus::placeholder {
+  color: var(--hair-2);
+}

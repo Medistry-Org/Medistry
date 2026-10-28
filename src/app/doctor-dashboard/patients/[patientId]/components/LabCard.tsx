@@ -7,27 +7,44 @@
 */
 
 import { useState } from "react";
-import { ArrowDown, ArrowRight, ArrowUp, Certificate } from "@phosphor-icons/react";
+import {
+  ArrowDown,
+  ArrowRight,
+  ArrowUp,
+  Certificate,
+} from "@phosphor-icons/react";
 import { useToast } from "@/components/ui/ToastProvider";
 import { shortDate } from "@/lib/format/dateTime";
 import { errorMessage } from "@/lib/http/apiClient";
 import { reviewLabReport } from "@/services/patientRecordService";
 import type { LabReport } from "@/types/patientRecord";
-import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import LabResultStatus from "./LabResultStatus";
+import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import styles from "./LabCard.module.css";
 
 /** Results keep the precision of their reference range: creatinine 1.0, never 1. */
-const shown = (value: number, range: string) => (/\d\.\d/.test(range) ? value.toFixed(1) : String(value));
+const shown = (value: number, range: string) =>
+  /\d\.\d/.test(range) ? value.toFixed(1) : String(value);
 
-export default function LabCard({ patientId, lab, older, onChanged }: { patientId: string; lab: LabReport; older?: LabReport; onChanged: () => void }) {
+export default function LabCard({
+  patientId,
+  lab,
+  older,
+  onChanged,
+}: {
+  patientId: string;
+  lab: LabReport;
+  older?: LabReport;
+  onChanged: () => void;
+}) {
   const toast = useToast();
   const [comment, setComment] = useState("");
   const [saving, setSaving] = useState(false);
-  const outOfRange = lab.results.filter((r) => r.flag !== "NORMAL");
+  const outOfRange = lab.results.filter((result) => result.flag !== "NORMAL");
   const [all, setAll] = useState(outOfRange.length === 0);
   const rows = all ? lab.results : outOfRange;
-  const before = (test: string) => older?.results.find((r) => r.test === test)?.value;
+  const before = (test: string) =>
+    older?.results.find((result) => result.test === test)?.value;
   const pending = lab.status === "DOCTOR_REVIEW_PENDING";
   // still at the lab: never called reviewed, and no empty table
   const waiting = lab.status === "PROCESSING" || !lab.results.length;
@@ -52,7 +69,8 @@ export default function LabCard({ patientId, lab, older, onChanged }: { patientI
           <strong>{lab.packageName}</strong>
           <span>
             Collected {shortDate(lab.collectedAt)}
-            {lab.reportedAt && `, reported ${shortDate(lab.reportedAt)}`}, partner lab
+            {lab.reportedAt && `, reported ${shortDate(lab.reportedAt)}`},
+            partner lab
           </span>
         </div>
         {waiting ? (
@@ -65,12 +83,16 @@ export default function LabCard({ patientId, lab, older, onChanged }: { patientI
           </span>
         ) : (
           <span className={clinicStyles.pill} data-tone="ok">
-            <Certificate size={14} weight="fill" /> Reviewed {lab.reviewedAt && shortDate(lab.reviewedAt)}
+            <Certificate size={14} weight="fill" /> Reviewed{" "}
+            {lab.reviewedAt && shortDate(lab.reviewedAt)}
           </span>
         )}
       </div>
       {waiting ? (
-        <p className={clinicStyles.muted}>Sample collected {shortDate(lab.collectedAt)}. Results come from the partner lab and appear here for your review.</p>
+        <p className={clinicStyles.muted}>
+          Sample collected {shortDate(lab.collectedAt)}. Results come from the
+          partner lab and appear here for your review.
+        </p>
       ) : (
         <>
           <div className={styles.tableWrap}>
@@ -95,15 +117,23 @@ export default function LabCard({ patientId, lab, older, onChanged }: { patientI
                     <tr key={result.test}>
                       <th scope="row">{result.test}</th>
                       <td className="num">
-                        <strong>{shown(result.value, result.range)}</strong> {result.unit}
-                        <small className={styles.refUnder}>{result.range}</small>
+                        <strong>{shown(result.value, result.range)}</strong>{" "}
+                        {result.unit}
+                        <small className={styles.refUnder}>
+                          {result.range}
+                        </small>
                       </td>
                       {older && (
                         <td className="num">
                           {previous !== undefined ? (
                             <span className={styles.trend}>
                               {shown(previous, result.range)}
-                              {previous !== result.value && (result.value < previous ? <ArrowDown size={13} aria-label="down" /> : <ArrowUp size={13} aria-label="up" />)}
+                              {previous !== result.value &&
+                                (result.value < previous ? (
+                                  <ArrowDown size={13} aria-label="down" />
+                                ) : (
+                                  <ArrowUp size={13} aria-label="up" />
+                                ))}
                             </span>
                           ) : (
                             "Not tested"
@@ -112,7 +142,11 @@ export default function LabCard({ patientId, lab, older, onChanged }: { patientI
                       )}
                       <td className={`num ${styles.refCol}`}>{result.range}</td>
                       <td>
-                        <LabResultStatus result={result} before={previous} reviewed={lab.status === "REVIEWED"} />
+                        <LabResultStatus
+                          result={result}
+                          before={previous}
+                          reviewed={lab.status === "REVIEWED"}
+                        />
                       </td>
                     </tr>
                   );
@@ -121,8 +155,14 @@ export default function LabCard({ patientId, lab, older, onChanged }: { patientI
             </table>
           </div>
           {outOfRange.length > 0 && outOfRange.length < lab.results.length && (
-            <button type="button" className={clinicStyles.textLink} onClick={() => setAll((v) => !v)}>
-              {all ? "Out of range only" : `Show all ${lab.results.length} results`}
+            <button
+              type="button"
+              className={clinicStyles.textLink}
+              onClick={() => setAll((showing) => !showing)}
+            >
+              {all
+                ? "Out of range only"
+                : `Show all ${lab.results.length} results`}
             </button>
           )}
         </>
@@ -130,16 +170,28 @@ export default function LabCard({ patientId, lab, older, onChanged }: { patientI
       {pending && !waiting ? (
         <form
           className={styles.reviewForm}
-          onSubmit={(e) => {
-            e.preventDefault();
+          onSubmit={(event) => {
+            event.preventDefault();
             review();
           }}
         >
           <label className={clinicStyles.label} htmlFor={`review-${lab.id}`}>
-            Note for the patient <span className={clinicStyles.muted}>shown with the report</span>
+            Note for the patient{" "}
+            <span className={clinicStyles.muted}>shown with the report</span>
           </label>
-          <textarea id={`review-${lab.id}`} className={clinicStyles.textarea} rows={3} value={comment} onChange={(e) => setComment(e.target.value)} placeholder="What these results mean for them, in plain words" />
-          <button type="submit" className="btn" disabled={!comment.trim() || saving}>
+          <textarea
+            id={`review-${lab.id}`}
+            className={clinicStyles.textarea}
+            rows={3}
+            value={comment}
+            onChange={(event) => setComment(event.target.value)}
+            placeholder="What these results mean for them, in plain words"
+          />
+          <button
+            type="submit"
+            className="btn"
+            disabled={!comment.trim() || saving}
+          >
             <span>Mark reviewed</span>
             <span className="well" aria-hidden="true">
               <ArrowRight size={18} />

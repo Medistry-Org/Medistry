@@ -1,0 +1,42 @@
+/* SegmentedControl: a track with a white thumb, 44px tall, sized to its options (a page that wants it full width says so). */
+
+.track {
+  justify-self: start;
+  max-width: 100%;
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--bg-2);
+}
+.track button {
+  min-height: 44px;
+  min-width: 52px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--ink-3);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 240ms var(--ease-out),
+    color 240ms var(--ease-out),
+    box-shadow 240ms var(--ease-out);
+}
+/* the narrowest phones: a label never breaks inside its segment ("8 am", not "8 / am") */
+@media (max-width: 389px) {
+  .track button {
+    min-width: 44px;
+    padding: 0 12px;
+    white-space: nowrap;
+  }
+}
+.track button[aria-checked="true"] {
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 0 1px 2px rgb(10 11 12 / 0.12);
+}

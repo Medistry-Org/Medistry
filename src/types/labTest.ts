@@ -24,10 +24,21 @@ export type LabPackage = {
 };
 
 /** What a package tests, grouped as the lab groups it (Redcliffe package-parameter-data). */
-export type LabPackageTests = { code: string; name: string; groups: { name: string; tests: string[] }[] };
+export type LabPackageTests = {
+  code: string;
+  name: string;
+  groups: { name: string; tests: string[] }[];
+};
 
 /** One place found by the area search (Redcliffe get-partner-location-2-eloc). */
-export type LabPlaceMatch = { eloc: string; name: string; address: string; city: string; state: string; pincode: string };
+export type LabPlaceMatch = {
+  eloc: string;
+  name: string;
+  address: string;
+  city: string;
+  state: string;
+  pincode: string;
+};
 
 export type LabCoordinates = { latitude: number; longitude: number };
 
@@ -35,16 +46,39 @@ export type LabCoordinates = { latitude: number; longitude: number };
 export type LabServiceability = { serviceable: boolean; message: string };
 
 /** A one-hour collection window (Redcliffe get-time-slot-list). */
-export type LabSlot = { id: string; startsAt: string; endsAt: string; open: boolean };
+export type LabSlot = {
+  id: string;
+  startsAt: string;
+  endsAt: string;
+  open: boolean;
+};
 
 /** Redcliffe accepts only these two. */
 export type LabPatientGender = "Male" | "Female";
 
-/** The person the sample is taken from. Redcliffe needs every field. */
-export type LabPatient = { name: string; age: number; gender: LabPatientGender; mobile: string; email: string };
+/** The person the sample is taken from. Redcliffe needs every field: name 3 to 30 letters, mobile 10
+ * digits from 6000000000, a real email (labPatientProblem in lib/validation/labBookingRules checks them). */
+export type LabPatient = {
+  name: string;
+  age: number;
+  gender: LabPatientGender;
+  mobile: string;
+  email: string;
+};
 
 /** POST /api/labs/bookings body. */
-export type NewLabBooking = { packageCode: string; addressId: number; collectionDate: string; slotId: string; patient: LabPatient };
+export type NewLabBooking = {
+  packageCode: string;
+  addressId: number;
+  /** "YYYY-MM-DD", today to today + 4 (Redcliffe books no further ahead) */
+  collectionDate: string;
+  /** Redcliffe slot id (an integer, as a string) */
+  slotId: string;
+  patient: LabPatient;
+  /** set when the booking is part of a care package (for example lab tests and consultation, bought at
+   * the end of onboarding): the backend then charges the package price and marks the consultation paid */
+  carePackageCode?: string;
+};
 
 /**
  * Where a booking is. PAYMENT_PENDING: the slot is held for 30 minutes while the patient pays.
@@ -77,7 +111,12 @@ export type LabBooking = {
   addressId: number;
   address: string;
   patient: { name: string; age: number; gender: LabPatientGender };
-  price: { packagePrice: number; discount: number; collectionCharge: number; total: number };
+  price: {
+    packagePrice: number;
+    discount: number;
+    collectionCharge: number;
+    total: number;
+  };
   /** false when a paid lab plan covers it, so no checkout is needed */
   paymentRequired: boolean;
   /** while PAYMENT_PENDING: when the 30-minute slot hold ends */

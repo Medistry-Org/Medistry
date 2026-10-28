@@ -7,7 +7,13 @@
 export type VisitType = "FIRST_CONSULTATION" | "FOLLOW_UP";
 export type SymptomSeverity = "Mild" | "Moderate" | "Severe";
 
-export type LabResult = { test: string; value: number; unit: string; range: string; flag: "LOW" | "NORMAL" | "HIGH" };
+export type LabResult = {
+  test: string;
+  value: number;
+  unit: string;
+  range: string;
+  flag: "LOW" | "NORMAL" | "HIGH";
+};
 
 export type LabReport = {
   id: string;
@@ -20,14 +26,21 @@ export type LabReport = {
   reviewedAt: string | null;
 };
 
-export type PrescriptionItem = { name: string; strength: string; dose: string; frequency: string; duration: string };
+/** A prescription as the doctor's record lists it (the patient's signed copy is carePlan.Prescription). */
+export type RecordPrescriptionItem = {
+  name: string;
+  strength: string;
+  dose: string;
+  frequency: string;
+  duration: string;
+};
 
-export type Prescription = {
+export type RecordPrescription = {
   id: string;
   version: number;
   status: "DRAFT" | "SIGNED" | "SUPERSEDED";
   date: string; // ISO
-  items: PrescriptionItem[];
+  items: RecordPrescriptionItem[];
   advice: string;
 };
 
@@ -67,9 +80,14 @@ export type Screening = {
   check: string[];
 };
 
-export type WeightReading = { at: string; kg: number; source: string };
+/** One weight in the record (the patient's own log entry is tracker.WeightReading). */
+export type RecordWeight = { at: string; kg: number; source: string };
 
-export type TreatmentPlan = { goals: { label: string; value: string }[]; reviewAt: string; notes: string };
+export type TreatmentPlan = {
+  goals: { label: string; value: string }[];
+  reviewAt: string;
+  notes: string;
+};
 
 /** A weekly pen, from the patient's own logs. */
 export type InjectionLog = {
@@ -83,7 +101,11 @@ export type InjectionLog = {
 };
 
 /** What changed since the last consultation, worked out by the service from the record. */
-export type SinceLastVisit = { at: string; weightChangeKg: number | null; news: string | null };
+export type SinceLastVisit = {
+  at: string;
+  weightChangeKg: number | null;
+  news: string | null;
+};
 
 /** GET /api/doctor/patients/:patientId/record */
 export type PatientRecord = {
@@ -93,7 +115,7 @@ export type PatientRecord = {
   careStartedAt: string | null;
   identityVerified: boolean;
   heightCm: number | null;
-  weights: WeightReading[];
+  weights: RecordWeight[];
   waist: { at: string; cm: number } | null;
   hba1c: { at: string; value: number }[];
   conditions: string[];
@@ -105,7 +127,7 @@ export type PatientRecord = {
   concern: string;
   screening: Screening | null;
   labs: LabReport[];
-  prescriptions: Prescription[];
+  prescriptions: RecordPrescription[];
   visits: RecordVisit[];
   symptoms: Symptom[];
   adherence: { taken: number; due: number } | null;
@@ -157,4 +179,8 @@ export type WaitingItem = {
 };
 
 /** The badge counts on the doctor's navigation (GET /api/doctor/work-counts). */
-export type DoctorWorkCounts = { waitingOnYou: number; notesToSign: number; messagesForYou: number };
+export type DoctorWorkCounts = {
+  waitingOnYou: number;
+  notesToSign: number;
+  messagesForYou: number;
+};

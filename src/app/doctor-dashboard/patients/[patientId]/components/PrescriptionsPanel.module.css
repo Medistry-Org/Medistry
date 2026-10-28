@@ -26,27 +26,7 @@
   font-weight: 560;
 }
 
-.rxItems {
-  display: grid;
-  gap: 8px;
-}
-
-.rxItems li {
-  display: grid;
-  gap: 1px;
-}
-
-.rxItems strong {
-  font-size: 0.9375rem;
-  font-weight: 600;
-}
-
-.rxItems span {
-  font-size: 0.875rem;
-  color: var(--ink-2);
-}
-
-.rxAdvice {
-  font-size: 0.8125rem;
-  color: var(--ink-3);
+/* the sign button keeps its own width instead of stretching across the card */
+.rx > :global(.btn) {
+  justify-self: start;
 }

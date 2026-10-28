@@ -23,14 +23,26 @@ export default function PreJoin({
 }) {
   return (
     <div className={styles.prejoin}>
+      <h1 className="sr-only">Join your consultation</h1>
       <Card title="Camera and microphone" className={styles.prejoinCard}>
         <DeviceCheck seenBy={seenBy} />
       </Card>
       {error && <ErrorNotice message={error} onRetry={onJoin} />}
-      <button type="button" className={`btn ${formStyles.go}`} onClick={onJoin} disabled={joining} data-busy={joining} aria-busy={joining}>
+      <button
+        type="button"
+        className={`btn ${formStyles.go}`}
+        onClick={onJoin}
+        disabled={joining}
+        data-busy={joining}
+        aria-busy={joining}
+      >
         <span>{joining ? "Joining" : "Join the call"}</span>
         <span className="well" aria-hidden="true">
-          {joining ? <i className={formStyles.spin} /> : <ArrowRight size={18} />}
+          {joining ? (
+            <i className={formStyles.spin} />
+          ) : (
+            <ArrowRight size={18} />
+          )}
         </span>
       </button>
       <Link href={home} className={formStyles.link}>

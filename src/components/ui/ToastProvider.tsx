@@ -1,42 +1,69 @@
 "use client";
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react";
-import layoutStyles from "./styles/AppLayout.module.css";
+/**
+ * A short confirmation at the foot of the screen for anything just saved, optionally with Undo.
+ * The patient and doctor shells wrap their dashboard in ToastProvider; any page calls useToast().
+ * `className` lets the shell lift the toast above its bottom dock.
+ */
+
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+  type ReactNode,
+} from "react";
+import styles from "./ToastProvider.module.css";
 
 type ShowToast = (message: string, undo?: () => void) => void;
+type Toast = { message: string; undo?: () => void; key: number };
 
 const ToastContext = createContext<ShowToast>(() => {});
 
-/** A short confirmation at the foot of the screen for anything just saved, optionally with Undo. */
 export const useToast = () => useContext(ToastContext);
 
-/**
- * Wraps a dashboard (the patient and doctor shells use it). `className` lets the shell lift the
- * toast above its bottom dock.
- */
-export default function ToastProvider({ children, className = "" }: { children: ReactNode; className?: string }) {
-  const [note, setNote] = useState<{ message: string; undo?: () => void; key: number } | null>(null);
-  const showToast = useCallback<ShowToast>((message, undo) => setNote({ message, undo, key: Math.random() }), []);
+/** Long enough to read: a longer line stays longer, and one with Undo stays long enough to tap it. */
+const visibleMs = (toast: Toast) =>
+  Math.max(toast.undo ? 4500 : 2600, toast.message.length * 55);
+
+export default function ToastProvider({
+  children,
+  className = "",
+}: {
+  children: ReactNode;
+  className?: string;
+}) {
+  const [toast, setToast] = useState<Toast | null>(null);
+  const showToast = useCallback<ShowToast>(
+    (message, undo) => setToast({ message, undo, key: Math.random() }),
+    [],
+  );
 
   useEffect(() => {
-    if (!note) return;
-    // long enough to read: a longer line stays longer
-    const timer = setTimeout(() => setNote(null), Math.max(note.undo ? 4500 : 2600, note.message.length * 55));
+    if (!toast) return;
+    const timer = setTimeout(() => setToast(null), visibleMs(toast));
     return () => clearTimeout(timer);
-  }, [note]);
+  }, [toast]);
 
   return (
     <ToastContext.Provider value={showToast}>
       {children}
-      <div className={`${layoutStyles.toast} ${className}`} data-show={!!note} data-undo={!!note?.undo} role="status" aria-live="polite">
-        <span>{note?.message}</span>
-        {note?.undo && (
+      <div
+        className={`${styles.toast} ${className}`}
+        data-show={!!toast}
+        data-undo={!!toast?.undo}
+        role="status"
+        aria-live="polite"
+      >
+        <span>{toast?.message}</span>
+        {toast?.undo && (
           <button
             type="button"
-            className={layoutStyles.toastUndo}
+            className={styles.undo}
             onClick={() => {
-              note.undo?.();
-              setNote(null);
+              toast.undo?.();
+              setToast(null);
             }}
           >
             Undo

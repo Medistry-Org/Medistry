@@ -13,16 +13,30 @@ import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.cs
 import recordStyles from "../PatientRecordPage.module.css";
 import styles from "./VisitsPanel.module.css";
 
-export default function VisitsPanel({ visits, noteToSign }: { visits: RecordVisit[]; noteToSign?: ClinicalNote }) {
+export default function VisitsPanel({
+  visits,
+  noteToSign,
+}: {
+  visits: RecordVisit[];
+  noteToSign?: ClinicalNote;
+}) {
   return (
-    <section id="visits" className={`${clinicStyles.panel} ${recordStyles.full}`} aria-labelledby="visits-heading">
+    <section
+      id="visits"
+      className={`${clinicStyles.panel} ${recordStyles.full}`}
+      aria-labelledby="visits-heading"
+    >
       <div className={clinicStyles.panelHead}>
         <h2 id="visits-heading" className={clinicStyles.h2}>
           Visits
         </h2>
         {noteToSign && (
-          <Link href={`/doctor-dashboard/notes/${noteToSign.id}`} className={clinicStyles.textLink}>
-            Note from {shortDate(noteToSign.callAt)} to sign <ArrowRight size={15} />
+          <Link
+            href={`/doctor-dashboard/notes/${noteToSign.id}?from=patient`}
+            className={clinicStyles.textLink}
+          >
+            Note from {shortDate(noteToSign.callAt)} to sign{" "}
+            <ArrowRight size={15} />
           </Link>
         )}
       </div>
@@ -31,13 +45,20 @@ export default function VisitsPanel({ visits, noteToSign }: { visits: RecordVisi
           {visits.map((visit) => (
             <li key={visit.id}>
               <p className={styles.visitHead}>
-                <strong>{visit.type === "FIRST_CONSULTATION" ? "First consultation" : "Follow-up"}</strong>
+                <strong>
+                  {visit.type === "FIRST_CONSULTATION"
+                    ? "First consultation"
+                    : "Follow-up"}
+                </strong>
                 <span className={styles.visitWhen}>
                   <span className="num">
                     {shortDate(visit.at)}, {clockTime(new Date(visit.at))}
                   </span>
                   {visit.noteId && (
-                    <Link href={`/doctor-dashboard/notes/${visit.noteId}`} className={styles.visitNote}>
+                    <Link
+                      href={`/doctor-dashboard/notes/${visit.noteId}?from=patient`}
+                      className={styles.visitNote}
+                    >
                       Open the note
                     </Link>
                   )}
@@ -59,7 +80,9 @@ export default function VisitsPanel({ visits, noteToSign }: { visits: RecordVisi
           ))}
         </ol>
       ) : (
-        <p className={clinicStyles.empty}>No visits yet. The first consultation is today or upcoming.</p>
+        <p className={clinicStyles.empty}>
+          No visits yet. The first consultation is today or upcoming.
+        </p>
       )}
     </section>
   );

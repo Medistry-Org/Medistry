@@ -1,0 +1,85 @@
+/* The weight sheet (WeightSheet): its body, then a weight typed as the scale shows it, a tenth either way one tap off. */
+.sheetBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.scale {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 12px;
+  padding: 24px 16px;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.scaleStep {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 160ms var(--ease-out);
+}
+.scaleStep:active {
+  transform: scale(0.94);
+}
+.scaleRead {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  min-width: 0;
+}
+.scaleRead:focus-within {
+  border-radius: 8px;
+  box-shadow: 0 2px 0 var(--ink);
+}
+.scaleInput {
+  width: 100%;
+  min-width: 0;
+  max-width: 4.5ch;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: var(--font-display);
+  font-size: 3rem;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-align: center;
+  color: var(--ink);
+  caret-color: var(--signal-ink);
+}
+.scaleInput:focus {
+  outline: none;
+}
+.scaleUnit {
+  font-size: 1.0625rem;
+  color: var(--ink-3);
+}
+
+/* when the reading the box starts on was taken (Arhaan Logs.module.css) */
+.lastChip {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-bottom: -4px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.lastChip strong {
+  font-weight: 600;
+  color: var(--ink);
+}

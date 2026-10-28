@@ -143,7 +143,7 @@
 
 .pmuted {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--ink-3);
 }
 
@@ -151,13 +151,15 @@
   .listHead,
   .prow {
     display: grid;
-    grid-template-columns: minmax(220px, 1.6fr) minmax(160px, 1.3fr) 70px 110px 100px 16px;
+    grid-template-columns:
+      minmax(220px, 1.6fr) minmax(160px, 1.3fr)
+      70px 110px 100px 16px;
     gap: 16px;
   }
   .listHead {
     padding: 0 4px 8px;
     border-bottom: 1px solid var(--hair);
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: var(--ink-3);
   }
   .pcell {
@@ -201,6 +203,12 @@
     padding-inline: var(--gutter);
     scroll-padding-inline: var(--gutter);
     /* the row fades out at both screen edges, so a chip running off the side reads as "scroll for more" */
-    mask-image: linear-gradient(to right, transparent, #000 var(--gutter), #000 calc(100% - 48px), transparent);
+    mask-image: linear-gradient(
+      to right,
+      transparent,
+      #000 var(--gutter),
+      #000 calc(100% - 48px),
+      transparent
+    );
   }
 }

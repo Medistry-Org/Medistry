@@ -1,3 +1,5 @@
+/** Consultations: slots, bookings and the video room, shared by both dashboards. */
+
 export type ConsultationType = "Virtual" | "Clinic";
 export type AppointmentStatus = "BOOKED" | "COMPLETED" | "CANCELLED";
 
@@ -35,3 +37,6 @@ export type BookSlotRequest = {
   consultationType: ConsultationType;
   reason: string;
 };
+
+/** The video call for a consultation (GET /api/video/appointments/:appointmentId/join). */
+export type VideoRoom = { joinLink: string; role: "doctor" | "patient" };

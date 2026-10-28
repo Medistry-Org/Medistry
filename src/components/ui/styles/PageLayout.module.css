@@ -1,0 +1,20 @@
+/*
+  Page layout: the centred page column every dashboard page sits in (`.page`, and `.page.narrow` for
+  a one-column page such as a booking, a bill or a list of reports).
+*/
+
+.page {
+  max-width: calc(1180px + var(--gutter) * 2);
+  margin-inline: auto;
+  padding: clamp(16px, 3vw, 36px) var(--gutter)
+    calc(32px + env(safe-area-inset-bottom));
+}
+.page.narrow {
+  max-width: calc(760px + var(--gutter) * 2);
+}
+/* the smallest phones: a 16px inset on every surface (Arhaan's rule on Care, Resources and Progress) */
+@media (max-width: 389px) {
+  .page {
+    --card-pad: 16px;
+  }
+}

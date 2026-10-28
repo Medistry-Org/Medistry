@@ -1,0 +1,126 @@
+/* Question 8, consent (ConsentQuestion): the documents named in the sentence and behind "Read them".
+   The tick cards (.agree, .check) sit in the page sheet with the answer marks they share. */
+
+/* one tick for everything care needs, the optional assistant as its own switch */
+.consents {
+  display: grid;
+  gap: 12px;
+}
+/* the four documents, named inside the one sentence: underlined, with padding that widens the tap
+   target without moving the lines apart */
+.docLink {
+  position: relative;
+  padding: 12.5px 2px;
+  margin: -12.5px -2px;
+  color: var(--ink);
+  font-weight: 560;
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--slate-800) 45%, transparent);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+  border-radius: 7px;
+  -webkit-tap-highlight-color: transparent;
+  transition: text-decoration-color 180ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .docLink:hover {
+    text-decoration-color: var(--slate-800);
+  }
+}
+.docLink:focus-visible {
+  outline: 2px solid var(--signal-ink);
+  outline-offset: -4px;
+}
+/* "Read them": the four documents behind one quiet disclosure, under the tick they belong to */
+.readDocs {
+  margin-top: -4px;
+}
+.readDocs summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 4px;
+  list-style: none;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--slate-800);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.readDocs summary::-webkit-details-marker {
+  display: none;
+}
+.readDocs summary:focus-visible {
+  border-radius: 7px;
+  outline: 2px solid var(--signal-ink);
+  outline-offset: 0;
+}
+.readCaret {
+  transition: transform 200ms var(--ease-out);
+}
+.readDocs[open] .readCaret {
+  transform: rotate(180deg);
+}
+.readDocs ul {
+  display: grid;
+  margin: 0 0 4px;
+  padding: 0 18px;
+  border-radius: var(--r-media);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+  list-style: none;
+}
+.readDocs li + li {
+  border-top: 1px solid var(--hair);
+}
+.readDocs button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  text-align: left;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.readDocs button svg {
+  flex: none;
+  color: var(--ink-3);
+}
+.readDocs button:focus-visible {
+  border-radius: 7px;
+  outline: 2px solid var(--signal-ink);
+  outline-offset: -2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .readCaret {
+    transition: none;
+  }
+}
+.docs {
+  display: grid;
+  gap: 12px;
+  max-width: 52ch;
+  padding-bottom: 8px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.docLead {
+  font-weight: 560;
+  color: var(--ink);
+}
+@media (max-height: 520px) {
+  .consents {
+    gap: 8px;
+  }
+}

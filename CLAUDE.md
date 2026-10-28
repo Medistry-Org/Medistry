@@ -62,7 +62,7 @@ Full notes: the scratchpad `compliance.md` (copied to `docs/compliance.md`).
   - The pharmacy scan shows the kit's genuine-product sticker ("Scan to verify").
   - The kit's own palette is greyscale. The site keeps its teal and mint as the web extension of it, with ink and white reserved for the logo.
 - Share image: `src/app/opengraph-image.png` (white wordmark over the contour field).
-- Tokens live in `src/app/globals.css` `:root`. Never hardcode colours in components.
+- Landing page tokens live in `src/app/globals.css` `:root` (the signed-in app's are in `src/components/ui/styles/appTheme.css`). Never hardcode colours in components.
 - Radius system: controls are full pills; surfaces 20px (mobile 16px); media 14px; section tags 7px. Nothing else.
 - Easing: `--ease-out: cubic-bezier(.23,1,.32,1)`, `--ease-io: cubic-bezier(.77,0,.175,1)`, `--ease-drawer: cubic-bezier(.32,.72,0,1)`. Never `linear` or `ease-in-out` for UI.
 - Motion: one authored moment per section, varied (clip reveals, line drawing, scrubbed timelines). No generic fade-up on everything. Respect `prefers-reduced-motion`.

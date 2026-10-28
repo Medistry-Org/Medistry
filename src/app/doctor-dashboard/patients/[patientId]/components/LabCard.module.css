@@ -55,7 +55,7 @@
 }
 
 .table thead th {
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--ink-3);
 }
@@ -89,7 +89,7 @@
 .quote cite {
   display: block;
   margin-top: 4px;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-style: normal;
   color: var(--ink-3);
 }
@@ -155,12 +155,40 @@
   }
   .refUnder {
     display: block;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     font-weight: 400;
     color: var(--ink-3);
   }
   .lab {
     padding: 12px;
+  }
+  /* a phone: every column wraps so the status column stays on screen */
+  .table th,
+  .table td {
+    padding-right: 6px;
+    white-space: normal;
+    vertical-align: top;
+  }
+  .table th:last-child,
+  .table td:last-child {
+    padding-right: 0;
+  }
+  /* the result and its range stay whole; the test name, the earlier value and the status wrap */
+  .status2 {
+    align-items: flex-start;
+    white-space: normal;
+  }
+  .status2 i {
+    flex: none;
+    margin-top: 3px;
+  }
+}
+
+/* from 380px the result and its range have room to stay whole */
+@media (min-width: 380px) and (max-width: 599px) {
+  .table td:nth-child(2),
+  .refUnder {
+    white-space: nowrap;
   }
 }
 
@@ -169,4 +197,3 @@
   gap: 10px;
   justify-items: start;
 }
-

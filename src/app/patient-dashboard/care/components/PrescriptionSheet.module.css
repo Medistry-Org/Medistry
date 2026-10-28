@@ -1,0 +1,200 @@
+/* The prescription sheet (PrescriptionSheet): one row per medicine (name, strength, when); open a row for how and why. Sheet body comes from CarePage.module.css. */
+
+.rxTools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -10px 0 -14px;
+}
+.rxCount {
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--ink-3);
+}
+.rxAll {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--slate-800);
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.rxAll::after {
+  content: "";
+  position: absolute;
+  inset: 0 -8px;
+}
+.rxAll svg {
+  transition: transform 240ms var(--ease-out);
+}
+.rxAll[aria-expanded="true"] svg {
+  transform: rotate(180deg);
+}
+.rxAll:focus-visible {
+  outline: 2px solid var(--slate-700);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.rxList {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  border-block: 1px solid var(--hair);
+}
+.rxList > li + li {
+  border-top: 1px solid var(--hair);
+}
+.rxItem summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 20px;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+  padding: 10px 0;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.rxItem summary::-webkit-details-marker {
+  display: none;
+}
+.rxItem summary:focus-visible {
+  outline: 2px solid var(--slate-700);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.rxSum {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.rxCaret {
+  justify-self: end;
+  color: var(--ink-3);
+  transition: transform 240ms var(--ease-out);
+}
+.rxItem[open] .rxCaret {
+  transform: rotate(180deg);
+}
+.rxBody {
+  display: grid;
+  gap: 6px;
+  padding: 0 32px 14px 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .rxItem[open] .rxBody {
+    animation: rxIn 240ms var(--ease-out);
+  }
+}
+@keyframes rxIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}
+.rxName {
+  min-width: 0;
+}
+.rxName strong {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+.rxName span {
+  margin-left: 6px;
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.rxHow {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.rxGeneric {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.rxDl {
+  display: grid;
+  gap: 4px;
+}
+/* run-in labels ("How", "Why") so each line keeps the sheet's full width */
+.rxDl > div {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+.rxDl dt,
+.rxDl dd {
+  display: inline;
+}
+.rxDl dt::after {
+  content: " ";
+}
+.rxDl dt {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.rxDl dd {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.rxDl ul {
+  display: grid;
+  gap: 2px;
+  padding-left: 18px;
+  list-style: disc;
+}
+.rxDl li::marker {
+  color: var(--slate-600);
+}
+.links {
+  display: grid;
+  border-block: 1px solid var(--hair);
+}
+.links li + li {
+  border-top: 1px solid var(--hair);
+}
+.linkRow {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--ink);
+  text-decoration: none;
+}
+.linkRow svg {
+  flex: none;
+  color: var(--ink-3);
+}
+
+/* a laptop: body text a step larger, as on the rest of Care */
+@media (min-width: 1024px) {
+  .rxDl > div,
+  .rxDl dt,
+  .rxDl dd {
+    font-size: 1.0625rem;
+  }
+}

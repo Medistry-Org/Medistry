@@ -33,12 +33,28 @@ export type Evidence = { segmentId: string; quote: string | null };
 
 export type NoteFlagKind = "unclear" | "conflict" | "unsaid";
 /** An option with `text: null` removes the sentence. `resolved` holds the chosen option's label. */
-export type NoteFlag = { kind: NoteFlagKind; why: string; options: { label: string; text: string | null }[]; resolved: string | null };
+export type NoteFlag = {
+  kind: NoteFlagKind;
+  why: string;
+  options: { label: string; text: string | null }[];
+  resolved: string | null;
+};
 
-export type NoteSentence = { id: string; text: string; evidence: Evidence[]; by: "scribe" | "doctor"; flag: NoteFlag | null };
+export type NoteSentence = {
+  id: string;
+  text: string;
+  evidence: Evidence[];
+  by: "scribe" | "doctor";
+  flag: NoteFlag | null;
+};
 
 /** `draft`: the scribe's original, kept for "Restore". `current`: what the doctor sees and edits. */
-export type NoteSection = { key: NoteSectionKey; draft: NoteSentence[]; current: NoteSentence[]; checked: boolean };
+export type NoteSection = {
+  key: NoteSectionKey;
+  draft: NoteSentence[];
+  current: NoteSentence[];
+  checked: boolean;
+};
 
 export type MedicineChange = {
   id: string;
@@ -106,7 +122,10 @@ export type ClinicalNote = {
 };
 
 /** PUT /api/doctor/notes/:noteId body: everything the doctor can change on a draft, and what changed. */
-export type ClinicalNoteChanges = Pick<ClinicalNote, "sections" | "medicines" | "followUps" | "recordUpdates" | "checks"> & {
+export type ClinicalNoteChanges = Pick<
+  ClinicalNote,
+  "sections" | "medicines" | "followUps" | "recordUpdates" | "checks"
+> & {
   /** one line for the note's history, e.g. "Edited the Visit summary" */
   change: string;
 };

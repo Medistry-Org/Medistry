@@ -1,0 +1,62 @@
+/* Where to turn, by how urgent (GuideHelpLevels): the 112 panel, then the care team, folded. */
+
+.levels {
+  display: grid;
+  gap: 12px;
+  margin-top: 20px;
+}
+.level {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+}
+.level[data-level="urgent"] {
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--alert) 25%, transparent);
+}
+.level h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.level[data-level="urgent"] h3 svg {
+  color: var(--alert);
+}
+.level h3 svg {
+  flex: none;
+  color: var(--slate-700);
+}
+
+/* the care-team level of a guide's help, folded so the 112 panel leads */
+.todaySum {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.todaySum svg {
+  flex: none;
+  color: var(--slate-700);
+}
+
+/* the 112 panel as a fold: its heading stays red and in view */
+.urgent > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+  margin: -12px 0;
+  list-style: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.urgent > summary::-webkit-details-marker {
+  display: none;
+}
+.urgent[open] > summary {
+  margin-bottom: 0;
+}

@@ -1,0 +1,53 @@
+/* NumberBox and FeetInchesBox: the typeable number beside a ruler (from the design repository's tools kit). */
+
+.typeWrap {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+}
+/* 44px tall to tap, pulled back so the row keeps its height */
+.type {
+  width: 4.2ch;
+  min-height: 44px;
+  margin-block: -6px;
+  padding: 6px 0;
+  border: 0;
+  border-bottom: 1px dashed var(--hair-2);
+  background: none;
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 520;
+  letter-spacing: -0.02em;
+  text-align: right;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+.type::-webkit-outer-spin-button,
+.type::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+.type:focus-visible {
+  outline: 2px solid var(--signal-ink);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+.typeUnit {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+/* feet and inches: a 44px wide hit area, digits still right-aligned */
+.typeShort {
+  width: 44px;
+  padding-left: calc(44px - 2.2ch);
+}
+
+/* the narrowest phones: feet and inches keep their row on one line */
+@media (max-width: 374px) {
+  .typeShort {
+    padding-left: calc(44px - 2ch);
+  }
+}

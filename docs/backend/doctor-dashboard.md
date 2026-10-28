@@ -1,43 +1,62 @@
-# Doctor dashboard: backend endpoints
+# Doctor dashboard
 
-The doctor dashboard (`/doctor-dashboard/...`, `src/app/doctor-dashboard/`) follows Arhaan's
-clinician prototype. This file lists every endpoint it calls: the ones the backend already has,
-and the ones it still needs. Until a proposed endpoint exists the screen calls it anyway, gets a
-404, and shows a calm "not available yet" line in its place. Nothing is mocked.
+## Purpose
 
-All endpoints:
+Every endpoint the doctor dashboard (`/doctor-dashboard/...`, `src/app/doctor-dashboard/`, after
+Arhaan's clinician prototype) calls: the doctor's day, patients and their records, call notes and
+chats. Until a PROPOSED endpoint exists the screen calls it anyway, gets a 404, and shows a calm
+"not available yet" line in its place. Nothing is mocked.
 
-- answer `{ "success": true, "message": "...", "data": ... }` (the shapes below are `data`);
-- need `Authorization: Bearer <access token>` of a user whose role is `DOCTOR`;
-- only return or change patients the signed-in doctor treats (403 otherwise);
-- use ISO 8601 timestamps with an offset (`2026-10-28T10:30:00+05:30`) and camelCase fields;
-- write an audit entry (who, what, when) for every read of a record and every change, which
+- Services: `doctorPortalService`, `patientRecordService`, `clinicalNoteService`, `doctorChatService`,
+  plus the shared `chatService` and `videoConsultationService`.
+- Types: `src/types/doctor.ts`, `patientRecord.ts`, `clinicalNote.ts`, `chat.ts`, `appointment.ts`.
+
+Every endpoint here:
+
+- answers `{ "success": true, "message": "...", "data": ... }` (the shapes below are `data`);
+- needs `Authorization: Bearer <access token>` of a user whose role is `DOCTOR`;
+- only returns or changes patients the signed-in doctor treats (403 otherwise);
+- uses ISO 8601 timestamps with an offset (`2026-10-28T10:30:00+05:30`) and camelCase fields;
+- writes an audit entry (who, what, when) for every read of a record and every change, which
   `GET .../record` returns as `audit` (newest first).
 
-## Already on the backend (used as they are)
+## Endpoints
 
-| Method | Path | Screen | Service function |
-| --- | --- | --- | --- |
-| GET | `/api/doctor/me` | Rail (name, specialisation, photo) | `doctorPortalService.getMyDoctorProfile` |
-| GET | `/api/appointments/doctor?date=YYYY-MM-DD` | Today (the day list, next patient) | `doctorPortalService.listAppointmentsOn` |
-| GET | `/api/appointments/doctor` | Schedule (month), Patients (next visit), Record (next visit), Today (next working day) | `doctorPortalService.listAllAppointments` |
-| GET | `/api/doctor/patients` | Patients, Record header, Messages header | `doctorPortalService.listMyPatients` |
-| GET | `/api/video/appointments/:appointmentId/join` | "Start consultation" opens `/consultation/:appointmentId` | `videoConsultationService` |
-| Socket.IO | `join_consultation`, `send_consultation_message`, `receive_consultation_message` | Messages (live chat; `senderRole: "DOCTOR"`) | `chatService.connectToChatSession` |
-| GET | `/api/chat/sessions/:sessionId/messages` (proposed in `consultations-and-care.md`) | Messages (earlier messages) | `chatHistoryService.listChatHistory` |
+| Method | Path | Status | Service function | Screen |
+| --- | --- | --- | --- | --- |
+| GET | `/api/doctor/me` | exists | `doctorPortalService.getMyDoctorProfile` | Rail (name, specialisation, photo), note signature |
+| GET | `/api/appointments/doctor?date=YYYY-MM-DD` | exists | `doctorPortalService.listAppointmentsOn` | Today (day list, next patient) |
+| GET | `/api/appointments/doctor` | exists | `doctorPortalService.listAllAppointments` | Schedule, Patients, Record, Today (next working day) |
+| GET | `/api/doctor/patients` | exists | `doctorPortalService.listMyPatients` | Patients, Record header, Messages, Notes |
+| GET | `/api/doctor/patients/:patientId/record` | PROPOSED | `patientRecordService.getPatientRecord` | Record, Today "Next" brief, Messages, Notes |
+| GET | `/api/doctor/patients/snapshots` | PROPOSED | `patientRecordService.listPatientSnapshots` | Patients columns, care-week tag in Messages and Notes |
+| GET | `/api/doctor/queue` | PROPOSED | `patientRecordService.listWaitingItems` | Today "Waiting on you", Patients filter, Record |
+| GET | `/api/doctor/work-counts` | PROPOSED | `patientRecordService.getWorkCounts` | Rail and dock badges |
+| GET | `/api/doctor/patients/:patientId/photos` | PROPOSED | `patientRecordService.listProgressPhotos` | Record, Progress photos |
+| POST | `/api/doctor/patients/:patientId/photos/viewed` | PROPOSED | `patientRecordService.recordPhotoViewing` | Record, "Show photos" |
+| POST | `/api/doctor/patients/:patientId/symptoms/:symptomId/acknowledgement` | PROPOSED | `patientRecordService.acknowledgeSymptom` | Record safety strip, Trackers, Messages |
+| DELETE | `/api/doctor/patients/:patientId/symptoms/:symptomId/acknowledgement` | PROPOSED | `patientRecordService.undoSymptomAcknowledgement` | the toast's Undo |
+| POST | `/api/doctor/patients/:patientId/labs/:labId/review` | PROPOSED | `patientRecordService.reviewLabReport` | Record, Labs "Mark reviewed" |
+| POST | `/api/doctor/patients/:patientId/prescriptions/:prescriptionId/sign` | PROPOSED | `patientRecordService.signPrescription` | Record, Prescriptions "Review and sign" |
+| POST | `/api/doctor/patients/:patientId/private-notes` | PROPOSED | `patientRecordService.addPrivateNote` | Record, Private notes |
+| GET | `/api/doctor/notes` | PROPOSED | `clinicalNoteService.listClinicalNotes` | Notes, Record "Visits", Note review |
+| GET | `/api/doctor/notes/:noteId` | PROPOSED | `clinicalNoteService.getClinicalNote` | Note review |
+| PUT | `/api/doctor/notes/:noteId` | PROPOSED | `clinicalNoteService.saveClinicalNote` | Note review (autosave) |
+| POST | `/api/doctor/notes/:noteId/sign` | PROPOSED | `clinicalNoteService.signClinicalNote` | Note review, Sign |
+| POST | `/api/doctor/notes/:noteId/addenda` | PROPOSED | `clinicalNoteService.addClinicalNoteAddendum` | Note review, signed note |
+| GET | `/api/chat/doctor/sessions` | PROPOSED | `doctorChatService.listMyChatSessions` | Messages list |
+| POST | `/api/chat/sessions/:sessionId/read` | PROPOSED | `doctorChatService.markChatRead` | Messages, opening a chat |
+| POST | `/api/chat/sessions/:sessionId/no-reply-needed` | PROPOSED | `doctorChatService.markNoReplyNeeded` | Messages, "No reply needed" |
+| DELETE | `/api/chat/sessions/:sessionId/no-reply-needed` | PROPOSED | `doctorChatService.undoNoReplyNeeded` | the toast's Undo |
+| GET | `/api/chat/sessions/:sessionId/messages` | PROPOSED (consultations-and-care.md) | `chatService.listChatHistory` | Messages, earlier messages |
+| Socket.IO | `join_consultation`, `send_consultation_message`, `receive_consultation_message` | exists | `chatService.connectToChatSession` | Messages (live; `senderRole: "DOCTOR"`) |
+| GET | `/api/video/appointments/:appointmentId/join` | exists | `videoConsultationService.joinVideoConsultation` | "Start consultation" opens `/consultation/:appointmentId` |
 
-Wishes on existing endpoints (no front-end change needed once added):
+## Requests and responses
 
-- `GET /api/doctor/me`: add `qualification` ("MBBS, MD (Medicine)") for the signature line on
-  signed notes; the dashboard uses `specialization` until then.
-- `GET /api/appointments/doctor`: add `visitType` (`FIRST_CONSULTATION` | `FOLLOW_UP`) to tell
-  first consultations from follow-ups in the day list.
+### The patient record
 
-## Proposed: the patient record
-
-Service: `src/services/patientRecordService.ts`. Types: `src/types/patientRecord.ts`.
-
-### GET `/api/doctor/patients/:patientId/record`
+#### GET `/api/doctor/patients/:patientId/record` (PROPOSED)
 
 Screen: Patient record (`/doctor-dashboard/patients/:patientId`), the Today "Next" brief, and the
 flagged-symptom tick in Messages. Reading it is itself an audit entry ("Opened the record").
@@ -113,7 +132,7 @@ Field notes: `screening` is the counsellor's call before a first consultation
 `prescriptions` newest first; `weights` and `hba1c` in any order. The front end derives BMI,
 care week and "since the last visit" itself.
 
-### GET `/api/doctor/patients/snapshots`
+#### GET `/api/doctor/patients/snapshots` (PROPOSED)
 
 Screen: Patients list (Programme, BMI, HbA1c columns, the Diabetes filter, search by city and
 condition) and the care-week tag in Messages and Notes.
@@ -132,10 +151,8 @@ condition) and the care-week tag in Messages and Notes.
 ]
 ```
 
-(These fields could instead be added to `GET /api/doctor/patients`; `doctorPortalService` would then
-map them.)
 
-### GET `/api/doctor/queue`
+#### GET `/api/doctor/queue` (PROPOSED)
 
 Screen: Today "Waiting on you", the flags in Today's day list, the Patients "Waiting on you"
 filter, and the Record's "Urgent message" action. Most pressing first: severe symptoms, moderate,
@@ -162,7 +179,7 @@ prescriptions to sign; oldest first within each.
 prescription id (for `message`, any stable id). `severity` only for symptoms; `urgent` only for
 messages with urgent words.
 
-### GET `/api/doctor/work-counts`
+#### GET `/api/doctor/work-counts` (PROPOSED)
 
 Screen: the badges on the rail and dock (Today, Notes, Messages).
 
@@ -170,7 +187,7 @@ Screen: the badges on the rail and dock (Today, Notes, Messages).
 { "waitingOnYou": 4, "notesToSign": 2, "messagesForYou": 1 }
 ```
 
-### GET `/api/doctor/patients/:patientId/photos`
+#### GET `/api/doctor/patients/:patientId/photos` (PROPOSED)
 
 Screen: Record "Progress photos". Answers only while the patient shares photos with this doctor
 (403 otherwise). Image URLs should be short-lived signed URLs.
@@ -183,12 +200,12 @@ Screen: Record "Progress photos". Answers only while the patient shares photos w
 
 `weightKg`: the weight the patient logged nearest the photos (within 3 days), or `null`.
 
-### POST `/api/doctor/patients/:patientId/photos/viewed`
+#### POST `/api/doctor/patients/:patientId/photos/viewed` (PROPOSED)
 
 Screen: Record, when the doctor presses "Show photos". No body. Adds "Viewed the progress photos"
 to the audit log.
 
-### POST `/api/doctor/patients/:patientId/symptoms/:symptomId/acknowledgement`
+#### POST `/api/doctor/patients/:patientId/symptoms/:symptomId/acknowledgement` (PROPOSED)
 
 Screen: Record safety strip and Trackers ("Called the patient", "Advised by message", "Booked a
 visit"), and Messages (a reply can mark the flagged symptom "Advised by message").
@@ -197,11 +214,11 @@ visit"), and Messages (a reply can mark the flagged symptom "Advised by message"
 { "outcome": "Advised by message" }
 ```
 
-### DELETE `/api/doctor/patients/:patientId/symptoms/:symptomId/acknowledgement`
+#### DELETE `/api/doctor/patients/:patientId/symptoms/:symptomId/acknowledgement` (PROPOSED)
 
 Screen: the toast's Undo after the above. No body.
 
-### POST `/api/doctor/patients/:patientId/labs/:labId/review`
+#### POST `/api/doctor/patients/:patientId/labs/:labId/review` (PROPOSED)
 
 Screen: Record, Labs "Mark reviewed". The comment is shown to the patient with the report.
 
@@ -209,12 +226,12 @@ Screen: Record, Labs "Mark reviewed". The comment is shown to the patient with t
 { "comment": "Your sugar is a little higher than we want. We will go through it on the call." }
 ```
 
-### POST `/api/doctor/patients/:patientId/prescriptions/:prescriptionId/sign`
+#### POST `/api/doctor/patients/:patientId/prescriptions/:prescriptionId/sign` (PROPOSED)
 
 Screen: Record, Prescriptions "Review and sign". No body. The draft becomes the signed version;
 the previous signed version becomes `SUPERSEDED`; the patient and the pharmacy see it.
 
-### POST `/api/doctor/patients/:patientId/private-notes`
+#### POST `/api/doctor/patients/:patientId/private-notes` (PROPOSED)
 
 Screen: Record, Private notes. Never shown to the patient.
 
@@ -222,22 +239,18 @@ Screen: Record, Private notes. Never shown to the patient.
 { "text": "Prefers evening calls." }
 ```
 
-## Proposed: call notes
-
-Service: `src/services/clinicalNotesService.ts`. Type: `src/types/clinicalNote.ts`
-(`ClinicalNote`, `ClinicalNoteChanges`). Screens: Notes (`/doctor-dashboard/notes`), Note review
-(`/doctor-dashboard/notes/:noteId`), Record "Visits" (note to sign, "Open the note").
+### Call notes
 
 The scribe drafts a note from each transcribed video consultation (transcription is a separate
 consent). Nothing reaches the record or the patient's app before the doctor signs it, and medicine
 changes only ever become a DRAFT prescription signed separately.
 
-### GET `/api/doctor/notes`
+#### GET `/api/doctor/notes` (PROPOSED)
 
 The doctor's drafts and the notes signed in the last 30 days, as `ClinicalNote[]` (the transcript
 may be left empty here).
 
-### GET `/api/doctor/notes/:noteId`
+#### GET `/api/doctor/notes/:noteId` (PROPOSED)
 
 ```json
 {
@@ -290,7 +303,7 @@ Field notes:
 - `signed`: `{ at, by, byQualification, prescriptionVersion, prescriptionStatus, sentToApp }` once signed.
 - While `now < readyAt` the scribe is still writing; the note shows a placeholder.
 
-### PUT `/api/doctor/notes/:noteId`
+#### PUT `/api/doctor/notes/:noteId` (PROPOSED)
 
 Saves the doctor's edits to a draft. Body (`ClinicalNoteChanges`): the editable parts and one line
 for the note's history. Answers with the whole updated note. On a signed note, only
@@ -307,7 +320,7 @@ for the note's history. Answers with the whole updated note. On a signed note, o
 }
 ```
 
-### POST `/api/doctor/notes/:noteId/sign`
+#### POST `/api/doctor/notes/:noteId/sign` (PROPOSED)
 
 ```json
 { "sendToApp": true }
@@ -321,7 +334,7 @@ open flagged symptoms are marked "discussed on the call"; follow-ups go to their
 under past consultations. Answers with the signed note. A signed note is final: corrections are
 addenda.
 
-### POST `/api/doctor/notes/:noteId/addenda`
+#### POST `/api/doctor/notes/:noteId/addenda` (PROPOSED)
 
 ```json
 { "text": "Patient called back: the dizziness has settled." }
@@ -329,13 +342,12 @@ addenda.
 
 Signed under the doctor's name with the current time. Answers with the whole updated note.
 
-## Proposed: the doctor's chats
+### The doctor's chats
 
-Service: `src/services/doctorChatService.ts`. Type: `src/types/doctorChat.ts`. Screen: Messages
-(`/doctor-dashboard/messages`). The live chat is the existing consultation socket; the backend has
-no way yet for a doctor to list their chats.
+The live chat is the existing consultation socket; the backend has no way yet for a doctor to list
+their chats.
 
-### GET `/api/chat/doctor/sessions`
+#### GET `/api/chat/doctor/sessions` (PROPOSED)
 
 ```json
 [
@@ -355,14 +367,24 @@ no way yet for a doctor to list their chats.
 (`null` when nothing waits). `urgent`: a waiting message contains urgent words (the same rule the
 patient app uses). `unread`: a message arrived after the doctor last opened the chat.
 
-### POST `/api/chat/sessions/:sessionId/read`
+#### POST `/api/chat/sessions/:sessionId/read` (PROPOSED)
 
 The doctor opened the chat; clears `unread`. No body.
 
-### POST `/api/chat/sessions/:sessionId/no-reply-needed`
+#### POST `/api/chat/sessions/:sessionId/no-reply-needed` (PROPOSED)
 
 "No reply needed": clears `waitingSince` without a reply. No body.
 
-### DELETE `/api/chat/sessions/:sessionId/no-reply-needed`
+#### DELETE `/api/chat/sessions/:sessionId/no-reply-needed` (PROPOSED)
 
 Undo of the above (from the toast). No body.
+
+## Notes
+
+- Wishes on existing endpoints (no frontend change needed once added):
+  - `GET /api/doctor/me`: add `qualification` ("MBBS, MD (Medicine)") for the signature line on
+    signed notes; the dashboard uses `specialization` until then.
+  - `GET /api/appointments/doctor`: add `visitType` (`FIRST_CONSULTATION` | `FOLLOW_UP`) to tell
+    first consultations from follow-ups in the day list.
+- The snapshot fields could instead be added to `GET /api/doctor/patients`; `doctorPortalService`
+  would then map them.

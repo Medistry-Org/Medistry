@@ -1,17 +1,36 @@
 /**
- * Programme plans.
- *   GET  /api/subscriptions/plans                 -> { success, data: [{ PlanId, PlanName, DurationMonths, Price, IsActive, Perks }] }
- *   GET  /api/subscriptions/status?userId=        -> { hasActivePlan | isActive, planId }
- *   POST /api/subscriptions/activate              { targetUserId, planId }  (call only after payment is verified)
+ * Programme plans and the patient's subscription. Plans start only through a verified payment
+ * (paymentService), never from here. Doc: docs/backend/patient-dashboard.md
+ *   GET /api/subscriptions/plans            the plans on offer (no auth)
+ *   GET /api/subscriptions/status?userId=   whether the patient has an active plan
+ *   GET /api/subscriptions/recommended      PROPOSED. The plan the doctor suggested -> { data: { planId, doctorName, note } }
  */
 
-import { apiRequest, listFrom } from "@/lib/http/apiClient";
-import type { SubscriptionPlan, SubscriptionStatus } from "@/types/subscription";
+import { ApiError, apiRequest, listFrom } from "@/lib/http/apiClient";
+import type {
+  RecommendedPlan,
+  SubscriptionPlan,
+  SubscriptionStatus,
+} from "@/types/subscription";
 
-type RawPlan = { PlanId: number; PlanName: string; DurationMonths: number; Price: number | null; IsActive: boolean; Perks?: string[] };
+type RawPlan = {
+  PlanId: number;
+  PlanName: string;
+  DurationMonths: number;
+  Price: number | null;
+  IsActive: boolean;
+  Perks?: string[];
+};
+type RawStatus = {
+  hasActivePlan?: boolean;
+  isActive?: boolean;
+  planId?: number;
+};
 
 export async function listPlans(): Promise<SubscriptionPlan[]> {
-  const body = await apiRequest("/api/subscriptions/plans", { authenticated: false });
+  const body = await apiRequest("/api/subscriptions/plans", {
+    authenticated: false,
+  });
   return listFrom<RawPlan>(body).map((raw) => ({
     id: raw.PlanId,
     name: raw.PlanName,
@@ -22,15 +41,39 @@ export async function listPlans(): Promise<SubscriptionPlan[]> {
   }));
 }
 
-export async function getSubscriptionStatus(userId: number): Promise<SubscriptionStatus> {
-  const body = await apiRequest<{ hasActivePlan?: boolean; isActive?: boolean; planId?: number; data?: { hasActivePlan?: boolean; isActive?: boolean; planId?: number } }>(
+export async function getSubscriptionStatus(
+  userId: number,
+): Promise<SubscriptionStatus> {
+  const body = await apiRequest<RawStatus & { data?: RawStatus }>(
     "/api/subscriptions/status",
     { query: { userId } },
   );
   const source = body.data ?? body;
-  return { hasActivePlan: Boolean(source.hasActivePlan ?? source.isActive), planId: source.planId ?? null };
+  return {
+    hasActivePlan: Boolean(source.hasActivePlan ?? source.isActive),
+    planId: source.planId ?? null,
+  };
 }
 
-export async function activatePlan(userId: number, planId: number): Promise<void> {
-  await apiRequest("/api/subscriptions/activate", { method: "POST", body: { targetUserId: userId, planId } });
+/** null when the doctor has not recommended a plan, or the backend does not have the endpoint yet. */
+export async function getRecommendedPlan(): Promise<RecommendedPlan | null> {
+  try {
+    const body = await apiRequest<{
+      data?: {
+        planId?: number | string | null;
+        doctorName?: string | null;
+        note?: string | null;
+      } | null;
+    }>("/api/subscriptions/recommended");
+    const raw = body.data;
+    if (!raw || raw.planId == null) return null;
+    return {
+      planId: Number(raw.planId),
+      doctorName: raw.doctorName ?? "",
+      note: raw.note ?? "",
+    };
+  } catch (caught) {
+    if (caught instanceof ApiError && caught.isMissingEndpoint) return null;
+    throw caught;
+  }
 }

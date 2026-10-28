@@ -4,12 +4,11 @@
 */
 
 import { CaretLeft, CaretRight } from "@phosphor-icons/react";
-import { weekdayDayMonth } from "@/lib/format/dateTime";
+import { monthAndYear, weekdayDayMonth } from "@/lib/format/dateTime";
 import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import styles from "../SchedulePage.module.css";
 
 const WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const monthFormat = new Intl.DateTimeFormat("en-IN", { month: "long", year: "numeric" });
 
 export default function MonthCalendar({
   firstOfMonth,
@@ -28,27 +27,52 @@ export default function MonthCalendar({
   /** months to move by; 0 returns to this month */
   onMove: (months: number) => void;
 }) {
-  const days = new Date(firstOfMonth.getFullYear(), firstOfMonth.getMonth() + 1, 0).getDate();
+  const days = new Date(
+    firstOfMonth.getFullYear(),
+    firstOfMonth.getMonth() + 1,
+    0,
+  ).getDate();
   const lead = (firstOfMonth.getDay() + 6) % 7;
   const today = new Date();
   const todayKey = today.toDateString();
-  const startOfToday = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
-  const monthName = monthFormat.format(firstOfMonth);
+  const startOfToday = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate(),
+  ).getTime();
+  const monthName = monthAndYear(
+    firstOfMonth.getFullYear(),
+    firstOfMonth.getMonth(),
+  );
 
   return (
     <section className={clinicStyles.panel} aria-label="Month">
       <div className={styles.monthHead}>
         <h2 className={clinicStyles.h2}>{monthName}</h2>
         <div className={styles.monthNav}>
-          <button type="button" className={clinicStyles.iconBtn} onClick={() => onMove(-1)} aria-label="Previous month">
+          <button
+            type="button"
+            className={clinicStyles.iconBtn}
+            onClick={() => onMove(-1)}
+            aria-label="Previous month"
+          >
             <CaretLeft size={16} />
           </button>
           {!isThisMonth && (
-            <button type="button" className={clinicStyles.textBtn} onClick={() => onMove(0)}>
+            <button
+              type="button"
+              className={clinicStyles.textBtn}
+              onClick={() => onMove(0)}
+            >
               Today
             </button>
           )}
-          <button type="button" className={clinicStyles.iconBtn} onClick={() => onMove(1)} aria-label="Next month">
+          <button
+            type="button"
+            className={clinicStyles.iconBtn}
+            onClick={() => onMove(1)}
+            aria-label="Next month"
+          >
             <CaretRight size={16} />
           </button>
         </div>
@@ -63,7 +87,11 @@ export default function MonthCalendar({
           <span key={`lead-${i}`} aria-hidden="true" />
         ))}
         {Array.from({ length: days }, (_, i) => {
-          const date = new Date(firstOfMonth.getFullYear(), firstOfMonth.getMonth(), i + 1);
+          const date = new Date(
+            firstOfMonth.getFullYear(),
+            firstOfMonth.getMonth(),
+            i + 1,
+          );
           const key = date.toDateString();
           const count = countOn(key);
           const closed = date.getDay() === 0;

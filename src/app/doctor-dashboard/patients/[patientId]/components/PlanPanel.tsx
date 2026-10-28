@@ -7,7 +7,11 @@ import recordStyles from "../PatientRecordPage.module.css";
 
 export default function PlanPanel({ plan }: { plan: TreatmentPlan | null }) {
   return (
-    <section id="plan" className={clinicStyles.panel} aria-labelledby="plan-heading">
+    <section
+      id="plan"
+      className={clinicStyles.panel}
+      aria-labelledby="plan-heading"
+    >
       <div className={clinicStyles.panelHead}>
         <h2 id="plan-heading" className={clinicStyles.h2}>
           Treatment plan
@@ -24,10 +28,14 @@ export default function PlanPanel({ plan }: { plan: TreatmentPlan | null }) {
               </div>
             ))}
           </div>
-          <p className={clinicStyles.muted}>Next plan review {longDate(plan.reviewAt)}</p>
+          <p className={clinicStyles.muted}>
+            Next plan review {longDate(plan.reviewAt)}
+          </p>
         </>
       ) : (
-        <p className={clinicStyles.empty}>No plan yet. It is set after the first consultation and any tests.</p>
+        <p className={clinicStyles.empty}>
+          No plan yet. It is set after the first consultation and any tests.
+        </p>
       )}
     </section>
   );

@@ -1,0 +1,37 @@
+/* The doctor sheet (DoctorSheet): the portrait and the lines beside it. Sheet body, facts and actions come from CarePage.module.css. */
+
+.bio {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.bioText {
+  display: grid;
+  gap: 3px;
+}
+.bioRole {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.bioQual {
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.bioSpec {
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+/* the narrowest phones: the doctor's sheet with a smaller portrait, so the lines beside it stay short */
+@media (max-width: 389px) {
+  .bio {
+    gap: 14px;
+  }
+  .bio > :first-child {
+    width: 56px !important;
+    height: 56px !important;
+    font-size: 19px !important;
+  }
+}

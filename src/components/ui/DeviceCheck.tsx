@@ -1,33 +1,57 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { ArrowRight, CheckCircle, Microphone, VideoCamera, WarningCircle } from "@phosphor-icons/react";
-import surfaceStyles from "./styles/Surfaces.module.css";
-import formStyles from "./styles/FormControls.module.css";
-
 /**
  * A rehearsal for the video call: the person sees themselves and watches the microphone move,
  * before anyone is waiting. Nothing is recorded or sent; the camera stops when this unmounts.
  * Used in the "Test camera and mic" sheet and before joining a consultation.
  */
 
-type CheckState = "idle" | "asking" | "live" | "denied" | "missing" | "unsupported";
+import { useEffect, useRef, useState } from "react";
+import {
+  ArrowRight,
+  CheckCircle,
+  Microphone,
+  VideoCamera,
+  WarningCircle,
+} from "@phosphor-icons/react";
+import formStyles from "./styles/FormControls.module.css";
+import styles from "./DeviceCheck.module.css";
+
+type CheckState =
+  | "idle"
+  | "asking"
+  | "live"
+  | "denied"
+  | "missing"
+  | "unsupported";
 
 /** Which browser settings to point at when access is blocked. */
 function whereToAllow() {
   const agent = navigator.userAgent;
-  if (/iPhone|iPad|iPod/.test(agent)) return "On an iPhone, open Settings, then Safari (or Chrome), then Camera and Microphone, and choose Allow. Come back and try again.";
-  if (/Android/.test(agent)) return "Tap the icon to the left of the address bar, then Permissions, and allow Camera and Microphone. Then try again.";
+  if (/iPhone|iPad|iPod/.test(agent))
+    return "On an iPhone, open Settings, then Safari (or Chrome), then Camera and Microphone, and choose Allow. Come back and try again.";
+  if (/Android/.test(agent))
+    return "Tap the icon to the left of the address bar, then Permissions, and allow Camera and Microphone. Then try again.";
   return "Click the icon to the left of the address bar, allow Camera and Microphone for this site, then try again.";
 }
 
 /** `seenBy` names who is on the other end ("your doctor" for a patient, "your patient" for a doctor). */
-export default function DeviceCheck({ seenBy = "your doctor" }: { seenBy?: string }) {
+export default function DeviceCheck({
+  seenBy = "your doctor",
+}: {
+  seenBy?: string;
+}) {
   const video = useRef<HTMLVideoElement>(null);
   const meter = useRef<HTMLSpanElement>(null);
   const stream = useRef<MediaStream | null>(null);
   // only mounted in the browser, after a tap (a sheet or the pre-join screen)
-  const [state, setState] = useState<CheckState>(() => (typeof navigator !== "undefined" && !!navigator.mediaDevices && "getUserMedia" in navigator.mediaDevices ? "idle" : "unsupported"));
+  const [state, setState] = useState<CheckState>(() =>
+    typeof navigator !== "undefined" &&
+    !!navigator.mediaDevices &&
+    "getUserMedia" in navigator.mediaDevices
+      ? "idle"
+      : "unsupported",
+  );
   const [heard, setHeard] = useState(false);
 
   useEffect(() => {
@@ -37,8 +61,11 @@ export default function DeviceCheck({ seenBy = "your doctor" }: { seenBy?: strin
 
   useEffect(() => {
     if (state !== "live" || !stream.current) return;
-    const AudioCtx = window.AudioContext ?? (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
-    const context = new AudioCtx();
+    const AudioContextClass =
+      window.AudioContext ??
+      (window as unknown as { webkitAudioContext: typeof AudioContext })
+        .webkitAudioContext;
+    const context = new AudioContextClass();
     const analyser = context.createAnalyser();
     analyser.fftSize = 512;
     context.createMediaStreamSource(stream.current).connect(analyser);
@@ -51,7 +78,8 @@ export default function DeviceCheck({ seenBy = "your doctor" }: { seenBy?: strin
       for (const value of samples) sum += ((value - 128) / 128) ** 2;
       const level = Math.min(1, Math.sqrt(sum / samples.length) * 4);
       // written straight to the element: sixty updates a second never touch React
-      if (meter.current) meter.current.style.transform = `scaleX(${level.toFixed(3)})`;
+      if (meter.current)
+        meter.current.style.transform = `scaleX(${level.toFixed(3)})`;
       if (level > 0.18 && ++loudFrames > 6) setHeard(true);
       frame = requestAnimationFrame(tick);
     };
@@ -65,7 +93,10 @@ export default function DeviceCheck({ seenBy = "your doctor" }: { seenBy?: strin
   const start = async () => {
     setState("asking");
     try {
-      const media = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" }, audio: true });
+      const media = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user" },
+        audio: true,
+      });
       stream.current = media;
       setState("live");
       requestAnimationFrame(() => {
@@ -73,64 +104,102 @@ export default function DeviceCheck({ seenBy = "your doctor" }: { seenBy?: strin
       });
     } catch (caught) {
       const name = (caught as DOMException).name;
-      setState(name === "NotFoundError" || name === "OverconstrainedError" ? "missing" : "denied");
+      setState(
+        name === "NotFoundError" || name === "OverconstrainedError"
+          ? "missing"
+          : "denied",
+      );
     }
   };
 
   return (
-    <div className={surfaceStyles.check}>
-      <div className={surfaceStyles.checkStage} data-state={state}>
+    <div className={styles.check}>
+      <div className={styles.checkStage} data-state={state}>
         {state === "live" ? (
-          <video ref={video} autoPlay playsInline muted className={surfaceStyles.checkVideo} />
+          <video
+            ref={video}
+            autoPlay
+            playsInline
+            muted
+            className={styles.checkVideo}
+          />
         ) : (
-          <span className={surfaceStyles.checkGlyph} aria-hidden="true">
+          <span className={styles.checkGlyph} aria-hidden="true">
             <VideoCamera size={28} />
           </span>
         )}
       </div>
 
       {state === "live" && (
-        <div className={surfaceStyles.checkRows}>
+        <div className={styles.checkRows}>
           <p>
-            <CheckCircle size={18} weight="fill" /> Camera works. This is what {seenBy} will see.
+            <CheckCircle size={18} weight="fill" /> Camera works. This is what{" "}
+            {seenBy} will see.
           </p>
-          <div className={surfaceStyles.mic}>
+          <div className={styles.mic}>
             <Microphone size={18} />
-            <span className={surfaceStyles.micTrack} aria-hidden="true">
+            <span className={styles.micTrack} aria-hidden="true">
               <span ref={meter} />
             </span>
-            <span className={surfaceStyles.micLabel}>{heard ? "Microphone works" : "Say a few words"}</span>
+            <span className={styles.micLabel}>
+              {heard ? "Microphone works" : "Say a few words"}
+            </span>
           </div>
-          <p className={formStyles.hint}>Sit facing a window or a lamp, with your phone at eye level. Earphones help in a busy house.</p>
+          <p className={formStyles.hint}>
+            Sit facing a window or a lamp, with your phone at eye level.
+            Earphones help in a busy house.
+          </p>
         </div>
       )}
 
       {state === "denied" && (
-        <p className={surfaceStyles.alert} role="alert">
+        <p className={styles.alert} role="alert">
           <WarningCircle size={18} weight="fill" />
           The browser has blocked the camera or microphone. {whereToAllow()}
         </p>
       )}
       {state === "missing" && (
-        <p className={surfaceStyles.alert} role="alert">
+        <p className={styles.alert} role="alert">
           <WarningCircle size={18} weight="fill" />
-          No camera or microphone was found. On a laptop, check that nothing else is using them, such as another call.
+          No camera or microphone was found. On a laptop, check that nothing
+          else is using them, such as another call.
         </p>
       )}
       {state === "unsupported" && (
-        <p className={surfaceStyles.alert} role="alert">
+        <p className={styles.alert} role="alert">
           <WarningCircle size={18} weight="fill" />
-          This browser cannot open the camera. Open the app in Safari on an iPhone, or Chrome elsewhere.
+          This browser cannot open the camera. Open the app in Safari on an
+          iPhone, or Chrome elsewhere.
         </p>
       )}
 
       {(state === "idle" || state === "asking" || state === "denied") && (
         <>
-          {state !== "denied" && <p className={formStyles.hint}>Your browser will ask to use the camera and microphone. Nothing is recorded, and both turn off when you close this.</p>}
-          <button type="button" className={`btn ${formStyles.go}`} onClick={start} data-busy={state === "asking"}>
-            <span>{state === "denied" ? "Try again" : state === "asking" ? "Waiting for your browser" : "Start the check"}</span>
+          {state !== "denied" && (
+            <p className={formStyles.hint}>
+              Your browser will ask to use the camera and microphone. Nothing is
+              recorded, and both turn off when you close this.
+            </p>
+          )}
+          <button
+            type="button"
+            className={`btn ${formStyles.go}`}
+            onClick={start}
+            data-busy={state === "asking"}
+          >
+            <span>
+              {state === "denied"
+                ? "Try again"
+                : state === "asking"
+                  ? "Waiting for your browser"
+                  : "Start the check"}
+            </span>
             <span className="well" aria-hidden="true">
-              {state === "asking" ? <i className={formStyles.spin} /> : <ArrowRight size={18} />}
+              {state === "asking" ? (
+                <i className={formStyles.spin} />
+              ) : (
+                <ArrowRight size={18} />
+              )}
             </span>
           </button>
         </>

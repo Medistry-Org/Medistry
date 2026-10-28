@@ -1,18 +1,36 @@
-import type { ReactNode } from "react";
-import surfaceStyles from "./styles/Surfaces.module.css";
-import furnitureStyles from "./styles/PageFurniture.module.css";
-
 /**
- * A surface with an optional heading row: the only container the dashboards use.
- * `action` sits at the right of the heading (a link or a small button).
+ * A surface with an optional heading row: the only container the dashboards use. `action` sits at
+ * the right of the heading (a link or a small button).
  */
-export default function Card({ title, action, children, id, className = "" }: { title?: ReactNode; action?: ReactNode; children: ReactNode; id?: string; className?: string }) {
+
+import type { ReactNode } from "react";
+import surfaceStyles from "./styles/CardSurface.module.css";
+import styles from "./Card.module.css";
+
+export default function Card({
+  title,
+  action,
+  children,
+  id,
+  className = "",
+}: {
+  title?: ReactNode;
+  action?: ReactNode;
+  children: ReactNode;
+  id?: string;
+  className?: string;
+}) {
+  const headingId = id && title ? `${id}-h` : undefined;
   return (
-    <section className={`${surfaceStyles.card} ${furnitureStyles.card} ${className}`} id={id} aria-labelledby={id && title ? `${id}-h` : undefined}>
+    <section
+      className={`${surfaceStyles.card} ${styles.card} ${className}`}
+      id={id}
+      aria-labelledby={headingId}
+    >
       {(title || action) && (
-        <div className={`${surfaceStyles.cardHead} ${furnitureStyles.cardHead}`}>
+        <div className={styles.cardHead}>
           {title && (
-            <h2 className={`${surfaceStyles.h2} ${furnitureStyles.cardTitle}`} id={id ? `${id}-h` : undefined}>
+            <h2 className={styles.title} id={headingId}>
               {title}
             </h2>
           )}

@@ -1,9 +1,13 @@
 "use client";
 
 /**
- * The onboarding state machine: the patient's answers, which question is showing, and moving
- * forward (save the step, then the next one), back and out. After the last question it completes
- * onboarding and hands over to booking the first consultation.
+ * The onboarding state machine: the patient's answers, which screen is showing, and moving forward
+ * (save the step, then the next one), back and out. The answers and their checks are in
+ * onboardingDraft.ts and onboardingStepAnswer.ts; question 9's paths in useBloodTestPath.ts. Order of calls: questions 1 to 8 are each saved
+ * (PATCH /api/onboarding/step); after question 8 the profile is completed (POST
+ * /api/onboarding/complete); only then comes the blood test step (question 9), which branches:
+ *   yes  "upload"  the report is uploaded for review (purpose ELIGIBILITY), then "sent".
+ *   no   "lab"     the care package with lab tests, booked with the shared lab booking flow.
  *
  * Every answer is saved as soon as Continue is pressed, so "Save and exit" only has to leave.
  */
@@ -12,120 +16,43 @@ import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { errorMessage } from "@/lib/http/apiClient";
 import { updateSessionUser } from "@/lib/session/authSession";
-import { completeOnboarding, saveStep } from "@/services/onboardingService";
-import type { ConsentType, Gender, OnboardingAnswers, OnboardingStatus, OnboardingStepAnswer } from "@/types/onboarding";
-import { AGE_MAX, AGE_MIN, CONSENT_VERSION, conditionsFor, FIRST_TIME, REQUIRED_CONSENTS, TOTAL_STEPS } from "./onboardingOptions";
-
-export type Phase = "steps" | "book" | "booked";
-
-/** A problem to show: under the box named by `field`, or under the answers when there is none. */
-export type Problem = { message: string; field?: "firstName" | "email" | "ageYears" | "otherText" };
-
-/** The answers as the screens edit them (age is typed text until it is saved). */
-export type OnboardingDraft = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  gender: Gender | null;
-  age: string;
-  heightCm: number | null;
-  weightKg: number | null;
-  experience: string[];
-  conditionCodes: string[];
-  noConditions: boolean;
-  otherText: string;
-  consents: ConsentType[];
-};
-
-export type DraftChanges = Partial<OnboardingDraft> | ((current: OnboardingDraft) => Partial<OnboardingDraft>);
-
-const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-function draftFrom(answers: OnboardingAnswers | undefined): OnboardingDraft {
-  return {
-    firstName: answers?.firstName ?? "",
-    lastName: answers?.lastName ?? "",
-    email: answers?.email ?? "",
-    gender: answers?.gender ?? null,
-    age: answers?.ageYears ? String(answers.ageYears) : "",
-    // nothing until the patient answers: a guessed number here would become their baseline
-    heightCm: answers?.heightCm ?? null,
-    weightKg: answers?.weightKg ?? null,
-    experience: answers?.weightLossExperience ?? [],
-    conditionCodes: answers?.conditions?.map((c) => c.code) ?? [],
-    noConditions: answers?.noConditions ?? false,
-    otherText: answers?.conditions?.find((c) => c.code === "OTHER")?.otherText ?? "",
-    consents: answers?.consents ?? [],
-  };
-}
-
-/** The ticked conditions that are on screen (PCOS is hidden for men). */
-export const visibleConditionCodes = (draft: OnboardingDraft) => draft.conditionCodes.filter((code) => conditionsFor(draft.gender).some((c) => c.code === code));
-
-/** The step's answer, ready to save, or what is wrong with it. */
-function answerFor(step: number, draft: OnboardingDraft): OnboardingStepAnswer | Problem {
-  switch (step) {
-    case 1:
-      if (!draft.firstName.trim()) return { message: "Add your first name.", field: "firstName" };
-      if (!draft.email.trim()) return { message: "Add your email.", field: "email" };
-      if (!EMAIL_PATTERN.test(draft.email.trim())) return { message: "That email does not look right.", field: "email" };
-      return { step: 1, firstName: draft.firstName, lastName: draft.lastName, email: draft.email };
-    case 2:
-      return draft.gender ? { step: 2, gender: draft.gender } : { message: "Choose one." };
-    case 3: {
-      const age = Number(draft.age);
-      if (!draft.age || !Number.isInteger(age)) return { message: "Enter your age in years.", field: "ageYears" };
-      if (age < AGE_MIN) return { message: "Medistry is for adults aged 18 and over.", field: "ageYears" };
-      if (age > AGE_MAX) return { message: `Enter an age from ${AGE_MIN} to ${AGE_MAX}.`, field: "ageYears" };
-      return { step: 3, ageYears: age };
-    }
-    case 4:
-      return draft.heightCm !== null ? { step: 4, heightCm: draft.heightCm } : { message: "Add your height, in feet or centimetres." };
-    case 5:
-      return draft.weightKg !== null ? { step: 5, weightKg: draft.weightKg } : { message: "Add your weight." };
-    case 6:
-      return draft.experience.length ? { step: 6, weightLossExperience: draft.experience } : { message: "Choose at least one." };
-    case 7: {
-      const codes = visibleConditionCodes(draft);
-      if (draft.noConditions) return { step: 7, noConditions: true, conditions: [] };
-      if (!codes.length) return { message: "Choose at least one, or None of these." };
-      if (codes.includes("OTHER") && !draft.otherText.trim()) return { message: "Say what it is.", field: "otherText" };
-      return { step: 7, noConditions: false, conditions: codes.map((code) => (code === "OTHER" ? { code, otherText: draft.otherText.trim() } : { code })) };
-    }
-    default:
-      if (!REQUIRED_CONSENTS.every((c) => draft.consents.includes(c))) return { message: "Tick the box to agree, so your doctor can see your details." };
-      return { step: 8, consents: draft.consents };
-  }
-}
-
-function answersFrom(draft: OnboardingDraft): OnboardingAnswers {
-  return {
-    firstName: draft.firstName,
-    lastName: draft.lastName,
-    email: draft.email,
-    gender: draft.gender,
-    ageYears: draft.age ? Number(draft.age) : null,
-    heightCm: draft.heightCm,
-    weightKg: draft.weightKg,
-    weightLossExperience: draft.experience,
-    conditions: draft.noConditions ? [] : visibleConditionCodes(draft).map((code) => (code === "OTHER" ? { code, otherText: draft.otherText.trim() } : { code })),
-    noConditions: draft.noConditions,
-    consents: draft.consents,
-  };
-}
-
-const isProblem = (value: OnboardingStepAnswer | Problem): value is Problem => "message" in value;
+import {
+  completeOnboarding,
+  saveOnboardingStep,
+} from "@/services/onboardingService";
+import type {
+  OnboardingConfig,
+  OnboardingStatus,
+  OnboardingStepAnswer,
+} from "@/types/onboarding";
+import {
+  answersFrom,
+  draftFrom,
+  experienceToggled,
+  type DraftChanges,
+  type Problem,
+} from "./onboardingDraft";
+import { LAST_SAVED_STEP, REPORT_STEP } from "./onboardingOptions";
+import { isProblem, stepAnswerFor } from "./onboardingStepAnswer";
+import { useBloodTestPath } from "./useBloodTestPath";
 
 /** `status` is null when the backend cannot resume yet: the patient starts at question 1. */
-export function useOnboardingProgress(status: OnboardingStatus | null) {
+export function useOnboardingProgress(
+  status: OnboardingStatus | null,
+  config: OnboardingConfig,
+) {
   const router = useRouter();
-  const [phase, setPhase] = useState<Phase>("steps");
+  const path = useBloodTestPath();
   const [step, setStep] = useState(status?.currentStep ?? 1);
   const [direction, setDirection] = useState<1 | -1>(1);
   const [busy, setBusy] = useState(false);
   const [problem, setProblem] = useState<Problem | null>(null);
-  const [welcomeBack, setWelcomeBack] = useState((status?.lastCompletedStep ?? 0) > 0);
+  const [welcomeBack, setWelcomeBack] = useState(
+    (status?.lastCompletedStep ?? 0) > 0,
+  );
   const [draft, setDraft] = useState(() => draftFrom(status?.answers));
+  // complete runs once: going back to question 8 and on again does not repeat it
+  const completed = useRef(Boolean(status?.completed));
   const advanceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   // bumped by Back and Save and exit, so a save still in flight cannot move the patient forward afterwards
   const navigation = useRef(0);
@@ -146,13 +73,26 @@ export function useOnboardingProgress(status: OnboardingStatus | null) {
 
   /** Changes some answers. Pass a function when the change depends on the latest answers (a held stepper). */
   const update = (changes: DraftChanges) => {
-    setDraft((current) => ({ ...current, ...(typeof changes === "function" ? changes(current) : changes) }));
+    setDraft((current) => ({
+      ...current,
+      ...(typeof changes === "function" ? changes(current) : changes),
+    }));
     setProblem(null);
+  };
+
+  /** Question 9 is not saved: it only opens the path the patient chose. */
+  const choosePath = (hasRecentReport: boolean | null) => {
+    if (hasRecentReport === null) setProblem({ message: "Choose one." });
+    else {
+      setDirection(1);
+      path.openPath(hasRecentReport);
+    }
   };
 
   const submit = async (override?: OnboardingStepAnswer) => {
     if (busy) return;
-    const answer = override ?? answerFor(step, draft);
+    if (step === REPORT_STEP) return choosePath(draft.hasRecentReport);
+    const answer = override ?? stepAnswerFor(step, draft, config);
     if (isProblem(answer)) {
       setProblem(answer);
       return;
@@ -161,18 +101,22 @@ export function useOnboardingProgress(status: OnboardingStatus | null) {
     setProblem(null);
     const ticket = navigation.current;
     try {
-      await saveStep(answer, CONSENT_VERSION);
+      await saveOnboardingStep(answer, config.consentVersion);
       if (ticket !== navigation.current) return;
-      if (answer.step === TOTAL_STEPS) {
-        await completeOnboarding(answersFrom(draft));
-        updateSessionUser({ fullName: `${draft.firstName.trim()} ${draft.lastName.trim()}`.trim() });
-        setPhase("book");
-      } else {
-        setStep(answer.step + 1);
+      // the profile is completed before the blood test step, so the backend has it for the review
+      if (answer.step === LAST_SAVED_STEP && !completed.current) {
+        await completeOnboarding(answersFrom(draft, config));
+        completed.current = true;
+        if (ticket !== navigation.current) return;
+        updateSessionUser({
+          fullName: `${draft.firstName.trim()} ${draft.lastName.trim()}`.trim(),
+        });
       }
+      setStep(answer.step + 1);
       setDirection(1);
     } catch (error) {
-      if (ticket === navigation.current) setProblem({ message: errorMessage(error) });
+      if (ticket === navigation.current)
+        setProblem({ message: errorMessage(error) });
     } finally {
       setBusy(false);
     }
@@ -184,27 +128,31 @@ export function useOnboardingProgress(status: OnboardingStatus | null) {
     advanceTimer.current = setTimeout(() => submit(answer), 260);
   };
 
+  /** Question 9: show the tick, then open the chosen path a beat later. */
+  const pickPathThenGo = (hasRecentReport: boolean) => {
+    update({ hasRecentReport });
+    if (advanceTimer.current) clearTimeout(advanceTimer.current);
+    advanceTimer.current = setTimeout(() => choosePath(hasRecentReport), 260);
+  };
+
+  /** One screen back: through the lab booking's steps, then to question 9, then question by question. */
   const back = () => {
     navigation.current++;
     if (advanceTimer.current) clearTimeout(advanceTimer.current);
     setProblem(null);
     setDirection(-1);
-    setStep((current) => Math.max(1, current - 1));
+    if (!path.stepBack()) setStep((current) => Math.max(1, current - 1));
   };
 
   const saveAndExit = () => {
     navigation.current++;
-    router.push("/dashboard");
+    router.push("/patient-dashboard");
   };
 
-  const firstExperienceToggle = (code: string) =>
-    // a first attempt and past attempts cannot both be true, so each clears the other
-    draft.experience.includes(code) ? draft.experience.filter((x) => x !== code) : code === FIRST_TIME ? [FIRST_TIME] : [...draft.experience.filter((x) => x !== FIRST_TIME), code];
-
-  const answer = answerFor(step, draft);
   return {
-    phase,
-    setPhase,
+    phase: path.phase,
+    setPhase: path.setPhase,
+    lab: path.lab,
     step,
     direction,
     busy,
@@ -212,11 +160,16 @@ export function useOnboardingProgress(status: OnboardingStatus | null) {
     welcomeBack,
     draft,
     update,
-    toggleExperience: (code: string) => update({ experience: firstExperienceToggle(code) }),
+    toggleExperience: (code: string) =>
+      update({ experience: experienceToggled(draft.experience, code) }),
     /** Continue looks unavailable until this is true, but a tap still says what is missing. */
-    canContinue: !isProblem(answer),
+    canContinue:
+      step === REPORT_STEP
+        ? draft.hasRecentReport !== null
+        : !isProblem(stepAnswerFor(step, draft, config)),
     submit,
     pickThenGo,
+    pickPathThenGo,
     back,
     saveAndExit,
   };

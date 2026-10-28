@@ -6,17 +6,27 @@
 import { ArrowRight, Check } from "@phosphor-icons/react/dist/ssr";
 import { formatRupees } from "@/lib/format/money";
 import formStyles from "@/components/ui/styles/FormControls.module.css";
-import surfaceStyles from "@/components/ui/styles/Surfaces.module.css";
+import surfaceStyles from "@/components/ui/styles/CardSurface.module.css";
 import type { LabPlan } from "../labPlans";
-import styles from "../Pricing.module.css";
+import styles from "../PricingPage.module.css";
 
-export default function LabPlanCard({ plan, onChoose }: { plan: LabPlan; onChoose: (plan: LabPlan) => void }) {
+export default function LabPlanCard({
+  plan,
+  onChoose,
+}: {
+  plan: LabPlan;
+  onChoose: (plan: LabPlan) => void;
+}) {
   return (
-    <article className={`${surfaceStyles.card} ${styles.plan}`} data-recommended={plan.recommended || undefined}>
+    <article
+      className={`${surfaceStyles.card} ${styles.plan}`}
+      data-recommended={plan.recommended || undefined}
+    >
       <span className={styles.tag}>{plan.badge}</span>
       <h2 className={styles.planName}>{plan.name}</h2>
       <p className={styles.price}>
-        <span className="num">{formatRupees(plan.price)}</span> <small>/ package</small>
+        <span className="num">{formatRupees(plan.price)}</span>{" "}
+        <small>/ package</small>
       </p>
       <ul className={styles.incl}>
         {plan.features.map((feature) => (
@@ -26,7 +36,11 @@ export default function LabPlanCard({ plan, onChoose }: { plan: LabPlan; onChoos
           </li>
         ))}
       </ul>
-      <button type="button" className={`btn ${formStyles.go}`} onClick={() => onChoose(plan)}>
+      <button
+        type="button"
+        className={`btn ${formStyles.go}`}
+        onClick={() => onChoose(plan)}
+      >
         <span>Choose Plan &amp; Proceed</span>
         <span className="well" aria-hidden="true">
           <ArrowRight size={18} />

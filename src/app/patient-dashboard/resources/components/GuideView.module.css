@@ -1,0 +1,101 @@
+/* A guide page (GuideView, /patient-dashboard/resources/[slug]): its columns, the summary beside or above the text, the walk-through on its own. The player's frame (.guideTop .player) is in ResourcesPage.module.css. */
+
+.readPage {
+  max-width: calc(760px + var(--gutter) * 2);
+}
+.readFoot {
+  margin-top: 16px;
+}
+/* the injection walk-through, on its own: a centred column, no page heading above it */
+.focusCard {
+  max-width: 640px;
+  margin-inline: auto;
+  width: 100%;
+}
+/* a guide with no video: its summary takes the left column on a laptop, the top on a phone; the
+   plates that sit on paper inside the card get paper of their own out here on the canvas */
+.guideBrief {
+  display: grid;
+  margin-bottom: 16px;
+}
+.guideBrief > :last-child {
+  margin-bottom: 0;
+}
+@media (min-width: 1024px) {
+  .guideBrief {
+    margin-bottom: 0;
+  }
+}
+
+.byline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+.byline > span {
+  display: grid;
+  gap: 1px;
+}
+.byline strong {
+  font-size: 1rem;
+  font-weight: 560;
+}
+.byline > span > span {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.anchor {
+  scroll-margin-top: calc(var(--nav-h) + 16px);
+}
+
+/* a guide page: one column on a phone; on a laptop the video stays beside the text as it scrolls */
+/* on a phone the text sits straight on the canvas: the full width for the words, and no box around the summary box */
+@media (max-width: 1023px) {
+  /* the poster already names the presenter */
+  .byline {
+    display: none;
+  }
+  .textCard details > summary {
+    min-height: 50px;
+  }
+  .textCard {
+    gap: 16px;
+    padding: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+  }
+}
+.guidePage {
+  max-width: calc(760px + var(--gutter) * 2);
+}
+.guide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+@media (min-width: 1024px) {
+  .guidePage {
+    max-width: calc(1180px + var(--gutter) * 2);
+  }
+  .guide {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  /* the written guide spans both rows on the right; the care team's line closes the left column at
+     the card's bottom edge, so the two columns end together */
+  .guideText {
+    display: contents;
+  }
+  .guideText > section {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .guide .guideFoot {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: end;
+    margin: 0;
+  }
+}

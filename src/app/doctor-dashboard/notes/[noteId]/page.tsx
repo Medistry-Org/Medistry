@@ -1,10 +1,18 @@
-"use client";
+/*
+  /doctor-dashboard/notes/[noteId]?from=today|patient: one call note to check, edit and sign.
+  This server page sets the title and reads the id from the URL; NoteReviewView loads the note.
+*/
 
-import { useParams } from "next/navigation";
-import NoteReview from "../components/NoteReview";
+import type { Metadata } from "next";
+import NoteReviewView from "./components/NoteReviewView";
 
-/** /doctor-dashboard/notes/[noteId]: one call note to check, edit and sign. */
-export default function NoteReviewPage() {
-  const { noteId } = useParams<{ noteId: string }>();
-  return <NoteReview key={noteId} noteId={noteId} />;
+export const metadata: Metadata = { title: "Call note | Medistry" };
+
+export default async function NoteReviewPage({
+  params,
+}: {
+  params: Promise<{ noteId: string }>;
+}) {
+  const { noteId } = await params;
+  return <NoteReviewView key={noteId} noteId={noteId} />;
 }

@@ -69,6 +69,9 @@
   display: grid;
   gap: 16px;
 }
+.prejoin > a:last-child {
+  justify-self: center;
+}
 .prejoinCard {
   --card-gap: 14px;
   gap: var(--card-gap);
@@ -160,7 +163,7 @@
 }
 .endedLabel {
   color: var(--ink-3);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 560;
 }
 .ended h1 {
@@ -204,4 +207,8 @@
   .room {
     padding-inline: 7px;
   }
+}
+/* before and after the call the room is a page: the app's usual gutter; only the live stage runs near the edge */
+.room:not([data-live="true"]) {
+  padding-inline: var(--gutter);
 }

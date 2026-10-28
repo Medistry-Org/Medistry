@@ -1,0 +1,39 @@
+/* The delivery sheet (DeliverySheet): what is in the parcel. Sheet body and facts come from CarePage.module.css. */
+
+.groupHead {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+.items {
+  display: grid;
+  gap: 8px;
+}
+/* the facts under the list draw the closing line, so the list has only its top one */
+.items ul {
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+.items li {
+  display: grid;
+  gap: 1px;
+  padding: 10px 0;
+}
+.items li + li {
+  border-top: 1px solid var(--hair);
+}
+.items strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.items span {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+
+/* a laptop: body text a step larger, as on the rest of Care */
+@media (min-width: 1024px) {
+  .items strong {
+    font-size: 1.0625rem;
+  }
+}

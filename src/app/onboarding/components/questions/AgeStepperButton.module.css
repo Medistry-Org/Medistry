@@ -1,0 +1,39 @@
+/* The round minus and plus beside the age (AgeStepperButton). */
+
+.ageStep {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--hair-2);
+  color: var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 180ms var(--ease-out);
+}
+.ageStep:active:not(:disabled) {
+  transform: scale(0.94);
+}
+@media (hover: hover) and (pointer: fine) {
+  .ageStep:not(:disabled):hover {
+    background: var(--bg-2);
+  }
+}
+.ageStep:disabled {
+  color: var(--ink-3);
+  opacity: 0.45;
+  cursor: default;
+}
+.ageStep:focus-visible {
+  outline: 2px solid var(--signal-ink);
+  outline-offset: 2px;
+}

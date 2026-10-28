@@ -1,0 +1,72 @@
+/* Report sent (ReportSentScreen): the drawn seal and the ways on. Loaded after the page sheet, so .done
+   overrides the step's gap on a short phone. */
+
+.done {
+  padding-bottom: 56px;
+}
+.seal {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  background: var(--signal-wash);
+  color: var(--signal-ink);
+  animation: seal 520ms var(--ease-out) both;
+}
+@keyframes seal {
+  from {
+    opacity: 0;
+    transform: scale(0.86);
+  }
+}
+.seal svg {
+  clip-path: inset(0 100% 0 0);
+  animation: draw 620ms var(--ease-out) 220ms forwards;
+}
+@keyframes draw {
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .seal {
+    animation: none;
+  }
+  .seal svg {
+    animation: none;
+    clip-path: none;
+  }
+}
+
+.doneActions {
+  display: grid;
+  gap: 12px;
+}
+@media (min-width: 560px) {
+  .doneActions {
+    grid-auto-flow: column;
+    justify-content: start;
+  }
+  .doneActions :global(.btn) {
+    width: auto;
+    min-width: 232px;
+  }
+}
+
+/* report sent, on a shorter phone: closer together, so the way on stays in view */
+@media (max-height: 760px) and (max-width: 767px) {
+  .done {
+    gap: 14px;
+    padding-bottom: 24px;
+  }
+  .seal {
+    width: 48px;
+    height: 48px;
+  }
+}
+@media (max-height: 600px) and (max-width: 767px) {
+  .seal {
+    display: none;
+  }
+}

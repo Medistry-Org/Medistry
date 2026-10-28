@@ -4,21 +4,32 @@
 */
 
 import type { Screening } from "@/types/patientRecord";
+import ScreeningCard from "./ScreeningCard";
 import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import recordStyles from "../PatientRecordPage.module.css";
-import ScreeningCard from "./ScreeningCard";
 import styles from "./FirstConsultationPanel.module.css";
 
-export default function FirstConsultationPanel({ screening }: { screening: Screening | null }) {
+export default function FirstConsultationPanel({
+  screening,
+}: {
+  screening: Screening | null;
+}) {
   return (
-    <section id="first" className={`${clinicStyles.panel} ${recordStyles.full}`} aria-labelledby="first-heading">
+    <section
+      id="first"
+      className={`${clinicStyles.panel} ${recordStyles.full}`}
+      aria-labelledby="first-heading"
+    >
       <div className={clinicStyles.panelHead}>
         <h2 id="first-heading" className={clinicStyles.h2}>
           Before the first consultation
         </h2>
       </div>
       {screening && <ScreeningCard screening={screening} />}
-      <p className={clinicStyles.muted}>Nothing else is on record yet beyond the patient&apos;s answers. To collect on the call:</p>
+      <p className={clinicStyles.muted}>
+        Nothing else is on record yet beyond the patient&apos;s answers. To
+        collect on the call:
+      </p>
       <ul className={styles.collect}>
         <li>Allergies to medicines, and any reaction</li>
         <li>Medicines from other doctors</li>

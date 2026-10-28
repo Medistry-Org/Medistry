@@ -1,0 +1,118 @@
+/*
+  The 404 screen: one carbon page with the contour field, the wordmark top-left, and the message
+  centred in the remaining space. Phone first; the panel widens up to 36rem on larger screens.
+*/
+
+.page {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  min-height: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 32px;
+  padding: max(24px, env(safe-area-inset-top)) var(--gutter)
+    max(32px, env(safe-area-inset-bottom));
+  background-color: var(--slate-900);
+  background-image: var(--sheen), var(--carbon);
+  color: var(--on-dark);
+}
+
+.field {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+}
+
+.brand {
+  justify-self: start;
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  color: #fff;
+  text-decoration: none;
+}
+
+.panel {
+  align-self: center;
+  justify-self: center;
+  width: 100%;
+  max-width: 36rem;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.code {
+  margin: 0;
+  padding: 4px 10px;
+  border-radius: 7px;
+  background: rgb(238 239 240 / 0.08);
+  box-shadow: inset 0 0 0 1px var(--hair-dark);
+  color: var(--on-dark-2);
+  font-family: var(--font-display);
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.875rem, 1.35rem + 2.2vw, 3rem);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+.lede {
+  margin: 0;
+  max-width: 30rem;
+  color: var(--on-dark-2);
+  font-size: 1rem;
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+/* the address that was asked for, on its own line; long addresses wrap anywhere */
+.path {
+  display: block;
+  max-width: 100%;
+  padding: 6px 12px;
+  border-radius: 7px;
+  background: rgb(238 239 240 / 0.08);
+  color: var(--on-dark);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9375rem;
+  overflow-wrap: anywhere;
+  vertical-align: baseline;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.back {
+  gap: 8px;
+  min-height: 48px;
+}
+
+/* phones: the actions stack, full width, primary first */
+@media (max-width: 480px) {
+  .actions {
+    display: grid;
+    width: 100%;
+  }
+  /* outweighs the theme's .btn sizing so both actions share the full width */
+  .panel .actions > :is(a, button) {
+    width: 100%;
+    justify-content: center;
+  }
+}

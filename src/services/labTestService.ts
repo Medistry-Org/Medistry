@@ -1,89 +1,168 @@
 /**
- * Home blood tests (Redcliffe Labs, called by the Medistry backend only: it holds the secret key).
- * Every endpoint, with its Redcliffe call, is in docs/backend/lab-tests-redcliffe.md.
- *   GET  /api/labs/packages                      Redcliffe center-package-data
- *   GET  /api/labs/packages/:code                Redcliffe package-parameter-data
- *   GET  /api/labs/locations/search?query=       Redcliffe get-partner-location-2-eloc
- *   GET  /api/labs/locations/:eloc               Redcliffe get-partner-loc-2-eloc
- *   GET  /api/labs/serviceability?latitude&longitude   Redcliffe is-location-serviceable
- *   GET  /api/labs/slots?date&addressId          Redcliffe get-time-slot-list
- *   POST /api/labs/bookings                      Redcliffe center-create-booking (slot held 30 min)
- *   GET  /api/labs/bookings                      the patient's bookings (Medistry database)
- *   GET  /api/labs/bookings/:id                  + center-get-booking, booking-test-status, corporate-phlebo-tracking
- *   POST /api/labs/bookings/:id/reschedule       Redcliffe center-update-booking (rescheduled)
- *   POST /api/labs/bookings/:id/cancel           Redcliffe center-update-booking (cancelled)
- *   GET  /api/labs/bookings/:id/report           Redcliffe get-consolidated-report
+ * Home blood tests through Redcliffe Labs. The Medistry backend calls Redcliffe (it holds the secret
+ * key); each route below names the Redcliffe call behind it. Doc: docs/backend/lab-tests-redcliffe.md
+ *   GET  /api/labs/packages                           PROPOSED. Bookable packages (center-package-data)
+ *   GET  /api/labs/packages/:code                     PROPOSED. What a package tests (package-parameter-data)
+ *   GET  /api/labs/locations/search?query=            PROPOSED. Area search (get-partner-location-2-eloc)
+ *   GET  /api/labs/locations/:eloc                    PROPOSED. A place's coordinates (get-partner-loc-2-eloc)
+ *   GET  /api/labs/serviceability?latitude&longitude  PROPOSED. Whether collectors reach a point (is-location-serviceable)
+ *   GET  /api/labs/slots?date&addressId               PROPOSED. Collection windows on a day (get-time-slot-list)
+ *   POST /api/labs/bookings                           PROPOSED. Holds a slot for 30 minutes (center-create-booking)
+ *   GET  /api/labs/bookings                           PROPOSED. The patient's bookings (Medistry database)
+ *   GET  /api/labs/bookings/:id                       PROPOSED. One booking (center-get-booking, booking-test-status, corporate-phlebo-tracking)
+ *   POST /api/labs/bookings/:id/reschedule            PROPOSED. Moves it (center-update-booking, rescheduled)
+ *   POST /api/labs/bookings/:id/cancel                PROPOSED. Cancels it (center-update-booking, cancelled)
+ *   GET  /api/labs/bookings/:id/report                PROPOSED. A fresh link to the PDF (get-consolidated-report)
+ * Redcliffe's limits are checked before any call (labPatientProblem from lib/validation/labBookingRules,
+ * the 4-day window), so a screen gets a plain sentence instead of a failed booking at the last step.
  */
 
-import { ApiError, apiRequest, listFrom } from "@/lib/http/apiClient";
-import { combineDateAndTime } from "@/lib/format/dateTime";
-import type { LabBooking, LabCoordinates, LabPackage, LabPackageTests, LabPlaceMatch, LabServiceability, LabSlot, NewLabBooking } from "@/types/labTest";
+import {
+  ApiError,
+  apiRequest,
+  listFrom,
+  nullWhenMissing,
+} from "@/lib/http/apiClient";
+import { combineDateAndTime, toApiDate } from "@/lib/format/dateTime";
+import { labPatientProblem } from "@/lib/validation/labBookingRules";
+import type {
+  LabBooking,
+  LabCoordinates,
+  LabPackage,
+  LabPackageTests,
+  LabPlaceMatch,
+  LabServiceability,
+  LabSlot,
+  NewLabBooking,
+} from "@/types/labTest";
 
 type RequestOptions = Parameters<typeof apiRequest>[1];
+type RawLabBooking = Omit<LabBooking, "id" | "partnerBookingId"> & {
+  id: number | string;
+  partnerBookingId: number | string | null;
+};
+type RawSlot = {
+  slotId: number | string;
+  startTime: string;
+  endTime: string;
+  available: number;
+};
+
+/** Redcliffe books collections from today to today + 4 days. */
+const LAB_DAYS_AHEAD = 4;
 
 /** A backend without the endpoint answers 404 with an HTML page; say it in words instead. */
-async function labRequest<T>(path: string, options?: RequestOptions): Promise<T> {
+async function labRequest<T>(
+  path: string,
+  options?: RequestOptions,
+): Promise<T> {
   try {
     return await apiRequest<T>(path, options);
   } catch (caught) {
-    if (caught instanceof ApiError && caught.isMissingEndpoint && (caught.body === null || typeof caught.body !== "object")) {
-      throw new ApiError("Home blood tests are not available yet.", 404, caught.body);
+    if (
+      caught instanceof ApiError &&
+      caught.isMissingEndpoint &&
+      (caught.body === null || typeof caught.body !== "object")
+    ) {
+      throw new ApiError(
+        "Home blood tests are not available yet.",
+        404,
+        caught.body,
+      );
     }
     throw caught;
   }
 }
 
-/** For loaders: null means the backend does not have this endpoint yet, so the screen says so calmly. */
-async function nullWhenMissing<T>(load: Promise<T>): Promise<T | null> {
-  try {
-    return await load;
-  } catch (caught) {
-    if (caught instanceof ApiError && caught.isMissingEndpoint) return null;
-    throw caught;
-  }
-}
-
-type RawLabBooking = Omit<LabBooking, "id" | "partnerBookingId"> & { id: number | string; partnerBookingId: number | string | null };
-
 const toLabBooking = (raw: RawLabBooking): LabBooking => ({
   ...raw,
   id: String(raw.id),
-  partnerBookingId: raw.partnerBookingId === null ? null : String(raw.partnerBookingId),
+  partnerBookingId:
+    raw.partnerBookingId === null ? null : String(raw.partnerBookingId),
   collector: raw.collector ?? null,
   tests: raw.tests ?? [],
 });
 
-type RawSlot = { slotId: number | string; startTime: string; endTime: string; available: number };
-
-export async function listLabPackages(): Promise<LabPackage[] | null> {
-  return nullWhenMissing(labRequest("/api/labs/packages").then((body) => listFrom<LabPackage>(body)));
+function labDateProblem(date: string) {
+  const today = new Date();
+  const lastDay = new Date(
+    today.getFullYear(),
+    today.getMonth(),
+    today.getDate() + LAB_DAYS_AHEAD,
+  );
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return "Choose a collection day.";
+  if (date < toApiDate(today) || date > toApiDate(lastDay))
+    return `The lab collects from today up to ${LAB_DAYS_AHEAD} days ahead. Choose another day.`;
+  return null;
 }
 
-export async function getLabPackageTests(code: string): Promise<LabPackageTests> {
-  const body = await labRequest<{ data: LabPackageTests }>(`/api/labs/packages/${encodeURIComponent(code)}`);
+function slotProblem(slotId: string) {
+  return /^\d+$/.test(slotId) ? null : "Choose a collection time.";
+}
+
+/** Throws the first problem as an Error (screens show it with errorMessage). */
+function refuse(...problems: (string | null)[]) {
+  const problem = problems.find(Boolean);
+  if (problem) throw new Error(problem);
+}
+
+export async function listLabPackages(): Promise<LabPackage[] | null> {
+  return nullWhenMissing(() =>
+    labRequest("/api/labs/packages").then((body) => listFrom<LabPackage>(body)),
+  );
+}
+
+export async function getLabPackageTests(
+  code: string,
+): Promise<LabPackageTests> {
+  const body = await labRequest<{ data: LabPackageTests }>(
+    `/api/labs/packages/${encodeURIComponent(code)}`,
+  );
   return body.data;
 }
 
-export async function searchLabLocations(query: string): Promise<LabPlaceMatch[]> {
-  const body = await labRequest("/api/labs/locations/search", { query: { query } });
+export async function searchLabLocations(
+  query: string,
+): Promise<LabPlaceMatch[]> {
+  const body = await labRequest("/api/labs/locations/search", {
+    query: { query },
+  });
   return listFrom<LabPlaceMatch>(body);
 }
 
-export async function getLabLocationCoordinates(eloc: string): Promise<LabCoordinates> {
-  const body = await labRequest<{ data: LabCoordinates }>(`/api/labs/locations/${encodeURIComponent(eloc)}`);
+export async function getLabLocationCoordinates(
+  eloc: string,
+): Promise<LabCoordinates> {
+  const body = await labRequest<{ data: LabCoordinates }>(
+    `/api/labs/locations/${encodeURIComponent(eloc)}`,
+  );
   return body.data;
 }
 
-export async function checkLabServiceability(point: LabCoordinates): Promise<LabServiceability> {
-  const body = await labRequest<{ data: LabServiceability }>("/api/labs/serviceability", { query: point });
+export async function checkLabServiceability(
+  point: LabCoordinates,
+): Promise<LabServiceability> {
+  const body = await labRequest<{ data: LabServiceability }>(
+    "/api/labs/serviceability",
+    { query: point },
+  );
   return body.data;
 }
 
-/** The open collection windows on one day at a saved address. `date` is "YYYY-MM-DD". */
-export async function listLabSlots(date: string, addressId: number): Promise<LabSlot[]> {
-  const body = await labRequest<{ data: Record<"morning" | "afternoon" | "evening", RawSlot[]> }>("/api/labs/slots", { query: { date, addressId } });
-  const { morning = [], afternoon = [], evening = [] } = body.data ?? {};
-  return [...morning, ...afternoon, ...evening].map((slot) => ({
+/** The open collection windows on one day at a saved address. `date` is "YYYY-MM-DD", today to today + 4. */
+export async function listLabSlots(
+  date: string,
+  addressId: number,
+): Promise<LabSlot[]> {
+  refuse(labDateProblem(date));
+  const body = await labRequest<{
+    data: RawSlot[] | Record<string, RawSlot[]>;
+  }>("/api/labs/slots", { query: { date, addressId } });
+  // the documented answer is a flat list; the older grouped one ({ morning, afternoon, evening }) still reads
+  const slots = Array.isArray(body.data)
+    ? body.data
+    : Object.values(body.data ?? {}).flat();
+  return slots.map((slot) => ({
     id: String(slot.slotId),
     startsAt: combineDateAndTime(date, slot.startTime),
     endsAt: combineDateAndTime(date, slot.endTime),
@@ -92,34 +171,70 @@ export async function listLabSlots(date: string, addressId: number): Promise<Lab
 }
 
 /** Holds the slot for 30 minutes. Pay within that time (or it is confirmed at once when a plan covers it). */
-export async function createLabBooking(booking: NewLabBooking): Promise<LabBooking> {
-  const body = await labRequest<{ data: RawLabBooking }>("/api/labs/bookings", { method: "POST", body: booking });
-  return toLabBooking(body.data);
-}
-
-export async function listMyLabBookings(): Promise<LabBooking[] | null> {
-  return nullWhenMissing(labRequest("/api/labs/bookings").then((body) => listFrom<RawLabBooking>(body).map(toLabBooking)));
-}
-
-export async function getLabBooking(bookingId: string): Promise<LabBooking | null> {
-  return nullWhenMissing(labRequest<{ data: RawLabBooking }>(`/api/labs/bookings/${encodeURIComponent(bookingId)}`).then((body) => toLabBooking(body.data)));
-}
-
-export async function rescheduleLabBooking(bookingId: string, collectionDate: string, slotId: string): Promise<LabBooking> {
-  const body = await labRequest<{ data: RawLabBooking }>(`/api/labs/bookings/${encodeURIComponent(bookingId)}/reschedule`, {
+export async function createLabBooking(
+  booking: NewLabBooking,
+): Promise<LabBooking> {
+  refuse(
+    labDateProblem(booking.collectionDate),
+    slotProblem(booking.slotId),
+    labPatientProblem(booking.patient),
+  );
+  const body = await labRequest<{ data: RawLabBooking }>("/api/labs/bookings", {
     method: "POST",
-    body: { collectionDate, slotId },
+    body: booking,
   });
   return toLabBooking(body.data);
 }
 
-export async function cancelLabBooking(bookingId: string, reason: string): Promise<LabBooking> {
-  const body = await labRequest<{ data: RawLabBooking }>(`/api/labs/bookings/${encodeURIComponent(bookingId)}/cancel`, { method: "POST", body: { reason } });
+export async function listMyLabBookings(): Promise<LabBooking[] | null> {
+  return nullWhenMissing(() =>
+    labRequest("/api/labs/bookings").then((body) =>
+      listFrom<RawLabBooking>(body).map(toLabBooking),
+    ),
+  );
+}
+
+export async function getLabBooking(
+  bookingId: string,
+): Promise<LabBooking | null> {
+  return nullWhenMissing(() =>
+    labRequest<{ data: RawLabBooking }>(
+      `/api/labs/bookings/${encodeURIComponent(bookingId)}`,
+    ).then((body) => toLabBooking(body.data)),
+  );
+}
+
+export async function rescheduleLabBooking(
+  bookingId: string,
+  collectionDate: string,
+  slotId: string,
+): Promise<LabBooking> {
+  refuse(labDateProblem(collectionDate), slotProblem(slotId));
+  const body = await labRequest<{ data: RawLabBooking }>(
+    `/api/labs/bookings/${encodeURIComponent(bookingId)}/reschedule`,
+    {
+      method: "POST",
+      body: { collectionDate, slotId },
+    },
+  );
+  return toLabBooking(body.data);
+}
+
+export async function cancelLabBooking(
+  bookingId: string,
+  reason: string,
+): Promise<LabBooking> {
+  const body = await labRequest<{ data: RawLabBooking }>(
+    `/api/labs/bookings/${encodeURIComponent(bookingId)}/cancel`,
+    { method: "POST", body: { reason } },
+  );
   return toLabBooking(body.data);
 }
 
 /** A fresh link to the lab's PDF (Redcliffe's links can expire, so ask each time). */
 export async function getLabReportUrl(bookingId: string): Promise<string> {
-  const body = await labRequest<{ data: { url: string } }>(`/api/labs/bookings/${encodeURIComponent(bookingId)}/report`);
+  const body = await labRequest<{ data: { url: string } }>(
+    `/api/labs/bookings/${encodeURIComponent(bookingId)}/report`,
+  );
   return body.data.url;
 }

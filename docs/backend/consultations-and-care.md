@@ -1,48 +1,77 @@
-# Consultations, Care, Messages and the video room: backend endpoints
+# Consultations, Care, Messages and the video room
 
-Screens: `/dashboard/appointments`, `/dashboard/appointments/book`, `/dashboard/care`,
-`/dashboard/messages`, `/dashboard/messages/[doctorId]`, `/consultation/[appointmentId]`.
+## Purpose
 
-All responses use the usual envelope `{ success, message, data }`. Every endpoint below needs the
-signed-in user's `Authorization: Bearer <accessToken>` unless it says otherwise.
+What the patient's consultation screens call: booking a time, changing it, the care team, the
+Care tab's treatment, the chat and the video call (the video call and chat are shared with the
+doctor dashboard).
 
-## Endpoints these screens use today (already on the backend)
+- Screens: `/patient-dashboard/appointments`, `/patient-dashboard/appointments/book`,
+  `/patient-dashboard/care`, `/patient-dashboard/messages`, `/patient-dashboard/messages/[doctorId]`,
+  `/consultation/[appointmentId]`.
+- Services: `appointmentService`, `careTeamService`, `carePlanService`, `chatService`,
+  `videoConsultationService` (all in `src/services/`).
+- Types: `src/types/appointment.ts`, `doctor.ts` (`CareTeam`), `carePlan.ts`, `chat.ts`.
 
-| Method | Path | Used by | Service |
-| --- | --- | --- | --- |
-| GET | `/api/appointments/patient` | Appointments, Care, Messages, Chat header | `appointmentService.listMyAppointments` |
-| GET | `/api/doctors` (no auth) | Book, Care doctor sheet | `doctorDirectoryService.listBookableDoctors` |
-| GET | `/api/schedule/slots/:doctorId/:date` (no auth) | Book, Change time | `appointmentService.listDoctorSlots` |
-| PUT | `/api/schedule/book` `{ slotId, consultationType: "Virtual", reason }` | Book | `appointmentService.bookSlot` |
-| GET | `/api/subscriptions/status?userId=` and `/api/subscriptions/plans` | Care (programme card) | `subscriptionService` |
-| POST | `/api/chat/init` `{ doctorId }` | Chat | `chatService.startChatSession` |
-| Socket.IO | `join_consultation`, `send_consultation_message`, `receive_consultation_message`, `error_message` | Chat | `chatService.connectToChatSession` |
-| GET | `/api/video/appointments/:appointmentId/join` | Video room | `videoConsultationService.joinVideoConsultation` |
-| POST | `/api/video/appointments/:appointmentId/end` (doctor) | Video room | `videoConsultationService.endVideoConsultation` |
+## Endpoints
 
-`reason` on booking is the patient's "Reason / Symptoms", plus ` | Note: <notes>` when they add notes
-(the same format the original booking page sent).
+| Method | Path | Status | Service function | Screen |
+| --- | --- | --- | --- | --- |
+| GET | `/api/schedule/available-slots?date=YYYY-MM-DD` | PROPOSED | `appointmentService.listAvailableSlots` | Book a consultation |
+| GET | `/api/schedule/slots/:doctorId/:date` (no auth) | exists | `appointmentService.listDoctorSlots` | Appointments, Change time |
+| PUT | `/api/schedule/book` | exists | `appointmentService.bookSlot` | Book a consultation (prepaid) |
+| GET | `/api/appointments/patient` | exists | `appointmentService.listMyAppointments` | Appointments, Care, Messages, Home |
+| PATCH | `/api/appointments/:appointmentId/reschedule` | PROPOSED | `appointmentService.rescheduleAppointment` | Appointments, Change time |
+| GET | `/api/care-team` | PROPOSED | `careTeamService.getMyCareTeam` | Care, Messages, chat header |
+| GET | `/api/care/prescription/current` | PROPOSED | `carePlanService.loadCarePlan` | Care, "Your prescription" |
+| GET | `/api/care/medicine-orders` | PROPOSED | `carePlanService.loadCarePlan` | Care, deliveries |
+| POST | `/api/chat/init` | exists | `chatService.startChatSession` | Chat |
+| GET | `/api/chat/sessions/:sessionId/messages` | PROPOSED | `chatService.listChatHistory` | Chat (both dashboards) |
+| Socket.IO | `join_consultation`, `send_consultation_message`, `receive_consultation_message`, `error_message` | exists | `chatService.connectToChatSession` | Chat (both dashboards) |
+| GET | `/api/video/appointments/:appointmentId/join` | exists | `videoConsultationService.joinVideoConsultation` | Video room |
+| POST | `/api/video/appointments/:appointmentId/end` (doctor) | exists | `videoConsultationService.endVideoConsultation` | Video room |
 
-## Proposed endpoints (not on the backend yet)
+Also used here, documented elsewhere: `GET /api/eligibility` (patient-dashboard.md),
+`POST /api/payments/orders` with `CONSULTATION_FEE` (payments-razorpay.md),
+`GET /api/subscriptions/status` and `/plans` (patient-dashboard.md).
 
-The screens already call these. Until they exist the backend answers 404 and the screen shows a
-calm "not available yet" state; nothing is faked.
+## Requests and responses
 
-### PATCH `/api/appointments/:appointmentId/reschedule`
+### GET `/api/schedule/available-slots?date=YYYY-MM-DD` (PROPOSED)
 
-Used by: Appointments, "Change time" on a booked consultation (sheet with the doctor's open times).
-Service: `appointmentChangeService.rescheduleAppointment`.
+The times this patient may book on one day. The patient never chooses a doctor: before a
+care-team doctor exists, return every doctor's free slots merged (one slot per time is enough);
+after, only that doctor's. The backend maps the slot id back to its doctor when booking or paying.
+Leave out slots held by another patient's open checkout.
 
-Auth: the patient who owns the appointment. Only a `BOOKED` appointment can move, and only to an
-open slot of the same doctor. The old slot is released and the new one taken in one transaction.
+```json
+{
+  "success": true,
+  "data": [
+    { "SlotId": 300, "StartTime": "09:30", "EndTime": "10:00", "Status": "Available" },
+    { "SlotId": 301, "StartTime": "10:00", "EndTime": "10:30", "Status": "Available" }
+  ]
+}
+```
 
-Request:
+### PUT `/api/schedule/book` (exists)
+
+```json
+{ "slotId": 300, "consultationType": "Virtual", "reason": "Tired after meals | Note: evenings suit me" }
+```
+
+`reason` is the patient's "Reason / Symptoms", plus ` | Note: <notes>` when they add notes. Refuse
+(400 with a message) a patient who is not `APPROVED`, or has no unused prepaid consultation for a
+first consultation.
+
+### PATCH `/api/appointments/:appointmentId/reschedule` (PROPOSED)
+
+The patient who owns the appointment moves a `BOOKED` consultation to an open slot of the same
+doctor. Release the old slot and take the new one in one transaction.
 
 ```json
 { "slotId": 812 }
 ```
-
-Response 200:
 
 ```json
 {
@@ -53,21 +82,38 @@ Response 200:
 ```
 
 Errors: 409 when the slot was just taken (`"That time was just booked. Choose another."`), 400 when
-the appointment is not `BOOKED` or the slot belongs to another doctor.
+the appointment is not `BOOKED` or the slot belongs to another doctor. On 404 the sheet says
+"Changing the time is not available yet. Message your doctor to move it."
 
-On 404 the sheet says: "Changing the time is not available yet. Message your doctor to move it."
+### GET `/api/care-team` (PROPOSED)
 
-Not proposed: cancelling a consultation. The design has no cancel action for consultations (only
-for home blood tests, which belong to the lab screens).
+The doctor of the first consultation, added after that consultation. `doctor: null` until then.
+On 404 the screens use the doctors from `GET /api/appointments/patient`.
 
-### GET `/api/care/prescription/current`
+```json
+{
+  "success": true,
+  "data": {
+    "doctor": {
+      "id": 1,
+      "fullName": "Dr. Govind Singh",
+      "photoUrl": null,
+      "specialization": "Endocrinology",
+      "qualifications": "MBBS, MD",
+      "experience": "35 years",
+      "languages": ["English", "Hindi"],
+      "about": "",
+      "consultationFee": null,
+      "rating": null
+    }
+  }
+}
+```
 
-Used by: Care, "Your programme" card (the medicine line) and the "Your prescription" sheet.
-Service: `carePlanService.loadCarePlan`.
+### GET `/api/care/prescription/current` (PROPOSED)
 
-Auth: the patient. Returns the latest SIGNED prescription, or `data: null` when there is none.
-
-Response 200:
+The latest SIGNED prescription, or `data: null` when there is none. `pdfUrl` should be a
+short-lived signed URL; `version` above 1 shows "updated after your follow-up".
 
 ```json
 {
@@ -96,16 +142,10 @@ Response 200:
 }
 ```
 
-`pdfUrl` should be a short-lived signed URL. `version` above 1 shows "updated after your follow-up".
+### GET `/api/care/medicine-orders` (PROPOSED)
 
-### GET `/api/care/medicine-orders`
-
-Used by: Care, the delivery line on "Your programme" and the delivery sheet.
-Service: `carePlanService.loadCarePlan`.
-
-Auth: the patient. Newest first.
-
-Response 200:
+Newest first. `status` is `PLACED` | `PACKED` | `DISPATCHED` | `DELIVERED`; `history` holds each
+status reached, oldest first.
 
 ```json
 {
@@ -121,7 +161,6 @@ Response 200:
       "items": [{ "name": "Metformin 500 mg", "quantity": "60 tablets" }],
       "history": [
         { "status": "PLACED", "at": "2026-10-20T09:00:00+05:30", "note": "Order received" },
-        { "status": "PACKED", "at": "2026-10-20T15:10:00+05:30", "note": "Packed and sealed" },
         { "status": "DISPATCHED", "at": "2026-10-21T10:30:00+05:30", "note": "Handed to the courier" }
       ]
     }
@@ -129,19 +168,13 @@ Response 200:
 }
 ```
 
-`status` is one of `PLACED`, `PACKED`, `DISPATCHED`, `DELIVERED`. `history` holds each status reached,
-oldest first. When either care endpoint answers 404 the card says "Your prescription and medicine
-deliveries will show here. This is not available in the app yet."
+When either care endpoint answers 404 the card says "Your prescription and medicine deliveries will
+show here. This is not available in the app yet."
 
-### GET `/api/chat/sessions/:sessionId/messages`
+### GET `/api/chat/sessions/:sessionId/messages` (PROPOSED)
 
-Used by: Chat, to show earlier messages when the screen opens (the socket only carries new ones).
-Service: `chatHistoryService.listChatHistory`.
-
-Auth: the patient or doctor who is part of the session. Oldest first, same shape as the socket's
-`receive_consultation_message`.
-
-Response 200:
+Earlier messages when a chat opens (the socket only carries new ones), for the patient or doctor in
+the session. Oldest first, the same shape as the socket's `receive_consultation_message`.
 
 ```json
 {
@@ -154,16 +187,20 @@ Response 200:
 ```
 
 On 404 the chat opens empty and says "Earlier messages are not shown here yet."
-The socket should also stamp `sentAt` on every message it emits (the app stamps the arrival time
-when it is missing).
 
-## Parts of the design these screens leave out (no backend, nothing to call yet)
+## Notes
 
-- Past consultation notes (the doctor's summary and next steps under "Past consultations"). Needs a
-  signed consultation-summary endpoint; Appointments lists past consultations without notes.
-- Photos in chat (the design's camera button). Needs a file upload endpoint that returns a `fileUrl`
-  for `messageType: "FILE"`. Typing indicators and read receipts need socket events.
-- The dietitian (care team member, booking a dietitian call), diet plans and check-ins. The Care
-  tab design does not show diet plans or check-ins; the dietitian needs a care-team endpoint.
-- The dose-step ladder beside the medicine (needs the prescribed device and its dose steps).
-- Starting a programme and paying for it from Care: this lives on `/dashboard/plans` and checkout.
+- **Patients never pick a doctor.** `GET /api/doctors` is not called by the patient dashboard; Book
+  lists times from `available-slots`, and Care, Messages and the chat use `/api/care-team`.
+- **Paying for the first consultation.** With `consultationPaid: true` on `GET /api/eligibility`
+  (the lab-and-consultation care package prepaid it), Book calls `PUT /api/schedule/book` directly
+  and the backend uses up that consultation. With `consultationPaid: false` (the own-report path) the
+  chosen slot goes to checkout as `CONSULTATION_FEE` with `referenceId` = the slot id
+  (payments-razorpay.md); the backend books it once paid.
+- **Socket.** Please stamp `sentAt` on every message emitted (the app stamps the arrival time when
+  it is missing).
+- **Not proposed:** cancelling a consultation (the design has no cancel action for consultations).
+- **Design pieces left out** (no endpoint yet): past consultation notes under "Past consultations"
+  (needs a signed consultation-summary endpoint); photos in chat (needs an upload returning a
+  `fileUrl` for `messageType: "FILE"`); typing indicators and read receipts (socket events); the
+  dietitian, diet plans and check-ins; the dose-step ladder beside the medicine.

@@ -2,7 +2,11 @@
 
 import ConsultationRoom from "./components/ConsultationRoom";
 
-export default async function ConsultationPage({ params }: { params: Promise<{ appointmentId: string }> }) {
+export default async function ConsultationPage({
+  params,
+}: {
+  params: Promise<{ appointmentId: string }>;
+}) {
   const { appointmentId } = await params;
   return <ConsultationRoom appointmentId={appointmentId} />;
 }

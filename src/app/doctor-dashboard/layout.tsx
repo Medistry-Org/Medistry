@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function DoctorDashboardLayout({ children }: { children: ReactNode }) {
+export default function DoctorDashboardLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <DoctorShell>{children}</DoctorShell>;
 }

@@ -1,0 +1,39 @@
+/* Folding sections (a details row with a caret that turns): guide sections, help levels, Help and support questions. */
+
+.section {
+  border-bottom: 1px solid var(--hair);
+}
+.section summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 56px;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.section summary::-webkit-details-marker {
+  display: none;
+}
+.sectionBody {
+  display: grid;
+  gap: 12px;
+  padding-bottom: 20px;
+}
+.sectionBody > p {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.caret {
+  color: var(--ink-3);
+  transition: transform 240ms var(--ease-out);
+}
+details[open] > summary .caret {
+  transform: rotate(180deg);
+}

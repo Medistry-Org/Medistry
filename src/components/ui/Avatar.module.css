@@ -1,0 +1,19 @@
+/* Avatar: a round portrait, or initials on carbon when there is no photo. */
+
+.photo {
+  flex: none;
+  border-radius: 999px;
+  object-fit: cover;
+  background: var(--bg-2);
+}
+.initials {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: 999px;
+  background: var(--slate-800);
+  color: var(--on-dark);
+  font-family: var(--font-display);
+  font-weight: 520;
+  letter-spacing: 0.02em;
+}

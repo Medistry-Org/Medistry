@@ -27,7 +27,11 @@ export type Prescription = {
   items: PrescriptionItem[];
 };
 
-export type MedicineOrderStatus = "PLACED" | "PACKED" | "DISPATCHED" | "DELIVERED";
+export type MedicineOrderStatus =
+  | "PLACED"
+  | "PACKED"
+  | "DISPATCHED"
+  | "DELIVERED";
 
 /** One delivery from Medistry's pharmacy. `history` holds each status reached, oldest first. */
 export type MedicineOrder = {

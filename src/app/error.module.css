@@ -1,0 +1,13 @@
+/* The app-wide error screen: the page column fills the viewport, Try again above Go home. */
+
+.screen {
+  min-height: 100dvh;
+}
+.actions {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+.actions > :first-child {
+  justify-self: stretch;
+}

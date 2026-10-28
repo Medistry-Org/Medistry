@@ -1,0 +1,206 @@
+/* Home's strip (NextStepStrip): the next thing, as one line, and Chat beside it. */
+.strip {
+  display: flex;
+  gap: 8px;
+}
+.pill {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  height: clamp(48px, 8.6vh, 64px);
+  padding: 0 14px 0 clamp(4px, 0.8vh, 8px);
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.pill:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pill:hover {
+    box-shadow: inset 0 0 0 1px var(--ink-3);
+  }
+  .pill:hover .pillGo {
+    transform: translateX(2px);
+  }
+}
+.pillIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: clamp(38px, 6.8vh, 48px);
+  height: clamp(38px, 6.8vh, 48px);
+  border-radius: 999px;
+  background: var(--signal-wash);
+  color: var(--signal-ink);
+}
+.pillText {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+}
+.pillText strong,
+.pillText span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pillText strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.pillText span {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.pillText .compact {
+  display: none;
+}
+/* a phone under 390px: the day on the first line, the time and who on the second, so neither is cut */
+@media (max-width: 389px) {
+  .pillText .full {
+    display: none;
+  }
+  .pillText .compact {
+    display: block;
+  }
+}
+.pillGo {
+  flex: none;
+  color: var(--ink-3);
+  transition: transform 200ms var(--ease-out);
+}
+/* the call is open: the line turns into the button */
+.pill[data-tone="join"] {
+  background: var(--signal);
+  box-shadow: none;
+  color: var(--slate-950);
+}
+.pill[data-tone="join"] .pillIcon {
+  background: var(--slate-950);
+  color: var(--signal);
+}
+.pill[data-tone="join"] .pillText span,
+.pill[data-tone="join"] .pillGo {
+  color: var(--slate-900);
+}
+
+/* the next step is something to do (book, start the plan): the strip's one dark button */
+.pill[data-tone="act"] {
+  background: var(--slate-900);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+.pill[data-tone="act"] .pillIcon {
+  background: rgb(244 245 246 / 0.16);
+  color: var(--signal);
+}
+.pill[data-tone="act"] .pillText span,
+.pill[data-tone="act"] .pillGo {
+  color: var(--on-dark-2);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pill[data-tone="act"]:hover {
+    background: var(--slate-800);
+    box-shadow: none;
+  }
+}
+
+/* Chat: a round button, the icon over its name, in paper so the strip's one filled shape is the pill */
+.chat {
+  display: inline-grid;
+  flex: none;
+  place-content: center;
+  justify-items: center;
+  gap: 1px;
+  width: clamp(48px, 8.6vh, 64px);
+  height: clamp(48px, 8.6vh, 64px);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 560;
+  line-height: 1.1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.chat:active {
+  transform: scale(0.96);
+}
+@media (hover: hover) and (pointer: fine) {
+  .chat:hover {
+    background: var(--bg-2);
+  }
+}
+.chat svg {
+  color: var(--slate-800);
+}
+.chat {
+  position: relative;
+  text-decoration: none;
+}
+/* under 375px the pill's icon gives its room to the words, and Chat is a little smaller, so the
+   words read in full */
+@media (max-width: 374px) {
+  .pillIcon {
+    display: none;
+  }
+  .pill {
+    gap: 8px;
+    height: clamp(48px, 8.6vh, 56px);
+    padding-left: 18px;
+  }
+  .chat {
+    width: clamp(48px, 8.6vh, 56px);
+    height: clamp(48px, 8.6vh, 56px);
+  }
+}
+
+@media (min-width: 1024px) {
+  .pill,
+  .chat {
+    width: auto;
+    height: 64px;
+  }
+  .chat {
+    width: 64px;
+  }
+  .pillText strong {
+    font-size: 1.0625rem;
+  }
+  .pillText span {
+    font-size: 0.9375rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .strip {
+    grid-area: strip;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .chat,
+  .pillGo {
+    transition: none;
+  }
+}

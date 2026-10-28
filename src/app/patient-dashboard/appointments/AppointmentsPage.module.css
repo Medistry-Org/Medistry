@@ -1,0 +1,147 @@
+/*
+  Appointments (the design's Appointments.module.css, page parts only; the visit block itself is
+  the area's ConsultationVisit). Pills for controls, 20px surfaces (16px on phones).
+*/
+
+/* fill each line: on a phone, WebKit's "pretty" wrapping breaks early and costs a line per paragraph */
+.page :is(p, li, dd) {
+  text-wrap: wrap;
+}
+/* short lines never leave one word on a line of its own */
+.page p.empty,
+.sheetBody p.sheetMeta {
+  text-wrap: pretty;
+}
+
+.cols {
+  display: grid;
+  gap: 16px;
+}
+/* the app's one inset on every card; a size container so a visit can lay out by the card's width */
+.card {
+  --card-gap: 12px;
+  gap: var(--card-gap);
+  grid-template-columns: minmax(0, 1fr);
+  padding: var(--card-pad);
+  container-type: inline-size;
+}
+/* the head's own action: a short "+ Book" that never breaks onto two lines */
+.headBook {
+  flex: none;
+  white-space: nowrap;
+}
+/* the smallest phones: a 16px inset on every surface, as on Care */
+@media (max-width: 389px) {
+  .page {
+    --card-pad: 16px;
+  }
+}
+
+/* booked visits, a hairline between them */
+.list {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.list > * + * {
+  padding-top: 16px;
+  border-top: 1px solid var(--hair);
+}
+
+.empty {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.emptyBlock {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.cta {
+  justify-self: stretch;
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+  text-align: left;
+  line-height: 1.25;
+}
+.cta > span:first-child {
+  min-width: 0;
+}
+@media (min-width: 560px) {
+  .cta {
+    justify-self: start;
+    width: auto;
+    min-width: 320px;
+  }
+}
+
+/* past visits: what it was, when and with whom */
+.past {
+  display: grid;
+}
+.past > li {
+  display: grid;
+  gap: 6px;
+  padding: 12px 0;
+}
+.past > li:first-child {
+  padding-top: 0;
+}
+.past > li + li {
+  border-top: 1px solid var(--hair);
+}
+.pastHead {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.pastBy {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+/* changing the time: the booked time above the calendar */
+.sheetBody {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.sheetMeta {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* a laptop: what is booked as one strip, then past visits side by side, newest first */
+@media (min-width: 1024px) {
+  .cols {
+    gap: 20px;
+  }
+  /* as many columns as there are visits, up to three: never an empty column beside them */
+  .past {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px 32px;
+    align-items: start;
+  }
+  .past > li {
+    padding-top: 0;
+  }
+  .past > li + li {
+    border-top: 0;
+  }
+  .empty {
+    font-size: 1.0625rem;
+  }
+  .pastHead {
+    font-size: 1.0625rem;
+  }
+}
+
+/* short laptop screens: less air above the cards so three past visits fit without scrolling */
+@media (min-width: 1024px) and (max-height: 820px) {
+  main.page {
+    padding-top: 4px;
+    padding-bottom: 12px;
+  }
+}

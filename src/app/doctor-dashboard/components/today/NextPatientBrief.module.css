@@ -1,0 +1,41 @@
+/* NextPatientBrief: four facts in tiles on the dark plate; four across once the plate (its container) is 600px wide. */
+
+.brief {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  overflow: hidden;
+  border-radius: var(--r-media);
+  background: var(--hair-dark);
+}
+@container (min-width: 600px) {
+  .brief {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+.brief li {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  gap: 2px;
+  padding: 10px 12px;
+  background: rgb(10 11 12 / 0.6);
+}
+.brief span {
+  font-size: 0.8125rem;
+  color: var(--on-dark-3);
+}
+.brief strong {
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--on-dark);
+}
+.brief strong[data-warn="true"] {
+  color: color-mix(in srgb, var(--alert) 40%, var(--on-dark));
+}
+.note {
+  display: block;
+  margin-top: 2px;
+  font-style: normal;
+  font-size: 0.8125rem;
+  color: var(--on-dark-3);
+}

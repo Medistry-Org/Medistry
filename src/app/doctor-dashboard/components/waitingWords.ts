@@ -20,7 +20,7 @@ export const chipWords = (item: WaitingItem) =>
           : item.title.replace("Prescription version ", "Prescription v");
 
 /** The same in a few words, for a patient's row in a list. */
-export const flagWords = (item: WaitingItem) =>
+const flagWords = (item: WaitingItem) =>
   item.kind === "symptom"
     ? item.severity === "Severe"
       ? "Severe symptom"
@@ -35,10 +35,10 @@ export const flagWords = (item: WaitingItem) =>
           ? "Note to sign"
           : "To sign";
 
-/** Where an item opens; `from` lets the record's back link return to the list it came from. */
+/** Where an item opens; `from` lets the record's or the note's Back return to the list it came from. */
 export const itemHref = (item: WaitingItem, from = "today") =>
   item.kind === "note"
-    ? `/doctor-dashboard/notes/${item.id}`
+    ? `/doctor-dashboard/notes/${item.id}?from=${from}`
     : item.kind === "message"
       ? `/doctor-dashboard/messages?p=${item.patientId}`
       : `/doctor-dashboard/patients/${item.patientId}?from=${from}${item.kind === "lab" ? "#labs" : item.kind === "rx" ? "#prescriptions" : "#flagged"}`;
@@ -46,6 +46,7 @@ export const itemHref = (item: WaitingItem, from = "today") =>
 /** Each patient's most pressing item in words (the queue arrives most pressing first). */
 export function flagsByPatient(items: WaitingItem[]) {
   const flags = new Map<string, string>();
-  for (const item of items) if (!flags.has(item.patientId)) flags.set(item.patientId, flagWords(item));
+  for (const item of items)
+    if (!flags.has(item.patientId)) flags.set(item.patientId, flagWords(item));
   return flags;
 }

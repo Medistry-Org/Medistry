@@ -46,7 +46,7 @@
   padding: 4px 8px;
   border-radius: 7px;
   background: var(--hover-wash);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--slate-800);
 }
@@ -98,7 +98,7 @@
   background: var(--slate-900);
   color: var(--signal);
   font-family: var(--font-text);
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   text-align: center;
 }
@@ -124,10 +124,54 @@
   font-weight: 560;
 }
 
-.me span {
-  font-size: 0.75rem;
+.me div span {
+  font-size: 0.8125rem;
   line-height: 1.35;
   color: var(--ink-3);
+}
+
+/* sign out: the quiet text button where Arhaan's rail keeps its small account control (.reset) */
+.signOut {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font-family: inherit;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background-color 180ms var(--ease-out),
+    color 180ms var(--ease-out);
+}
+
+.rail .signOut {
+  align-self: center;
+  margin-top: -16px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .signOut:hover {
+    background: var(--hover-wash);
+    color: var(--ink);
+  }
+}
+
+.signOut:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.topMe {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* ---------- phone chrome ---------- */
@@ -182,7 +226,7 @@
   gap: 2px;
   padding: 7px 0 6px;
   border-radius: 999px;
-  font-size: 0.6875rem;
+  font-size: 0.8125rem;
   font-weight: 560;
   color: var(--on-dark-3);
   text-decoration: none;
@@ -219,7 +263,7 @@
   border-radius: 999px;
   background: var(--signal);
   color: var(--slate-950);
-  font-size: 0.625rem;
+  font-size: 0.8125rem;
   font-style: normal;
   font-weight: 700;
   line-height: 1.4;
@@ -251,33 +295,54 @@
 /* five places in the dock: the smallest phones take a smaller label */
 @media (max-width: 359px) {
   .dockTab {
-    font-size: 0.625rem;
+    font-size: 0.8125rem;
   }
 }
 
-/* a pushed screen (a call note under review): below a laptop it brings its own top and bottom bars */
+/*
+  A pushed screen (a loaded call note, marked data-own-bars): below a laptop it brings its own top and
+  bottom bars, so the shell's step aside. Its loading and error states keep the shell's.
+*/
 @media (max-width: 1023px) {
-  .app[data-bare="true"] .top,
-  .app[data-bare="true"] .dock {
+  .app:has([data-own-bars]) .top,
+  .app:has([data-own-bars]) .dock {
     display: none;
   }
-  .app[data-bare="true"] .main {
+  .app:has([data-own-bars]) .main {
     padding-bottom: 0;
   }
 }
 
 /* the toast sits above the dock on a phone, and above a pushed screen's sign bar */
-.toastLift {
+.toast {
   bottom: calc(96px + env(safe-area-inset-bottom));
 }
-.toastBare {
+.app:has([data-own-bars]) ~ .toast {
   bottom: calc(132px + env(safe-area-inset-bottom));
 }
 @media (min-width: 1024px) {
-  .toastLift {
+  .toast {
     bottom: 24px;
   }
-  .toastBare {
+  .app:has([data-own-bars]) ~ .toast {
     bottom: 96px;
   }
+}
+
+/* a long error (a path, an address) breaks inside the toast instead of running off the screen */
+.toast {
+  overflow-wrap: anywhere;
+}
+.toast > span {
+  min-width: 0;
+}
+
+/* the offline line above the page, as in the patient shell */
+.offline {
+  margin: 8px 0 0;
+  padding: 10px var(--gutter);
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+  text-align: center;
 }

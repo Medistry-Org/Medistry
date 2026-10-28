@@ -6,7 +6,11 @@
     "dev": "next dev -p 3001",
     "build": "next build",
     "start": "next start -p 3001",
-    "lint": "eslint"
+    "lint": "eslint",
+    "format": "prettier --write \"src/**/*.{ts,tsx,css,mjs}\" \"!src/components/landing/**\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,css,mjs}\" \"!src/components/landing/**\"",
+    "check:redcliffe": "node --no-warnings --conditions=react-server src/server/redcliffe/redcliffeClient.check.mjs",
+    "check:sign-in": "node --no-warnings src/lib/navigation/signInReturn.check.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",
@@ -16,6 +20,7 @@
     "ogl": "^1.0.11",
     "react": "19.2.8",
     "react-dom": "19.2.8",
+    "server-only": "^0.0.1",
     "socket.io-client": "^4.8.4"
   },
   "devDependencies": {
@@ -25,6 +30,10 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "playwright": "^1.63.0",
+    "prettier": "^3.6.2",
     "typescript": "^5"
+  },
+  "engines": {
+    "node": ">=22.18"
   }
 }

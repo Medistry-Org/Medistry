@@ -1,0 +1,20 @@
+/* Blood tests on Care (BloodTestsCard): the two actions side by side and the laptop's closing line. Rows and card come from CarePage.module.css. */
+
+/* only on a laptop, where the blood tests card has room to spare */
+.labsFoot {
+  display: none;
+}
+@media (min-width: 1024px) {
+  /* blood tests: a closing line straight under the rows (never pinned to the bottom edge, which
+     opened a gap in the middle of the card) */
+  .labsFoot {
+    display: block;
+    padding-top: 14px;
+    border-top: 1px solid var(--hair);
+  }
+}
+.pair {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(172px, 1fr));
+  gap: 8px;
+}

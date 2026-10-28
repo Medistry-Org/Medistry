@@ -1,0 +1,27 @@
+/* The line of past readings (WeightSparkline): its labelled highest and lowest rules. The line's box (.spark) is in HomePage.module.css, inside the weight card. */
+
+/* the highest and lowest readings, ruled and labelled: a laptop only */
+.sparkRule {
+  display: none;
+  stroke: var(--hair);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.sparkLabel {
+  position: absolute;
+  left: 0;
+  display: none;
+  padding-right: 8px;
+  background: var(--paper);
+  font-size: 0.875rem;
+  line-height: 1;
+  color: var(--ink-3);
+  transform: translateY(-50%);
+}
+
+@media (min-width: 1024px) {
+  .sparkRule,
+  .sparkLabel {
+    display: block;
+  }
+}

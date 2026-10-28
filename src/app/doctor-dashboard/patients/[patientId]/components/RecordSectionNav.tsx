@@ -11,7 +11,11 @@ import { useEffect, useRef, useState } from "react";
 import clinicStyles from "@/app/doctor-dashboard/styles/ClinicSurfaces.module.css";
 import styles from "./RecordSectionNav.module.css";
 
-export type RecordChip = { id: string; label: string; dot?: { label: string; urgent?: boolean } };
+export type RecordChip = {
+  id: string;
+  label: string;
+  dot?: { label: string; urgent?: boolean };
+};
 
 export default function RecordSectionNav({ chips }: { chips: RecordChip[] }) {
   const [active, setActive] = useState(chips[0]?.id ?? "");
@@ -37,14 +41,34 @@ export default function RecordSectionNav({ chips }: { chips: RecordChip[] }) {
             last = top;
           }
         }
-        const tapped = picked.current ? document.getElementById(picked.current)?.getBoundingClientRect().top : undefined;
-        if (picked.current && tapped !== undefined && Math.abs(tapped - last) <= 1) current = picked.current;
+        const tapped = picked.current
+          ? document.getElementById(picked.current)?.getBoundingClientRect().top
+          : undefined;
+        if (
+          picked.current &&
+          tapped !== undefined &&
+          Math.abs(tapped - last) <= 1
+        )
+          current = picked.current;
         // at the very bottom, the last section is the one being read
-        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = sections[sections.length - 1];
+        if (
+          window.innerHeight + window.scrollY >=
+          document.documentElement.scrollHeight - 4
+        )
+          current = sections[sections.length - 1];
         setActive(current);
-        const chip = bar.current?.querySelector<HTMLElement>(`[data-chip="${current}"]`);
+        const chip = bar.current?.querySelector<HTMLElement>(
+          `[data-chip="${current}"]`,
+        );
         const row = bar.current;
-        if (chip && row && (chip.offsetLeft < row.scrollLeft || chip.offsetLeft + chip.offsetWidth > row.scrollLeft + row.clientWidth)) row.scrollTo({ left: chip.offsetLeft - 16, behavior: "smooth" });
+        if (
+          chip &&
+          row &&
+          (chip.offsetLeft < row.scrollLeft ||
+            chip.offsetLeft + chip.offsetWidth >
+              row.scrollLeft + row.clientWidth)
+        )
+          row.scrollTo({ left: chip.offsetLeft - 16, behavior: "smooth" });
       });
     };
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -69,7 +93,13 @@ export default function RecordSectionNav({ chips }: { chips: RecordChip[] }) {
           }}
         >
           {chip.label}
-          {chip.dot && <i className={clinicStyles.dotWait} data-urgent={chip.dot.urgent || undefined} aria-label={chip.dot.label} />}
+          {chip.dot && (
+            <i
+              className={clinicStyles.dotWait}
+              data-urgent={chip.dot.urgent || undefined}
+              aria-label={chip.dot.label}
+            />
+          )}
         </a>
       ))}
     </nav>

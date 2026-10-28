@@ -1,0 +1,23 @@
+/* LoadingSkeleton: soft placeholders that breathe while a page loads (they hold still under reduced motion). */
+
+.skeleton {
+  display: grid;
+  gap: 16px;
+  padding-top: 64px;
+}
+.ghost {
+  display: block;
+  border-radius: var(--r-surface);
+  background: var(--bg-2);
+  animation: breathe 1400ms var(--ease-out) infinite alternate;
+}
+@keyframes breathe {
+  to {
+    opacity: 0.5;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ghost {
+    animation: none;
+  }
+}

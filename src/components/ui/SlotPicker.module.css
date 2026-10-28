@@ -1,3 +1,5 @@
+/* SlotPicker: the week switcher, the day row, the times grouped by part of day, and the confirm action. */
+
 .wrap {
   display: grid;
   gap: clamp(14px, 2.6vh, 24px);
@@ -125,11 +127,6 @@
   line-height: 1.1;
   letter-spacing: -0.02em;
 }
-.dayOpen {
-  font-size: 0.6875rem;
-  line-height: 1;
-  color: var(--ink-3);
-}
 
 .pickTime {
   display: grid;
@@ -254,47 +251,20 @@
 }
 
 /* the action stays in reach once a time is picked, like Continue in onboarding */
+/* --surface-bg: the card or sheet it sits on; --dock-clearance: the patient dock it must clear on a phone */
 .confirm {
   position: sticky;
-  bottom: 0;
+  bottom: var(--dock-clearance, 0px);
   z-index: 2;
   display: grid;
   gap: 8px;
   padding-block: 10px max(10px, env(safe-area-inset-bottom));
-  background: var(--bg);
+  background: var(--surface-bg, var(--bg));
 }
 .note {
   text-align: center;
 }
-
-/* the quiet way out: under Book on a phone, under the days on a laptop */
-.elsewhere {
-  justify-self: center;
-  min-height: 44px;
-  font-weight: 500;
-  color: var(--ink-2);
-  text-decoration: underline;
-  text-decoration-color: var(--hair-2);
-  text-underline-offset: 4px;
-}
-.elsewhere:focus-visible {
-  outline: 2px solid var(--signal-ink);
-  outline-offset: 2px;
-  border-radius: 7px;
-}
-
-/* wide (onboarding on a laptop): when on the left, times and the action on the right */
-.atWhen {
-  display: none;
-}
 @container (min-width: 720px) {
-  .atWhen {
-    display: inline-flex;
-    margin-top: 4px;
-  }
-  .atEnd {
-    display: none;
-  }
   .confirm .note[data-quiet="true"] {
     display: block;
   }
@@ -313,9 +283,6 @@
   .note {
     text-align: left;
   }
-  .elsewhere {
-    justify-self: start;
-  }
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
     gap: 8px;
@@ -331,7 +298,11 @@
   right: 0;
   bottom: 100%;
   height: 20px;
-  background: linear-gradient(to top, var(--bg), transparent);
+  background: linear-gradient(
+    to top,
+    var(--surface-bg, var(--bg)),
+    transparent
+  );
   pointer-events: none;
 }
 
@@ -343,40 +314,18 @@
   color: var(--signal-ink);
   text-decoration: none;
 }
-.mine {
-  font-size: 0.625rem;
-  font-weight: 600;
-  line-height: 1;
-}
-.currentKey {
-  display: none;
-}
 /* a narrow phone: four or five pill-shaped times to a row, never a squeezed circle; "Current" moves
    out of its chip into one line under the grid */
 @media (max-width: 389px) {
+  .days {
+    gap: 4px;
+  }
   .grid {
     grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
     gap: 6px;
   }
   .slot {
     padding: 0 10px;
-  }
-  .mine {
-    display: none;
-  }
-  .currentKey {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.8125rem;
-    color: var(--ink-3);
-  }
-  .currentKey i {
-    width: 22px;
-    height: 14px;
-    border-radius: 999px;
-    background: var(--signal-wash);
-    box-shadow: inset 0 0 0 1.5px var(--signal-ink);
   }
 }
 
@@ -448,9 +397,5 @@
   }
   .confirm {
     padding-top: 6px;
-  }
-  .elsewhere {
-    min-height: 44px;
-    margin-block: -4px;
   }
 }

@@ -12,6 +12,10 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function ConsultationLayout({ children }: { children: ReactNode }) {
+export default function ConsultationLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
   return <AppTheme>{children}</AppTheme>;
 }

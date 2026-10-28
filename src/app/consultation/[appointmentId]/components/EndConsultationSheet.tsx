@@ -8,7 +8,15 @@ import Sheet from "@/components/ui/Sheet";
 import ErrorNotice from "@/components/ui/ErrorNotice";
 import styles from "./ConsultationRoom.module.css";
 
-export default function EndConsultationSheet({ open, onClose, onEnd }: { open: boolean; onClose: () => void; onEnd: () => Promise<void> }) {
+export default function EndConsultationSheet({
+  open,
+  onClose,
+  onEnd,
+}: {
+  open: boolean;
+  onClose: () => void;
+  onEnd: () => Promise<void>;
+}) {
   const [ending, setEnding] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,13 +34,25 @@ export default function EndConsultationSheet({ open, onClose, onEnd }: { open: b
 
   return (
     <Sheet open={open} onClose={onClose} title="End this consultation?">
-      <p className={styles.confirmText}>The call ends for you and your patient.</p>
+      <p className={styles.confirmText}>
+        The call ends for you and your patient.
+      </p>
       {error && <ErrorNotice message={error} />}
       <div className={styles.confirmActions}>
-        <button type="button" className={styles.secondaryButton} onClick={onClose}>
+        <button
+          type="button"
+          className={styles.secondaryButton}
+          onClick={onClose}
+        >
           Stay on call
         </button>
-        <button type="button" className={styles.endButton} onClick={end} disabled={ending} aria-busy={ending}>
+        <button
+          type="button"
+          className={styles.endButton}
+          onClick={end}
+          disabled={ending}
+          aria-busy={ending}
+        >
           {ending ? "Ending" : "End call"}
         </button>
       </div>

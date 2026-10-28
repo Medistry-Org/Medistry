@@ -1,0 +1,19 @@
+/* The BMI line over its band (BmiReadout); the plate and hint rules it shares sit in the page sheet. */
+
+.bmiHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  min-height: 2rem;
+}
+.bmiHead span {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.bmiHead strong {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 520;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}

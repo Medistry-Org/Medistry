@@ -1,0 +1,13 @@
+/* Question 1, the name (NameQuestion): first and last name side by side, the "optional" note. */
+
+.two {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.opt {
+  margin-left: 4px;
+  font-weight: 450;
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}

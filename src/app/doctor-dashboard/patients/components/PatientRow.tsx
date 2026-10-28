@@ -12,32 +12,57 @@ import type { DoctorPatient } from "@/types/doctor";
 import type { PatientSnapshot } from "@/types/patientRecord";
 import styles from "../PatientsPage.module.css";
 
-const sexLetter = (sex: string) => (/^f/i.test(sex) ? "F" : /^m/i.test(sex) ? "M" : "");
+const sexLetter = (sex: string) =>
+  /^f/i.test(sex) ? "F" : /^m/i.test(sex) ? "M" : "";
 
-export default function PatientRow({ patient, snapshot, waiting, nextVisit }: { patient: DoctorPatient; snapshot: PatientSnapshot | null; waiting?: string; nextVisit?: string }) {
+export default function PatientRow({
+  patient,
+  snapshot,
+  waiting,
+  nextVisit,
+}: {
+  patient: DoctorPatient;
+  snapshot: PatientSnapshot | null;
+  waiting?: string;
+  nextVisit?: string;
+}) {
   const facts = [patient.age, sexLetter(patient.sex)].filter(Boolean).join(" ");
   const place = snapshot?.city || patient.mobile;
   const hba1c = snapshot?.latestHba1c;
   return (
-    <Link href={`/doctor-dashboard/patients/${patient.id}`} className={styles.prow}>
+    <Link
+      href={`/doctor-dashboard/patients/${patient.id}`}
+      className={styles.prow}
+    >
       <span className={styles.pwho}>
         <Avatar name={patient.fullName} size={40} />
         <span>
           <strong>{patient.fullName}</strong>
-          <span className="num">{[facts, place].filter(Boolean).join(", ")}</span>
+          <span className="num">
+            {[facts, place].filter(Boolean).join(", ")}
+          </span>
           <span className={styles.pnext}>
             {waiting && (
-              <em className={styles.waitText} data-kind={/symptom|urgent/i.test(waiting) ? "symptom" : "task"}>
+              <em
+                className={styles.waitText}
+                data-kind={/symptom|urgent/i.test(waiting) ? "symptom" : "task"}
+              >
                 {waiting}
               </em>
             )}
-            <span className="num">{nextVisit ? `Next ${shortDate(nextVisit)}` : "No visit booked"}</span>
+            <span className="num">
+              {nextVisit ? `Next ${shortDate(nextVisit)}` : "No visit booked"}
+            </span>
           </span>
         </span>
       </span>
       <span className={styles.pcell} data-label="Programme">
         {snapshot?.programme || "Not recorded"}
-        {snapshot?.careWeek && <span className={`${styles.pmuted} num`}>Week {snapshot.careWeek}</span>}
+        {snapshot?.careWeek && (
+          <span className={`${styles.pmuted} num`}>
+            Week {snapshot.careWeek}
+          </span>
+        )}
       </span>
       <span className={`${styles.pcell} num`} data-label="BMI">
         {snapshot?.bmi ?? "Not recorded"}

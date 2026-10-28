@@ -1,0 +1,27 @@
+/* PrescriptionItems: a prescription's medicines, one per line, and the advice under them. */
+
+.items {
+  display: grid;
+  gap: 8px;
+}
+
+.items li {
+  display: grid;
+  gap: 1px;
+}
+
+.items strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.items span {
+  font-size: 0.875rem;
+  color: var(--ink-2);
+}
+
+.advice {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}

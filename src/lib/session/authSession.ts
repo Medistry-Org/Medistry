@@ -5,10 +5,10 @@
  * Everything else calls these functions. Never read or write these keys anywhere else.
  */
 
-export type UserRole = "PATIENT" | "DOCTOR";
+type UserRole = "PATIENT" | "DOCTOR";
 
 /** What we keep about the signed-in person between page loads. */
-export type SessionUser = {
+type SessionUser = {
   userId: number | null;
   role: UserRole;
   fullName: string;
@@ -61,20 +61,39 @@ export function saveSession(params: {
   accessToken: string;
   refreshToken?: string | null;
   mobile: string;
-  user?: { id?: number | string; userId?: number | string; fullName?: string; name?: string } | null;
+  user?: {
+    id?: number | string;
+    userId?: number | string;
+    fullName?: string;
+    name?: string;
+  } | null;
 }): SessionUser {
   const claims = decodeTokenPayload(params.accessToken);
-  const role: UserRole = String(claims.role ?? "").toUpperCase() === "DOCTOR" ? "DOCTOR" : "PATIENT";
-  const rawId = params.user?.userId ?? params.user?.id ?? claims.userId ?? claims.id ?? claims.sub;
+  const role: UserRole =
+    String(claims.role ?? "").toUpperCase() === "DOCTOR" ? "DOCTOR" : "PATIENT";
+  const rawId =
+    params.user?.userId ??
+    params.user?.id ??
+    claims.userId ??
+    claims.id ??
+    claims.sub;
   const sessionUser: SessionUser = {
-    userId: rawId != null && !Number.isNaN(Number(rawId)) ? Number(rawId) : null,
+    userId:
+      rawId != null && !Number.isNaN(Number(rawId)) ? Number(rawId) : null,
     role,
-    fullName: String(params.user?.fullName ?? params.user?.name ?? claims.name ?? claims.fullName ?? ""),
+    fullName: String(
+      params.user?.fullName ??
+        params.user?.name ??
+        claims.name ??
+        claims.fullName ??
+        "",
+    ),
     mobile: params.mobile,
   };
 
   localStorage.setItem(STORAGE_KEYS.accessToken, params.accessToken);
-  if (params.refreshToken) localStorage.setItem(STORAGE_KEYS.refreshToken, params.refreshToken);
+  if (params.refreshToken)
+    localStorage.setItem(STORAGE_KEYS.refreshToken, params.refreshToken);
   localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(sessionUser));
   return sessionUser;
 }
@@ -83,7 +102,10 @@ export function saveSession(params: {
 export function updateSessionUser(changes: Partial<SessionUser>) {
   const current = getSessionUser();
   if (!current) return;
-  localStorage.setItem(STORAGE_KEYS.user, JSON.stringify({ ...current, ...changes }));
+  localStorage.setItem(
+    STORAGE_KEYS.user,
+    JSON.stringify({ ...current, ...changes }),
+  );
 }
 
 export function clearSession() {
@@ -93,5 +115,5 @@ export function clearSession() {
 
 /** Where a signed-in person lands. */
 export function homePathFor(role: UserRole) {
-  return role === "DOCTOR" ? "/doctor-dashboard" : "/dashboard";
+  return role === "DOCTOR" ? "/doctor-dashboard" : "/patient-dashboard";
 }

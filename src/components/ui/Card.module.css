@@ -1,0 +1,52 @@
+/*
+  Card: the heading row on top of the shared card surface (styles/CardSurface.module.css .card).
+  A card's title is the label of its section: a step quieter than the content's own first line, with
+  a short mint rule under it. The rule sits in the title's own box (its bottom padding), and the head
+  sets the gap under it: --title-gap, the same on every card, whatever gap the card keeps between
+  its other parts (a card module declares that as --card-gap).
+*/
+
+.card {
+  --title-gap: 14px;
+}
+@media (min-width: 1024px) {
+  .card {
+    --title-gap: 16px;
+  }
+}
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 44px;
+}
+.card > .cardHead {
+  align-items: flex-start;
+  min-height: 0;
+  margin-bottom: calc(var(--title-gap) - var(--card-gap, 20px));
+}
+/* an action in the head (a 44px link or button) centres on the title's first line and adds no height */
+.card > .cardHead > :is(a, button) {
+  margin-block: -10px;
+}
+.title {
+  position: relative;
+  padding-bottom: 11px;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+  color: var(--ink-2);
+}
+.title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 20px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--signal-ink);
+}

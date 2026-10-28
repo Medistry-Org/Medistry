@@ -1,0 +1,27 @@
+/* A step's label and date under its bar (StepLine); the bars themselves are CarePage.module.css's .steps, which the programme card's delivery also reaches. */
+
+.stepLabel {
+  font-size: 0.875rem;
+  line-height: 1.3;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+[data-state="done"] > .stepLabel {
+  font-weight: 450;
+  color: var(--ink-2);
+}
+[data-state="now"] > .stepLabel {
+  font-weight: 600;
+  color: var(--ink);
+}
+.stepWhen {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+@media (max-width: 389px) {
+  .stepLabel,
+  .stepWhen {
+    font-size: 0.8125rem;
+  }
+}

@@ -1,0 +1,72 @@
+/* One question screen (QuestionScreen): the return-visit note and the dock that holds Continue. */
+
+/* the return-visit note in the status line: the signal colour, briefly */
+.back {
+  color: var(--signal-ink);
+  font-weight: 560;
+  animation: fade 400ms var(--ease-out) both;
+}
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+/* the action: under the answer, centred on a phone, inline on a laptop */
+.dock {
+  z-index: 5;
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: clamp(10px, 2vh, 20px) 0 max(12px, env(safe-area-inset-bottom));
+  background: var(--bg);
+}
+.dock > p {
+  font-size: 0.875rem;
+}
+@media (min-width: 768px) {
+  .dock {
+    grid-template-columns: auto minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    gap: 24px;
+    margin-top: clamp(16px, 3vh, 40px);
+    padding-bottom: 24px;
+    background: none;
+  }
+  .dock :global(.btn) {
+    width: auto;
+    min-width: 232px;
+  }
+}
+/* short screens drop the reassurance line under Continue */
+@media (max-height: 700px) {
+  .dock > p {
+    display: none;
+  }
+}
+@media (max-height: 600px) {
+  .dock {
+    padding-top: 8px;
+  }
+}
+
+/* Continue before the answer is complete: it looks unavailable, and a tap says what is missing */
+.dock button[aria-disabled="true"] {
+  cursor: default;
+  --btn-bg: var(--bg-2);
+  --btn-fg: var(--ink-3);
+  --well-bg: var(--hair);
+  --well-fg: var(--ink-3);
+}
+.dock button[aria-disabled="true"]:active {
+  transform: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .dock button[aria-disabled="true"]:hover {
+    --btn-bg: var(--bg-2);
+  }
+  .dock button[aria-disabled="true"]:hover :global(.well) {
+    transform: none;
+  }
+}

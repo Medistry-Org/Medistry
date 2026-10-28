@@ -55,30 +55,54 @@ type RequestOptions = {
 function buildUrl(path: string, query?: RequestOptions["query"]) {
   const url = new URL(`${API_BASE_URL}${path}`);
   Object.entries(query ?? {}).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") url.searchParams.set(key, String(value));
+    if (value !== undefined && value !== null && value !== "")
+      url.searchParams.set(key, String(value));
   });
   return url.toString();
 }
 
+/** The sentence to show for a failed request: the backend's own message, else one by status. */
+function isNotAuthorisedBody(body: unknown) {
+  if (!body || typeof body !== "object") return false;
+  const error = String((body as { error?: unknown }).error ?? "").toUpperCase();
+  return (
+    error === "NOT_AUTHORISED" ||
+    error === "NOT_AUTHORIZED" ||
+    error === "NOT_AUTHENTICATED"
+  );
+}
+
 function messageFrom(body: unknown, status: number) {
   if (body && typeof body === "object") {
-    const b = body as { message?: unknown; error?: unknown };
-    if (typeof b.message === "string" && b.message) return b.message;
-    if (typeof b.error === "string" && b.error) return b.error;
+    const fields = body as { message?: unknown; error?: unknown };
+    if (typeof fields.message === "string" && fields.message)
+      return fields.message;
+    if (typeof fields.error === "string" && fields.error) return fields.error;
   }
   // a short plain-text reason is shown; an HTML error page (e.g. Express "Cannot GET") never is
-  if (typeof body === "string" && body && body.length < 200 && !body.trimStart().startsWith("<")) return body;
+  if (
+    typeof body === "string" &&
+    body &&
+    body.length < 200 &&
+    !body.trimStart().startsWith("<")
+  )
+    return body;
   if (status === 404) return "This feature is not available yet.";
   if (status === 401) return "Your session has ended. Please sign in again.";
   return "Something went wrong. Please try again.";
 }
 
-export async function apiRequest<TBody = ApiEnvelope<unknown>>(path: string, options: RequestOptions = {}): Promise<TBody> {
+export async function apiRequest<TBody = ApiEnvelope<unknown>>(
+  path: string,
+  options: RequestOptions = {},
+): Promise<TBody> {
   const { method = "GET", body, query, authenticated = true, signal } = options;
-  const isFormData = typeof FormData !== "undefined" && body instanceof FormData;
+  const isFormData =
+    typeof FormData !== "undefined" && body instanceof FormData;
 
   const headers: Record<string, string> = { Accept: "application/json" };
-  if (body !== undefined && !isFormData) headers["Content-Type"] = "application/json";
+  if (body !== undefined && !isFormData)
+    headers["Content-Type"] = "application/json";
   const token = authenticated ? getAccessToken() : null;
   if (token) headers.Authorization = `Bearer ${token}`;
 
@@ -87,13 +111,22 @@ export async function apiRequest<TBody = ApiEnvelope<unknown>>(path: string, opt
     response = await fetch(buildUrl(path, query), {
       method,
       headers,
-      body: body === undefined ? undefined : isFormData ? (body as FormData) : JSON.stringify(body),
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? (body as FormData)
+            : JSON.stringify(body),
       signal,
       cache: "no-store",
     });
   } catch (networkError) {
     if ((networkError as Error).name === "AbortError") throw networkError;
-    throw new ApiError("Cannot reach Medistry. Check your connection and try again.", 0, null);
+    throw new ApiError(
+      "Cannot reach Medistry. Check your connection and try again.",
+      0,
+      null,
+    );
   }
 
   const text = await response.text();
@@ -104,17 +137,37 @@ export async function apiRequest<TBody = ApiEnvelope<unknown>>(path: string, opt
     parsed = text;
   }
 
-  const failedBySuccessFlag = parsed !== null && typeof parsed === "object" && (parsed as ApiEnvelope<unknown>).success === false;
+  const failedBySuccessFlag =
+    parsed !== null &&
+    typeof parsed === "object" &&
+    (parsed as ApiEnvelope<unknown>).success === false;
+  // the backend answers a missing or expired sign-in with HTTP 200 and error "NOT_AUTHORISED"; treat it as a 401
+  const notAuthorised = response.status === 401 || isNotAuthorisedBody(parsed);
+  if (notAuthorised) {
+    if (token) clearSession();
+    throw new ApiError(
+      "Your session has ended. Please sign in again.",
+      401,
+      parsed,
+    );
+  }
   if (!response.ok || failedBySuccessFlag) {
-    if (response.status === 401 && token) clearSession();
-    throw new ApiError(messageFrom(parsed, response.status), response.status, parsed);
+    throw new ApiError(
+      messageFrom(parsed, response.status),
+      response.status,
+      parsed,
+    );
   }
   return parsed as TBody;
 }
 
 /** Turns any thrown value into a sentence a patient or doctor can read. */
-export function errorMessage(error: unknown, fallback = "Something went wrong. Please try again.") {
-  if (error instanceof ApiError || error instanceof Error) return error.message || fallback;
+export function errorMessage(
+  error: unknown,
+  fallback = "Something went wrong. Please try again.",
+) {
+  if (error instanceof ApiError || error instanceof Error)
+    return error.message || fallback;
   return fallback;
 }
 
@@ -137,4 +190,19 @@ export function listFrom<T>(body: unknown, nestedKey?: string): T[] {
     }
   }
   return [];
+}
+
+/**
+ * Runs a request and answers null instead of throwing when the backend does not have the endpoint
+ * yet (404), so a screen can show a calm "not available yet". Any other failure still throws.
+ */
+export async function nullWhenMissing<T>(
+  load: () => Promise<T>,
+): Promise<T | null> {
+  try {
+    return await load();
+  } catch (caught) {
+    if (caught instanceof ApiError && caught.isMissingEndpoint) return null;
+    throw caught;
+  }
 }

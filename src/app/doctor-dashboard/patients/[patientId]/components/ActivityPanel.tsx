@@ -8,7 +8,11 @@ import styles from "./ActivityPanel.module.css";
 
 export default function ActivityPanel({ record }: { record: PatientRecord }) {
   return (
-    <section id="activity" className={`${clinicStyles.panel} ${recordStyles.full}`} aria-labelledby="activity-heading">
+    <section
+      id="activity"
+      className={`${clinicStyles.panel} ${recordStyles.full}`}
+      aria-labelledby="activity-heading"
+    >
       <div className={clinicStyles.panelHead}>
         <h2 id="activity-heading" className={clinicStyles.h2}>
           Activity
@@ -16,8 +20,15 @@ export default function ActivityPanel({ record }: { record: PatientRecord }) {
         <span className={clinicStyles.muted}>Audit log</span>
       </div>
       <p className={styles.consents}>
-        <span className={clinicStyles.muted}>Consents</span> {record.consents.length ? record.consents.join(", ") : "None recorded"}
-        {record.careStartedAt && !record.consents.includes("Call transcription") && <span className={clinicStyles.muted}> (call transcription declined: no scribe draft, you write the note)</span>}
+        <span className={clinicStyles.muted}>Consents</span>{" "}
+        {record.consents.length ? record.consents.join(", ") : "None recorded"}
+        {record.careStartedAt &&
+          !record.consents.includes("Call transcription") && (
+            <span className={clinicStyles.muted}>
+              {" "}
+              (call transcription declined: no scribe draft, you write the note)
+            </span>
+          )}
       </p>
       {record.audit.length ? (
         <ul className={styles.audit}>
@@ -31,7 +42,9 @@ export default function ActivityPanel({ record }: { record: PatientRecord }) {
           ))}
         </ul>
       ) : (
-        <p className={clinicStyles.empty}>Every view and change to this record is logged here.</p>
+        <p className={clinicStyles.empty}>
+          Every view and change to this record is logged here.
+        </p>
       )}
     </section>
   );

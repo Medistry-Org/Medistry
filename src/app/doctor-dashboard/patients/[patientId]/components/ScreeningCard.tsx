@@ -21,13 +21,17 @@ export default function ScreeningCard({ screening }: { screening: Screening }) {
           <strong>Counsellor&apos;s screening</strong>
           <span>
             {screening.by}
-            {screening.byRole ? `, ${screening.byRole.toLowerCase()}` : ""} · phone, <span className="num">{screening.minutes}</span> min ·{" "}
+            {screening.byRole ? `, ${screening.byRole.toLowerCase()}` : ""} ·
+            phone, <span className="num">{screening.minutes}</span> min ·{" "}
             <span className="num">
               {shortDate(screening.at)}, {clockTime(new Date(screening.at))}
             </span>
           </span>
         </p>
-        <span className={clinicStyles.pill} data-tone={cautions ? "draft" : "ok"}>
+        <span
+          className={clinicStyles.pill}
+          data-tone={cautions ? "draft" : "ok"}
+        >
           {cautions ? "Fit to proceed, with cautions" : "Fit to proceed"}
         </span>
       </div>
@@ -46,10 +50,16 @@ export default function ScreeningCard({ screening }: { screening: Screening }) {
         </div>
         <div data-warn={cautions || undefined}>
           <dt>To check before prescribing</dt>
-          <dd>{cautions ? screening.check.join(". ") : "Nothing raised. Pregnancy plans, pancreatitis and gallbladder history were asked about."}</dd>
+          <dd>
+            {cautions
+              ? screening.check.join(". ")
+              : "Nothing raised. Pregnancy plans, pancreatitis and gallbladder history were asked about."}
+          </dd>
         </div>
       </dl>
-      <p className={styles.screenFoot}>What the patient told the counsellor, not yet confirmed by a doctor.</p>
+      <p className={styles.screenFoot}>
+        What the patient told the counsellor, not yet confirmed by a doctor.
+      </p>
     </div>
   );
 }

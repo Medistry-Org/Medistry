@@ -1,16 +1,30 @@
 /**
- * Consultations, from the patient's side.
- *   GET /api/schedule/slots/:doctorId/:date   a doctor's slots on a day (YYYY-MM-DD)
- *   PUT /api/schedule/book                    { slotId, consultationType, reason }
- *   GET /api/appointments/patient             the patient's consultations
- * toAppointment() is also used by doctorPortalService, so both dashboards read one shape.
+ * Consultations, from the patient's side. Doc: docs/backend/consultations-and-care.md
+ *   GET   /api/schedule/available-slots?date=         PROPOSED. The slots this patient may book on a day, doctor hidden
+ *   GET   /api/schedule/slots/:doctorId/:date         one doctor's open slots on a day (no auth)
+ *   PUT   /api/schedule/book                          books a slot { slotId, consultationType, reason }
+ *   GET   /api/appointments/patient                   the patient's consultations
+ *   PATCH /api/appointments/:appointmentId/reschedule PROPOSED. Moves a booked consultation to another slot { slotId }
+ * available-slots: before a care-team doctor is assigned, every doctor's free slots merged; after,
+ * only that doctor's. The backend maps the chosen slot to its doctor.
+ * toAppointment() is shared with doctorPortalService, so both dashboards read one shape.
  */
 
 import { apiRequest, listFrom } from "@/lib/http/apiClient";
 import { combineDateAndTime, toApiDate } from "@/lib/format/dateTime";
-import type { Appointment, AppointmentStatus, BookSlotRequest, DoctorSlot } from "@/types/appointment";
+import type {
+  Appointment,
+  AppointmentStatus,
+  BookSlotRequest,
+  DoctorSlot,
+} from "@/types/appointment";
 
-type RawSlot = { SlotId: number; StartTime: string; EndTime: string; Status?: string };
+type RawSlot = {
+  SlotId: number;
+  StartTime: string;
+  EndTime: string;
+  Status?: string;
+};
 
 /** The backend's appointment row. Fields differ a little between the patient and doctor lists. */
 export type RawAppointment = {
@@ -43,9 +57,20 @@ function toStatus(raw?: string): AppointmentStatus {
 }
 
 /** Maps a raw appointment row. `fallbackDate` is used when the row carries only a time. */
-export function toAppointment(raw: RawAppointment, fallbackDate?: string): Appointment {
-  const date = (raw.SlotDate ?? raw.AppointmentDate ?? fallbackDate ?? toApiDate(new Date())).slice(0, 10);
-  const patientName = raw.PatientName ?? raw.FirstName ?? (raw.PatientPhone ? `Patient ${raw.PatientPhone.slice(-4)}` : "Patient");
+export function toAppointment(
+  raw: RawAppointment,
+  fallbackDate?: string,
+): Appointment {
+  const date = (
+    raw.SlotDate ??
+    raw.AppointmentDate ??
+    fallbackDate ??
+    toApiDate(new Date())
+  ).slice(0, 10);
+  const patientName =
+    raw.PatientName ??
+    raw.FirstName ??
+    (raw.PatientPhone ? `Patient ${raw.PatientPhone.slice(-4)}` : "Patient");
   return {
     id: String(raw.AppointmentId ?? raw.id ?? ""),
     doctorId: raw.DoctorId != null ? String(raw.DoctorId) : null,
@@ -65,11 +90,9 @@ export function toAppointment(raw: RawAppointment, fallbackDate?: string): Appoi
   };
 }
 
-export async function listDoctorSlots(doctorId: number, day: Date): Promise<DoctorSlot[]> {
-  const date = toApiDate(day);
-  const body = await apiRequest(`/api/schedule/slots/${doctorId}/${date}`, { authenticated: false });
-  return listFrom<RawSlot>(body)
-    .filter((slot) => !slot.Status || slot.Status.toLowerCase() === "available")
+/** Slots on `date` that are still in the future, as the slot pickers read them. */
+function toFutureSlots(slots: RawSlot[], date: string): DoctorSlot[] {
+  return slots
     .map((slot) => ({
       slotId: Number(slot.SlotId),
       date,
@@ -77,7 +100,32 @@ export async function listDoctorSlots(doctorId: number, day: Date): Promise<Doct
       endTime: slot.EndTime?.slice(0, 5) ?? "",
       startsAt: combineDateAndTime(date, slot.StartTime),
     }))
-    .filter((slot) => slot.slotId && new Date(slot.startsAt).getTime() > Date.now());
+    .filter(
+      (slot) => slot.slotId && new Date(slot.startsAt).getTime() > Date.now(),
+    );
+}
+
+/** The patient's bookable slots on a day, across doctors (the patient never picks a doctor). */
+export async function listAvailableSlots(day: Date): Promise<DoctorSlot[]> {
+  const date = toApiDate(day);
+  const body = await apiRequest("/api/schedule/available-slots", {
+    query: { date },
+  });
+  return toFutureSlots(listFrom<RawSlot>(body), date);
+}
+
+export async function listDoctorSlots(
+  doctorId: number,
+  day: Date,
+): Promise<DoctorSlot[]> {
+  const date = toApiDate(day);
+  const body = await apiRequest(`/api/schedule/slots/${doctorId}/${date}`, {
+    authenticated: false,
+  });
+  const openSlots = listFrom<RawSlot>(body).filter(
+    (slot) => !slot.Status || slot.Status.toLowerCase() === "available",
+  );
+  return toFutureSlots(openSlots, date);
 }
 
 export async function bookSlot(request: BookSlotRequest): Promise<void> {
@@ -88,5 +136,16 @@ export async function listMyAppointments(): Promise<Appointment[]> {
   const body = await apiRequest("/api/appointments/patient");
   return listFrom<RawAppointment>(body, "appointments")
     .map((raw) => toAppointment(raw))
-    .sort((a, b) => a.startsAt.localeCompare(b.startsAt));
+    .sort((first, second) => first.startsAt.localeCompare(second.startsAt));
+}
+
+/** A 404 means the backend does not offer it yet; the Change time sheet says so. */
+export async function rescheduleAppointment(
+  appointmentId: string,
+  slotId: number,
+): Promise<void> {
+  await apiRequest(`/api/appointments/${appointmentId}/reschedule`, {
+    method: "PATCH",
+    body: { slotId },
+  });
 }

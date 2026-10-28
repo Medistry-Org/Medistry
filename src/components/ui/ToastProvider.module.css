@@ -1,0 +1,63 @@
+/*
+  ToastProvider: the confirmation at the foot of the screen. One line stays a pill; a longer one
+  wraps inside the gutters. It sits above an open sheet too, so feedback for a tap inside it is
+  always seen. With an undo it becomes a small control bar the thumb can use.
+*/
+
+.toast {
+  position: fixed;
+  z-index: 80;
+  left: 0;
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  width: fit-content;
+  max-width: calc(100vw - 2 * var(--gutter));
+  margin-inline: auto;
+  padding: 12px 18px;
+  border-radius: 22px;
+  background: var(--slate-900);
+  color: var(--on-dark);
+  font-size: 0.9375rem;
+  font-weight: 560;
+  line-height: 1.35;
+  text-align: center;
+  white-space: normal;
+  text-wrap: balance;
+  box-shadow: 0 16px 32px -18px rgb(10 11 12 / 0.5);
+  opacity: 0;
+  transform: translateY(16px);
+  transition:
+    opacity 200ms var(--ease-out),
+    transform 360ms var(--ease-out);
+  pointer-events: none;
+}
+.toast[data-show="true"] {
+  opacity: 1;
+  transform: none;
+}
+/* a long word or link still wraps inside the toast */
+.toast > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.toast[data-undo="true"] {
+  padding-block: 0;
+  padding-right: 0;
+}
+.toast[data-undo="true"][data-show="true"] {
+  pointer-events: auto;
+}
+.undo {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(236 237 239 / 0.08);
+  font: inherit;
+  font-weight: 600;
+  color: var(--signal-soft);
+  cursor: pointer;
+}

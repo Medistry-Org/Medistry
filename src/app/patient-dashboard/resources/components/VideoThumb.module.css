@@ -1,0 +1,17 @@
+/* A video's drawn thumbnail (VideoThumb): the play mark in its corner. The thumbnail itself is in ResourcesPage.module.css with the rows it sits in. */
+
+.thumbPlay {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--signal);
+  color: var(--slate-950);
+}
+.thumbPlay svg {
+  margin-left: 1px;
+}

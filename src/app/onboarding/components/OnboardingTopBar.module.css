@@ -1,0 +1,102 @@
+/* The onboarding top bar (OnboardingTopBar): back, the progress ruler graduated by question, save and exit. */
+
+.bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 16px;
+  padding: calc(6px + env(safe-area-inset-top)) var(--gutter) 6px;
+  background: var(--chrome-bg);
+  --chrome-blur: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: var(--chrome-blur);
+  backdrop-filter: var(--chrome-blur);
+}
+@media (prefers-reduced-transparency: reduce) {
+  .bar {
+    background: var(--bg);
+  }
+}
+.barStart {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.barEnd {
+  display: flex;
+  justify-content: flex-end;
+}
+.brand {
+  display: none;
+  color: var(--ink);
+  min-height: 44px;
+  min-width: 44px;
+  align-items: center;
+}
+.exitText {
+  display: none;
+}
+@media (min-width: 768px) {
+  .bar {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 440px) minmax(0, 1fr);
+    gap: 24px;
+  }
+  .brand {
+    display: inline-flex;
+  }
+  .exitText {
+    display: inline-flex;
+  }
+  .exitIcon {
+    display: none;
+  }
+}
+
+/* one ruler, graduated by question, with a wider gap between chapters */
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+}
+
+.chap {
+  display: flex;
+  gap: 3px;
+  flex-basis: 0;
+}
+.chap i {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--hair);
+  overflow: hidden;
+}
+.chap i::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--slate-800);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition:
+    transform 560ms var(--ease-drawer),
+    background-color 300ms var(--ease-out);
+}
+.chap i[data-state="done"]::after {
+  transform: none;
+}
+/* the question on screen: the one live mark, in the signal colour */
+.chap i[data-state="now"]::after {
+  transform: none;
+  background: var(--signal-ink);
+}
+@media (prefers-reduced-motion: reduce) {
+  .chap i::after {
+    transition: none;
+  }
+}

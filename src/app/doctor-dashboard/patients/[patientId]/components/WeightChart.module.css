@@ -1,0 +1,32 @@
+/* WeightChart: weight readings as points joined by a line, nothing projected. */
+
+.chart {
+  width: 100%;
+  min-height: 168px;
+}
+.grid {
+  stroke: var(--hair);
+  stroke-width: 1;
+}
+.axis {
+  font-size: 0.8125rem;
+  fill: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.line {
+  fill: none;
+  stroke: var(--slate-700);
+  stroke-width: 2;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.dot {
+  fill: var(--paper);
+  stroke: var(--slate-700);
+  stroke-width: 2;
+}
+.dotLast {
+  fill: var(--signal-ink);
+  stroke: var(--paper);
+  stroke-width: 2.5;
+}

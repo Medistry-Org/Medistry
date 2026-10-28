@@ -15,7 +15,16 @@ export type MedicalReport = {
   fileUrl: string | null;
   labBookingId: string | null;
   addedAt: string;
+  /** the back office's review, for reports that decide eligibility; null for other reports */
+  reviewStatus: "UNDER_REVIEW" | "APPROVED" | "NOT_APPROVED" | null;
+  reviewNote: string | null;
 };
 
 /** POST /api/reports (multipart). */
-export type NewReport = { file: File; reportDate: string; title: string };
+export type NewReport = {
+  file: File;
+  reportDate: string;
+  title: string;
+  /** ELIGIBILITY: the report a new patient uploads at the end of onboarding, sent for review */
+  purpose?: "ELIGIBILITY";
+};

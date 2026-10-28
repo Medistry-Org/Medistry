@@ -3,13 +3,9 @@
 import type { CSSProperties, RefObject } from "react";
 import { WarningCircle } from "@phosphor-icons/react";
 import formStyles from "@/components/ui/styles/FormControls.module.css";
-import { COUNTRY_CODE, spacedMobile } from "./PhoneStep";
-import styles from "../SignInPage.module.css";
-
-export const CODE_LENGTH = 4;
-const CELLS = Array.from({ length: CODE_LENGTH }, (_, i) => i);
-
-const minutesSeconds = (seconds: number) => `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+import { COUNTRY_CODE, spacedMobile } from "@/lib/format/phone";
+import pageStyles from "../SignInPage.module.css";
+import styles from "./CodeStep.module.css";
 
 type Props = {
   direction: 1 | -1;
@@ -27,35 +23,63 @@ type Props = {
   onResend: () => void;
 };
 
-export default function CodeStep({ direction, digits, code, error, shake, busy, verified, resendInSeconds, inputRef, onCode, onSubmit, onEditNumber, onResend }: Props) {
+const CODE_LENGTH = 4;
+const CELLS = Array.from({ length: CODE_LENGTH }, (_, i) => i);
+
+const minutesSeconds = (seconds: number) =>
+  `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+
+export default function CodeStep({
+  direction,
+  digits,
+  code,
+  error,
+  shake,
+  busy,
+  verified,
+  resendInSeconds,
+  inputRef,
+  onCode,
+  onSubmit,
+  onEditNumber,
+  onResend,
+}: Props) {
   return (
     <form
-      className={styles.step}
+      className={pageStyles.step}
       style={{ "--dir": direction } as CSSProperties}
-      onSubmit={(e) => {
-        e.preventDefault();
+      onSubmit={(event) => {
+        event.preventDefault();
         if (code.length === CODE_LENGTH) onSubmit(code);
       }}
       noValidate
     >
-      <div className={styles.head}>
-        <h1 id="sign-in-title" className={styles.title}>
+      <div className={pageStyles.head}>
+        <h1 id="sign-in-title" className={pageStyles.title}>
           Enter the code
         </h1>
-        <p className={styles.sub}>
+        <p className={pageStyles.sub}>
           Sent to{" "}
           <strong className="num">
             {COUNTRY_CODE} {spacedMobile(digits)}
           </strong>
           .{" "}
-          <button type="button" className={`${formStyles.link} ${styles.link} ${styles.inline}`} onClick={onEditNumber}>
+          <button
+            type="button"
+            className={`${formStyles.link} ${pageStyles.link} ${styles.inline}`}
+            onClick={onEditNumber}
+          >
             Edit
           </button>
         </p>
       </div>
 
       <div className={styles.otpWrap}>
-        <div className={styles.otp} data-state={verified ? "ok" : error ? "err" : undefined} data-shake={shake === 0 ? undefined : shake % 2 ? "1" : "2"}>
+        <div
+          className={styles.otp}
+          data-state={verified ? "ok" : error ? "err" : undefined}
+          data-shake={shake === 0 ? undefined : shake % 2 ? "1" : "2"}
+        >
           <input
             ref={inputRef}
             className={styles.otpInput}
@@ -69,16 +93,29 @@ export default function CodeStep({ direction, digits, code, error, shake, busy, 
             aria-describedby="sign-in-code-hint"
             value={code}
             disabled={verified}
-            onChange={(e) => {
-              const value = e.target.value.replace(/\D/g, "").slice(0, CODE_LENGTH);
+            onChange={(event) => {
+              const value = event.target.value
+                .replace(/\D/g, "")
+                .slice(0, CODE_LENGTH);
               onCode(value);
               if (value.length === CODE_LENGTH) onSubmit(value);
             }}
           />
           {CELLS.map((i) => {
-            const active = !verified && !busy && i === Math.min(code.length, CODE_LENGTH - 1) && code.length < CODE_LENGTH;
+            const active =
+              !verified &&
+              !busy &&
+              i === Math.min(code.length, CODE_LENGTH - 1) &&
+              code.length < CODE_LENGTH;
             return (
-              <span key={i} className={styles.cell} data-filled={i < code.length || verified} data-active={active} style={{ "--i": i } as CSSProperties} aria-hidden="true">
+              <span
+                key={i}
+                className={styles.cell}
+                data-filled={i < code.length || verified}
+                data-active={active}
+                style={{ "--i": i } as CSSProperties}
+                aria-hidden="true"
+              >
                 <span key={code[i] ?? ""} className={`${styles.digit} num`}>
                   {code[i]}
                 </span>
@@ -87,7 +124,12 @@ export default function CodeStep({ direction, digits, code, error, shake, busy, 
             );
           })}
         </div>
-        <p id="sign-in-code-hint" className={error ? styles.err : styles.hint} role={error ? "alert" : undefined} aria-live="polite">
+        <p
+          id="sign-in-code-hint"
+          className={error ? pageStyles.err : styles.hint}
+          role={error ? "alert" : undefined}
+          aria-live="polite"
+        >
           {error ? (
             <>
               <WarningCircle size={16} />
@@ -109,10 +151,16 @@ export default function CodeStep({ direction, digits, code, error, shake, busy, 
       <div className={styles.resend}>
         {resendInSeconds > 0 ? (
           <p className={styles.hint}>
-            Resend code in <span className="num">{minutesSeconds(resendInSeconds)}</span>
+            Resend code in{" "}
+            <span className="num">{minutesSeconds(resendInSeconds)}</span>
           </p>
         ) : (
-          <button type="button" className={`${formStyles.link} ${styles.link}`} onClick={onResend} disabled={busy || verified}>
+          <button
+            type="button"
+            className={`${formStyles.link} ${pageStyles.link}`}
+            onClick={onResend}
+            disabled={busy || verified}
+          >
             Send a new code
           </button>
         )}

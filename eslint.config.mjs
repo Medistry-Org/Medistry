@@ -29,7 +29,7 @@ const onlyOwnArea = (area) => ({
   message: `Files in src/app/${area} may import only their own area (@/app/${area}/...). Move shared code to src/components, src/services, src/hooks or src/lib.`,
 });
 
-const ROUTE_AREAS = ["dashboard", "doctor-dashboard", "sign-in", "onboarding", "consultation", "pricing"];
+const ROUTE_AREAS = ["patient-dashboard", "doctor-dashboard", "sign-in", "onboarding", "consultation", "pricing"];
 
 const ENV_ONLY_IN_LIB_AND_SERVICES = {
   group: ["@/config/env"],
@@ -72,6 +72,15 @@ export default defineConfig([
     },
   })),
 
+  // A feature is a self-contained flow used by more than one area (e.g. lab booking in onboarding and
+  // the dashboard): it may call services, but never imports a route folder.
+  {
+    files: ["src/features/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", { paths: [ONE_ICON_LIBRARY], patterns: [NO_UPWARD_RELATIVE_IMPORTS, NO_IMPORTS_FROM_ROUTES, ENV_ONLY_IN_LIB_AND_SERVICES] }],
+    },
+  },
+
   // The lib layer owns fetch, storage and configuration.
   {
     files: ["src/lib/**/*.{ts,tsx}"],
@@ -111,7 +120,7 @@ export default defineConfig([
             NO_UPWARD_RELATIVE_IMPORTS,
             NO_IMPORTS_FROM_ROUTES,
             ENV_ONLY_IN_LIB_AND_SERVICES,
-            { group: ["@/services/*"], message: "Shared components receive data as props. The page calls the service." },
+            { group: ["@/services/*", "@/features/*"], message: "Shared components receive data as props. The page (or a feature) calls the service." },
           ],
         },
       ],

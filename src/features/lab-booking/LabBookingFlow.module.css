@@ -1,0 +1,362 @@
+/*
+  Booking a home blood test: shared by every step of the flow (one stylesheet, as Arhaan's
+  Care.module.css serves his whole lab booking sheet). Packets, bill, "What is tested" and the
+  fasting note are his classes and values, unchanged. The host sets the width.
+*/
+
+/* plates (a package, an address, a note) sit on --plate-bg: the page tint inside a card, paper with a hairline when the flow sits on the page itself (onboarding) */
+.flow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  min-width: 0;
+}
+.flow :is(p, li, dd) {
+  text-wrap: wrap;
+}
+.sheetMeta {
+  display: grid;
+  gap: 6px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+  text-wrap: pretty;
+}
+.foot {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+  text-wrap: pretty;
+}
+.strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+.pill {
+  justify-content: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 6px 18px;
+  font-size: 0.9375rem;
+}
+.go {
+  flex: none;
+  color: var(--ink-3);
+}
+
+/* ---------- a list of choices: packages, addresses, places found ---------- */
+.packets {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+}
+.packet {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 72px;
+  padding: 12px 16px;
+  border: 0;
+  border-radius: var(--r-media);
+  background: var(--plate-bg, var(--bg));
+  box-shadow: var(--plate-ring, none);
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.packet:active {
+  transform: scale(0.985);
+}
+.packet:disabled {
+  cursor: default;
+}
+@media (hover: hover) and (pointer: fine) {
+  .packet:not(:disabled):hover {
+    background: var(--bg-2);
+  }
+}
+.packet[data-suggested] {
+  box-shadow: inset 0 0 0 1.5px var(--signal-ink);
+}
+.packetText {
+  display: grid;
+  gap: 3px;
+  flex: 1;
+  min-width: 0;
+}
+/* a long name pushes the price under it instead of squeezing into a narrow column */
+.packetHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2px 12px;
+}
+.packetHead strong {
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.packetPrice {
+  flex: none;
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--ink);
+}
+.listPrice {
+  margin-right: 6px;
+  font-weight: 400;
+  color: var(--ink-3);
+  text-decoration: line-through;
+}
+.packetWhat {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+/* a long lab description stays two lines in the list */
+.clamp {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+.tag {
+  justify-self: start;
+  margin: 2px 0 0;
+  max-width: 100%;
+  padding: 1px 7px;
+  border-radius: 7px;
+  background: var(--signal-wash);
+  font-style: normal;
+  font-size: 0.875rem;
+  font-weight: 560;
+  color: var(--signal-ink);
+}
+.spin {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  color: var(--ink-3);
+}
+
+/* ---------- onboarding: the care package card ---------- */
+.carePackages {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+}
+.carePackage {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+  padding: 20px;
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+}
+.carePackage .packetHead strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 520;
+  line-height: 1.2;
+}
+.carePackage .packetPrice {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+}
+.includes {
+  display: grid;
+  gap: 8px;
+}
+.includes li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 10px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+/* the brand's measuring tick as the bullet */
+.includes li::before {
+  content: "";
+  width: 2px;
+  height: 12px;
+  margin-top: 6px;
+  border-radius: 1px;
+  background: var(--signal-ink);
+}
+
+/* ---------- forms ---------- */
+.fields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.pairFields {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+.place {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 12px;
+  padding: 12px 14px;
+  border-radius: var(--r-media);
+  background: var(--plate-bg, var(--bg));
+  box-shadow: var(--plate-ring, none);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ---------- review ---------- */
+.facts {
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+.facts > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.facts dt {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.facts dd {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+.facts > div > div {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+/* a full 44px target that does not make the row taller */
+.facts button {
+  flex: none;
+  align-self: center;
+  min-height: 44px;
+  margin-block: -6px;
+}
+.bill {
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+.bill > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.bill dt {
+  display: grid;
+  gap: 1px;
+  font-size: 1rem;
+  font-weight: 560;
+}
+.bill dt small {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+.bill dd {
+  flex: none;
+  font-size: 1rem;
+  color: var(--ink-2);
+}
+.bill .total {
+  border-bottom: 0;
+}
+.bill .total dt,
+.bill .total dd {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 520;
+  color: var(--ink);
+}
+.tested {
+  border-block: 1px solid var(--hair);
+}
+.tested summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  list-style: none;
+  cursor: pointer;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--ink);
+  -webkit-tap-highlight-color: transparent;
+}
+.tested summary::-webkit-details-marker {
+  display: none;
+}
+.tested summary svg {
+  flex: none;
+  color: var(--ink-3);
+  transition: transform 240ms var(--ease-out);
+}
+.tested[open] summary svg {
+  transform: rotate(180deg);
+}
+.tested p {
+  padding-bottom: 12px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.fast {
+  padding: 12px 14px;
+  border-radius: var(--r-media);
+  background: var(--plate-bg, var(--bg));
+  box-shadow: var(--plate-ring, none);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .packet,
+  .tested summary svg {
+    transition: none;
+  }
+}
+
+/* gender: two equal halves, as wide as the age field beside it */
+.genderField > [role="radiogroup"] {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 100%;
+}
+.genderField > [role="radiogroup"] > button {
+  min-width: 0;
+  padding-inline: 8px;
+}
+
+/* "Remove" under a saved address: a quiet link with a full tap target, right-aligned under its row */
+.removeAddress {
+  display: block;
+  margin: 2px 0 0 auto;
+  min-height: 44px;
+  padding: 0 4px;
+  font-size: 0.875rem;
+}
