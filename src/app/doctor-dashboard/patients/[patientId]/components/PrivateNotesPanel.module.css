@@ -1,0 +1,28 @@
+/* Private notes, for the care team only. */
+
+.notes {
+  display: grid;
+}
+
+.notes li {
+  display: grid;
+  gap: 4px;
+  padding: 12px 0;
+  border-top: 1px solid var(--hair);
+}
+
+.notes p {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.notes span {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.noteForm {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}

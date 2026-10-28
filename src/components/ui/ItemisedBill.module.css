@@ -1,0 +1,46 @@
+/* an itemised price: what each line is for, the amount on the right, the total last (Arhaan's Care .bill) */
+.bill {
+  display: grid;
+  border-top: 1px solid var(--hair);
+}
+.bill > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hair);
+}
+.bill dt {
+  display: grid;
+  gap: 1px;
+  font-size: 1rem;
+  font-weight: 560;
+}
+.bill dt small {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+.bill dd {
+  flex: none;
+  font-size: 1rem;
+  color: var(--ink-2);
+}
+.bill .total {
+  border-bottom: 0;
+}
+.bill .total dt,
+.bill .total dd {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 520;
+  color: var(--ink);
+}
+
+/* a laptop: body text a step larger */
+@media (min-width: 1024px) {
+  .bill dt {
+    font-size: 1.0625rem;
+  }
+}

@@ -1,0 +1,147 @@
+/*
+  One booked consultation (the design's Appointments visit block), shared by Appointments and Care.
+  Pills for controls; the card it sits in must be a size container (container-type: inline-size).
+*/
+
+.pill {
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 18px;
+  font-size: 0.9375rem;
+}
+.visit {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+}
+.visitText {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.visitWhat {
+  font-size: 0.9375rem;
+  color: var(--ink-2);
+}
+.visitWhen {
+  text-wrap: balance;
+  font-family: var(--font-display);
+  font-size: 1.3125rem;
+  font-weight: 520;
+  letter-spacing: -0.012em;
+  line-height: 1.2;
+}
+.visitMeta {
+  margin-top: 2px;
+  text-wrap: balance;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.actions > .pill {
+  flex: 1 1 auto;
+  justify-content: center;
+  padding-inline: 14px;
+}
+.join {
+  flex: 1 1 auto;
+  justify-content: space-between;
+  min-height: 48px;
+}
+/*
+  A phone: the visit's first action (test the camera, or join) takes the row; the others share the
+  next one. Under 390px Add to calendar is its icon alone, a 44px round button.
+*/
+.actions > .lead {
+  flex: 1 1 100%;
+}
+.actions > .cal {
+  flex: none;
+  justify-content: center;
+  gap: 6px;
+  min-height: 44px;
+  padding: 6px 16px;
+  font-size: 0.9375rem;
+}
+.cal svg {
+  flex: none;
+}
+@media (max-width: 389px) {
+  .actions > .cal {
+    width: 44px;
+    padding: 0;
+  }
+  .calText {
+    display: none;
+  }
+}
+/* a phone with room for the words: the other actions share the row in equal parts */
+@media (min-width: 390px) and (max-width: 559px) {
+  .actions > .pill:not(.lead),
+  .actions > .cal {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-inline: 12px;
+  }
+}
+/* wider: every action on one line, Add to calendar as a quiet text action after the pills */
+@media (min-width: 560px) {
+  .actions > .pill,
+  .actions > .lead,
+  .join {
+    flex: 0 0 auto;
+  }
+  .actions > .cal {
+    margin-left: 4px;
+    padding: 0 4px;
+    --btn-bg: transparent;
+    box-shadow: none;
+    color: var(--slate-800);
+    font-weight: 560;
+  }
+}
+@media (min-width: 560px) and (hover: hover) and (pointer: fine) {
+  .actions > .cal:hover {
+    box-shadow: none;
+    text-decoration: underline;
+  }
+}
+
+@media (min-width: 1024px) {
+  .visitWhen {
+    white-space: nowrap;
+  }
+}
+
+/* a wide card: the time on the left, its actions on the right */
+@container (min-width: 621px) {
+  .visit {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 16px 24px;
+  }
+  .visit .actions {
+    justify-content: flex-end;
+  }
+  .visitWhen {
+    white-space: nowrap;
+  }
+}
+
+/* icons in a pill keep their size when the label is long */
+.pill svg {
+  flex: none;
+}
+
+/* a laptop: body text a step larger */
+@media (min-width: 1024px) {
+  .visitWhat {
+    font-size: 1rem;
+  }
+}

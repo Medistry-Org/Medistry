@@ -1,0 +1,60 @@
+"use client";
+
+/**
+ * Cancelling a booked home test, confirmed in a sheet. Redcliffe asks for a reason; an empty one is
+ * sent as the backend's default. Not possible once a collector is assigned.
+ */
+
+import { useState } from "react";
+import { ArrowRight } from "@phosphor-icons/react";
+import { errorMessage } from "@/lib/http/apiClient";
+import { cancelLabBooking } from "@/services/labTestService";
+import type { LabBooking } from "@/types/labTest";
+import ErrorNotice from "@/components/ui/ErrorNotice";
+import Sheet from "@/components/ui/Sheet";
+import formStyles from "@/components/ui/styles/FormControls.module.css";
+import { collectionWindow } from "./labBookingWording";
+import styles from "../LabTests.module.css";
+
+export default function CancelSheet({ booking, open, onClose, onCancelled }: { booking: LabBooking; open: boolean; onClose: () => void; onCancelled: (updated: LabBooking) => void }) {
+  const [reason, setReason] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const cancel = async () => {
+    if (busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      onCancelled(await cancelLabBooking(booking.id, reason.trim()));
+    } catch (caught) {
+      setError(errorMessage(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Sheet open={open} onClose={onClose} title="Cancel this test">
+      <div className={styles.actions}>
+        <p className={styles.text}>
+          {booking.packageName}, <span className="num">{collectionWindow(booking)}</span>.
+        </p>
+        <label className={formStyles.field}>
+          <span className={formStyles.label}>Reason (optional)</span>
+          <input className={formStyles.input} value={reason} maxLength={200} onChange={(e) => setReason(e.target.value)} placeholder="For example, I will be away" />
+        </label>
+        {error && <ErrorNotice message={error} />}
+        <button type="button" className={`btn ${formStyles.go}`} onClick={cancel} data-busy={busy} aria-busy={busy}>
+          <span>{busy ? "Cancelling" : "Cancel the test"}</span>
+          <span className="well" aria-hidden="true">
+            {busy ? <i className={formStyles.spin} /> : <ArrowRight size={18} />}
+          </span>
+        </button>
+        <button type="button" className={`btn btn--ghost ${styles.pill}`} onClick={onClose}>
+          Keep it
+        </button>
+      </div>
+    </Sheet>
+  );
+}

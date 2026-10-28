@@ -1,0 +1,22 @@
+/* Consents and the audit log of every view and change. */
+
+.audit {
+  display: grid;
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.audit li {
+  display: grid;
+  grid-template-columns: 132px minmax(0, 1fr);
+  gap: 12px;
+}
+
+.audit span {
+  color: var(--ink-3);
+}
+
+.consents {
+  font-size: 0.875rem;
+  line-height: 1.5;
+}

@@ -1,0 +1,949 @@
+/*
+  Home (Arhaan account/Home.module.css, without the medicine card). Home never scrolls on a phone:
+  every size follows the screen's height (vh inside clamp), so a short phone gets a tighter Home.
+  On a laptop the blocks pair up in two columns, each card as tall as what it holds.
+  Type: 14px for meta, 15px for secondary lines, 16px for row titles and buttons.
+*/
+
+
+.home {
+  --g: clamp(8px, 1.6vh, 16px);
+  --pad: clamp(12px, 2.2vh, 22px);
+  --tap: clamp(44px, 7.4vh, 52px);
+  display: flex;
+  flex-direction: column;
+  gap: var(--g);
+  max-width: calc(560px + var(--gutter) * 2);
+  margin-inline: auto;
+  /* the same top as the page head on Care, Resources and Profile, so the title never jumps */
+  padding: clamp(16px, 3vw, 36px) var(--gutter)
+    calc(32px + env(safe-area-inset-bottom));
+}
+
+/* ---------- greeting ---------- */
+.hello {
+  display: grid;
+  gap: 2px;
+  padding-top: clamp(4px, 1.5vh, 16px);
+  margin-bottom: calc(var(--g) * 0.25);
+}
+.h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  /* the same title size as every other tab, held back only on the narrowest phones */
+  font-size: min(clamp(1.875rem, 1.6rem + 1vw, 2.5rem), 9vw);
+  line-height: 1.1;
+  letter-spacing: -0.024em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+.sub {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+/* ---------- the next thing, as one line, and Chat beside it ---------- */
+.strip {
+  display: flex;
+  gap: 8px;
+}
+.pill {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: 12px;
+  height: clamp(48px, 8.6vh, 64px);
+  padding: 0 14px 0 clamp(4px, 0.8vh, 8px);
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--ink);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    box-shadow 200ms var(--ease-out);
+}
+.pill:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pill:hover {
+    box-shadow: inset 0 0 0 1px var(--ink-3);
+  }
+  .pill:hover .pillGo {
+    transform: translateX(2px);
+  }
+}
+.pillIcon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: clamp(38px, 6.8vh, 48px);
+  height: clamp(38px, 6.8vh, 48px);
+  border-radius: 999px;
+  background: var(--signal-wash);
+  color: var(--signal-ink);
+}
+.pillText {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.25;
+}
+.pillText strong,
+.pillText span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.pillText strong {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.pillText span {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+.pillText .compact {
+  display: none;
+}
+/* a phone under 390px: the day on the first line, the time and who on the second, so neither is cut */
+@media (max-width: 389px) {
+  .pillText .full {
+    display: none;
+  }
+  .pillText .compact {
+    display: block;
+  }
+}
+.pillGo {
+  flex: none;
+  color: var(--ink-3);
+  transition: transform 200ms var(--ease-out);
+}
+/* the call is open: the line turns into the button */
+.pill[data-tone="join"] {
+  background: var(--signal);
+  box-shadow: none;
+  color: var(--slate-950);
+}
+.pill[data-tone="join"] .pillIcon {
+  background: var(--slate-950);
+  color: var(--signal);
+}
+.pill[data-tone="join"] .pillText span,
+.pill[data-tone="join"] .pillGo {
+  color: var(--slate-900);
+}
+
+/* the next step is something to do (book, start the plan): the strip's one dark button */
+.pill[data-tone="act"] {
+  background: var(--slate-900);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+.pill[data-tone="act"] .pillIcon {
+  background: rgb(244 245 246 / 0.16);
+  color: var(--signal);
+}
+.pill[data-tone="act"] .pillText span,
+.pill[data-tone="act"] .pillGo {
+  color: var(--on-dark-2);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pill[data-tone="act"]:hover {
+    background: var(--slate-800);
+    box-shadow: none;
+  }
+}
+
+/* Chat: a round button, the icon over its name, in paper so the strip's one filled shape is the pill */
+.chat {
+  display: inline-grid;
+  flex: none;
+  place-content: center;
+  justify-items: center;
+  gap: 1px;
+  width: clamp(48px, 8.6vh, 64px);
+  height: clamp(48px, 8.6vh, 64px);
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  color: var(--ink);
+  font-size: 0.875rem;
+  font-weight: 560;
+  line-height: 1.1;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.chat:active {
+  transform: scale(0.96);
+}
+@media (hover: hover) and (pointer: fine) {
+  .chat:hover {
+    background: var(--bg-2);
+  }
+}
+.chat svg {
+  color: var(--slate-800);
+}
+.chat {
+  position: relative;
+  text-decoration: none;
+}
+/* a new message from the care team: one dot, no count, dark enough to read on paper */
+.chatDot {
+  position: absolute;
+  top: 9%;
+  right: 9%;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--signal-ink);
+  box-shadow: 0 0 0 2px var(--paper);
+}
+
+/* ---------- cards ---------- */
+.card {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  gap: calc(var(--g) * 0.6);
+  padding: var(--pad);
+  border-radius: var(--r-surface);
+  background: var(--paper);
+  box-shadow: 0 0 0 1px var(--hair);
+  overflow: clip;
+}
+.card :focus-visible {
+  outline-offset: 2px;
+}
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 22px;
+}
+.label {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--ink-2);
+}
+.go {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.9375rem;
+  font-weight: 560;
+  color: var(--slate-800);
+  transition: transform 200ms var(--ease-out);
+}
+/* the whole card is the link; the buttons inside sit above it */
+.stretch {
+  color: inherit;
+  text-decoration: none;
+}
+.stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+}
+.stretch:focus-visible {
+  outline: none;
+}
+.stretch:focus-visible::after {
+  outline: 2px solid var(--slate-800);
+  outline-offset: -2px;
+}
+.card:has(.stretch) {
+  cursor: pointer;
+  transition: box-shadow 200ms var(--ease-out);
+}
+@media (hover: hover) and (pointer: fine) {
+  .card:has(.stretch):hover {
+    box-shadow: 0 0 0 1px var(--hair-2);
+  }
+  .card:has(.stretch):hover .go {
+    transform: translateX(2px);
+  }
+}
+
+/* weight: label, reading, change and a quiet line of past readings, then the two actions */
+.weight {
+  grid-template-columns: auto auto minmax(0, 1fr);
+  grid-template-areas:
+    "head head head"
+    "big moved spark"
+    "act act act";
+  align-items: baseline;
+  column-gap: 14px;
+}
+.weight .head {
+  grid-area: head;
+}
+.big {
+  grid-area: big;
+}
+.moved {
+  grid-area: moved;
+}
+.spark {
+  grid-area: spark;
+}
+.actions {
+  grid-area: act;
+}
+.big {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 6vh, 3rem);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+.unit {
+  font-size: max(14px, 0.42em);
+  letter-spacing: 0;
+  color: var(--ink-3);
+}
+.none {
+  font-size: 0.6em;
+  letter-spacing: -0.01em;
+  color: var(--ink-3);
+}
+.moved {
+  white-space: nowrap;
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  color: var(--ink-2);
+}
+.moved:empty {
+  display: none;
+}
+.moved :global(.num) {
+  font-weight: 600;
+  color: var(--ink);
+}
+.tip {
+  grid-area: spark;
+  display: none;
+  align-self: center;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.spark {
+  position: relative;
+  display: none;
+  align-self: center;
+  justify-self: end;
+  width: 100%;
+  max-width: 120px;
+  height: 36px;
+}
+.spark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.spark path {
+  fill: none;
+  stroke: var(--slate-600);
+  stroke-width: 1.75;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.spark .sparkEnd {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--signal-ink);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+/* the highest and lowest readings, ruled and labelled: a laptop only */
+.sparkRule {
+  display: none;
+  stroke: var(--hair);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.sparkLabel {
+  position: absolute;
+  left: 0;
+  display: none;
+  padding-right: 8px;
+  background: var(--paper);
+  font-size: 0.875rem;
+  line-height: 1;
+  color: var(--ink-3);
+  transform: translateY(-50%);
+}
+@media (min-height: 700px) {
+  .spark {
+    display: block;
+  }
+}
+
+.actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: calc(var(--g) * 0.25);
+}
+.act {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--tap);
+  padding: 0 12px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--hair);
+  font-size: 1rem;
+  font-weight: 560;
+  white-space: nowrap;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.act svg {
+  flex: none;
+}
+.act:active {
+  transform: scale(0.97);
+}
+.actMain {
+  background: var(--slate-900);
+  box-shadow: none;
+  color: var(--on-dark);
+}
+.actMain svg {
+  color: var(--signal);
+}
+@media (hover: hover) and (pointer: fine) {
+  .act:hover {
+    background: var(--bg-2);
+  }
+  .actMain:hover {
+    background: var(--slate-800);
+  }
+}
+
+/* ---------- the third card: the programme, or the steps before it ---------- */
+.doseTitle {
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3vh, 1.375rem);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: -0.014em;
+}
+/* the title link is at least 44px tall without adding height to the card */
+.doseTitle .stretch {
+  display: inline-block;
+  padding-block: 10px;
+  margin-block: -10px;
+}
+.label .stretch {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
+}
+/* the programme before it starts: the same surface as the weight card */
+.quietLine {
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+.process {
+  display: none;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.process li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  border-top: 1px solid var(--hair);
+  font-size: 1rem;
+  color: var(--ink-2);
+}
+.process li:first-child {
+  border-top: 0;
+}
+.process svg {
+  flex: none;
+  color: var(--slate-700);
+}
+.quiet .doseTitle {
+  text-wrap: balance;
+}
+
+/* before the first consultation: the three steps on a measured line, the one in hand marked in
+   the signal colour, the ones done ticked in teal */
+.steps {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.steps li {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 12px;
+  padding-block: 5px;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  color: var(--ink-2);
+}
+/* the line joining one step to the next */
+.steps li:not(:last-child)::before {
+  content: "";
+  position: absolute;
+  left: 10.5px;
+  top: 27px;
+  bottom: -5px;
+  width: 1px;
+  background: var(--hair-2);
+}
+.steps i {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  color: var(--paper);
+}
+.steps li[data-state="now"] {
+  font-weight: 600;
+  color: var(--ink);
+}
+.steps li[data-state="now"] i {
+  background: var(--signal-wash);
+  box-shadow: inset 0 0 0 1.5px var(--signal-ink);
+}
+.steps li[data-state="now"] i::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--signal-ink);
+}
+.steps li[data-state="done"] i {
+  background: var(--slate-600);
+  box-shadow: none;
+}
+.stepDetail {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+/* the same three as one line, for the shortest phones */
+.stepsLine {
+  display: none;
+  overflow: hidden;
+  font-size: 0.9375rem;
+  line-height: 1.4;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--ink-3);
+}
+.stepsLine [data-state="now"] {
+  font-weight: 600;
+  color: var(--ink);
+}
+.stepsLine [data-state="done"] {
+  color: var(--slate-700);
+}
+.sep {
+  font-weight: 400;
+  color: var(--ink-3);
+}
+/* a mid-height phone shows the steps in place of the sentence; a tall one keeps the sentence above
+   them; the shorter ones keep the sentence and the steps as one line */
+@media (min-height: 700px) and (max-height: 799px) and (max-width: 1023px) {
+  .first .doseTitle {
+    display: none;
+  }
+}
+@media (max-height: 879px) and (max-width: 1023px) {
+  .first .quietLine {
+    display: none;
+  }
+}
+@media (max-height: 699px) and (max-width: 1023px) {
+  .steps {
+    display: none;
+  }
+  .stepsLine {
+    display: block;
+  }
+}
+@media (max-width: 339px) {
+  .stepsLine {
+    font-size: 0.875rem;
+  }
+}
+
+/* a short phone: labels move beside what they label, so each card loses a row */
+@media (max-width: 899px) {
+  /* the dock is 78px tall with its margin; this still leaves 14px of air above it */
+  .home.home {
+    padding-bottom: calc(82px + max(10px, env(safe-area-inset-bottom)));
+  }
+}
+
+/* a phone, at any height: the weight card reads top to bottom like the cards below it. Its name and
+   the way into Progress on one line, the reading under them, then one quiet line of what changed,
+   then the two actions. The line of past readings sits beside the reading where it fits. */
+@media (max-width: 899px) {
+  .weight {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "head head"
+      "big spark"
+      "moved moved"
+      "act act";
+    align-items: end;
+    column-gap: 16px;
+    row-gap: 0;
+  }
+  .weight .head {
+    margin-bottom: clamp(6px, 1.2vh, 12px);
+  }
+  .weight .big {
+    font-size: clamp(1.875rem, 5.4vh, 2.75rem);
+  }
+  .weight .moved {
+    min-width: 0;
+    margin-top: clamp(4px, 0.8vh, 8px);
+    white-space: normal;
+    text-wrap: pretty;
+    font-size: 0.875rem;
+    color: var(--ink-3);
+  }
+  .weight .moved :global(.num) {
+    color: var(--ink-2);
+  }
+  .weight .spark {
+    align-self: center;
+    min-width: 0;
+    max-width: 112px;
+    height: clamp(28px, 4.4vh, 36px);
+  }
+  .weight .actions {
+    margin-top: clamp(10px, 1.8vh, 16px);
+  }
+}
+
+/* the shortest and narrowest phones: the greeting keeps its title, the quiet card its heading */
+@media (max-height: 679px) and (max-width: 899px) {
+  .weight .head {
+    margin-bottom: 4px;
+  }
+  .weight .moved {
+    margin-top: 2px;
+  }
+}
+/* a phone up to 720px tall: the greeting alone, so the cards keep their room */
+@media (max-height: 720px) and (max-width: 899px) {
+  .sub {
+    display: none;
+  }
+}
+@media (max-height: 600px) and (max-width: 899px), (max-width: 339px) {
+  .sub {
+    display: none;
+  }
+  .quiet .quietLine {
+    display: none;
+  }
+}
+/* the shortest phones: the bar above is 44px here (Dashboard.module.css), and its 20px goes into the
+   cards' own padding and the gaps between them, so nothing reads as crammed */
+@media (max-height: 600px) and (max-width: 899px) {
+  .home {
+    --g: 10px;
+    --pad: 14px;
+    padding-top: 10px;
+  }
+  .hello {
+    padding-top: 0;
+    margin-bottom: 4px;
+  }
+  /* the line of past readings is not drawn this short, so what changed takes its place beside the
+     reading and the card loses a row */
+  .weight {
+    grid-template-areas:
+      "head head"
+      "big moved"
+      "act act";
+  }
+  .weight .big,
+  .weight .moved {
+    align-self: baseline;
+  }
+  .weight .moved {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 374px) {
+  /* the greeting on one line, so the cards below keep their room */
+  .h1 {
+    font-size: clamp(1.5rem, 7.6vw, 2.25rem);
+  }
+}
+/* a 320px phone: the pill's icon, the card's link words and the button icons give their room to the words */
+@media (max-width: 339px) {
+  .act svg {
+    display: none;
+  }
+}
+/* under 375px the pill's icon gives its room to the words, and Chat is a little smaller, so the
+   words read in full */
+@media (max-width: 374px) {
+  .pillIcon {
+    display: none;
+  }
+  .pill {
+    gap: 8px;
+    height: clamp(48px, 8.6vh, 56px);
+    padding-left: 18px;
+  }
+  .chat {
+    width: clamp(48px, 8.6vh, 56px);
+    height: clamp(48px, 8.6vh, 56px);
+  }
+}
+
+/* a tall phone (800px and up), once the doctor has suggested a plan: the three plain facts about it, as on a laptop, in what would otherwise be empty above the dock */
+@media (min-height: 800px) and (min-width: 360px) and (max-width: 1023px) {
+  .process {
+    display: grid;
+  }
+  .process li {
+    min-height: 48px;
+    font-size: 0.9375rem;
+  }
+  .process + .quietLine {
+    display: none;
+  }
+}
+/* 800 to 839px tall: the same three, in tighter rows, so the card fills the room and Home still never scrolls */
+@media (min-height: 800px) and (max-height: 839px) and (min-width: 360px) and (max-width: 1023px) {
+  .process li {
+    min-height: 36px;
+  }
+}
+
+/* ---------- laptop: two columns, the same blocks, each card as tall as what it holds ---------- */
+@media (min-width: 1024px) {
+  .home {
+    --g: 20px;
+    --pad: var(--card-pad);
+    --tap: 52px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: end;
+    gap: clamp(20px, 3.2vh, 32px) 24px;
+    max-width: calc(1180px + var(--gutter) * 2);
+    padding-block: clamp(16px, 3vw, 36px) clamp(24px, 5vh, 56px);
+  }
+  .hello {
+    gap: 6px;
+    margin: 0;
+  }
+  .h1 {
+    font-size: clamp(1.875rem, 1.6rem + 1vw, 2.5rem);
+  }
+  .sub {
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+  .pill,
+  .chat {
+    width: auto;
+    height: 64px;
+  }
+  .chat {
+    width: 64px;
+  }
+  .pillText strong {
+    font-size: 1.0625rem;
+  }
+  .pillText span {
+    font-size: 0.9375rem;
+  }
+  /* each card as tall as what it holds, so neither is an empty slab */
+  .card {
+    align-self: start;
+    align-content: start;
+    gap: 16px;
+  }
+  .label {
+    font-size: 1rem;
+  }
+  .weight {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "head head"
+      "big moved"
+      "spark spark"
+      "act act";
+  }
+  .moved {
+    font-size: 1.0625rem;
+  }
+  .tip {
+    display: block;
+    align-self: center;
+    max-width: 34ch;
+    font-size: 1.0625rem;
+  }
+  /* the line with room to read: a fixed height, the highest and lowest readings labelled */
+  .spark {
+    display: block;
+    align-self: stretch;
+    width: 100%;
+    height: clamp(120px, 20vh, 180px);
+    max-width: none;
+    margin-block: 4px;
+    padding-left: 48px;
+  }
+  .sparkRule,
+  .sparkLabel {
+    display: block;
+  }
+  .big {
+    font-size: 3.5rem;
+  }
+  .act {
+    font-size: 1.0625rem;
+  }
+  .doseTitle {
+    font-size: 2rem;
+  }
+  .process {
+    display: grid;
+  }
+  .process + .quietLine {
+    display: none;
+  }
+}
+
+/* laptop: the greeting alone on the first row; under it the weight card on the left, and on the
+   right the next-step strip with the dose card below it. The two columns share their top and their
+   bottom: the taller side sets the height and the other side's card stretches to meet it, its
+   action (or the pen's track) settling at the foot rather than leaving a gap under the card. */
+@media (min-width: 1024px) {
+  .home {
+    grid-template-areas:
+      "hello ."
+      "weight strip"
+      "weight dose";
+    grid-template-rows: auto auto minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .hello {
+    grid-area: hello;
+  }
+  .strip {
+    grid-area: strip;
+  }
+  .card.weight {
+    grid-area: weight;
+    align-self: stretch;
+    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    align-content: stretch;
+  }
+  .card.dose {
+    grid-area: dose;
+    align-self: stretch;
+    display: flex;
+    flex-direction: column;
+  }
+  .first .quietLine {
+    display: block;
+    margin-top: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pill,
+  .chat,
+  .act,
+  .pillGo,
+  .go {
+    transition: none;
+  }
+}
+
+/* a link inside a step of a card that is itself a link: it sits above the card's own link */
+.stepLink {
+  position: relative;
+  z-index: 1;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+/* Home has one action under the weight: it takes the whole row */
+.actions > :only-child {
+  grid-column: 1 / -1;
+}
+
+/* the weight sheet: when the reading the box starts on was taken (Arhaan Logs.module.css) */
+.lastChip {
+  justify-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  margin-bottom: -4px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: var(--bg-2);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--ink-2);
+}
+.lastChip strong {
+  font-weight: 600;
+  color: var(--ink);
+}

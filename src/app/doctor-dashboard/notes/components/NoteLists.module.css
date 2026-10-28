@@ -1,0 +1,249 @@
+/* The lists under the prose: medicine changes, follow-ups and record updates, each with a tick. */
+
+/* ---------- medicines, follow-ups, record updates ---------- */
+.rows {
+  display: grid;
+  gap: 4px;
+  list-style: none;
+}
+
+.medRow {
+  display: grid;
+  grid-template-columns: 76px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 4px 12px;
+  padding-block: 6px;
+}
+
+.act {
+  justify-self: start;
+  margin-top: 1px;
+  padding: 3px 8px;
+  border-radius: 7px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.act[data-act="START"],
+.act[data-act="CHANGE"] {
+  background: var(--signal-wash);
+  color: var(--signal-ink);
+}
+
+.act[data-act="STOP"] {
+  background: color-mix(in srgb, var(--alert) 9%, var(--paper));
+  color: var(--alert);
+}
+
+.act[data-act="CONTINUE"] {
+  padding-inline: 0;
+  font-weight: 560;
+  color: var(--ink-3);
+}
+
+.medText {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.medText strong {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.medText span {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-2);
+}
+
+.medText em {
+  font-size: 0.8125rem;
+  font-style: normal;
+  color: var(--ink-3);
+}
+
+.medRow[data-out="true"] strong,
+.fuRow[data-out="true"] .tick > span:last-child,
+.upRow[data-out="true"] p {
+  color: var(--ink-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--hair-2);
+}
+
+.rowTools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: -6px;
+}
+
+.evBtn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .evBtn:hover {
+    background: var(--hover-wash);
+    color: var(--ink);
+  }
+}
+
+.evBtn[aria-pressed="true"] {
+  background: var(--signal-wash);
+  color: var(--signal-ink);
+}
+
+.tick {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  font-size: 0.875rem;
+  cursor: pointer;
+}
+
+.tick input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.box {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  color: transparent;
+  transition:
+    background-color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+.tick input:checked + .box {
+  background: var(--signal-ink);
+  box-shadow: none;
+  color: #fff;
+}
+
+.tick input:focus-visible + .box {
+  outline: 2px solid var(--signal-ink);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .tick:hover input:not(:checked) + .box {
+    box-shadow: inset 0 0 0 1.5px var(--ink-3);
+  }
+}
+
+.fuRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0 10px;
+}
+
+.fuRow .tick {
+  align-items: flex-start;
+  padding-block: 10px;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+
+.fuRow .box {
+  margin-top: 1px;
+}
+
+.owner {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+.upRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 4px 12px;
+  padding-block: 4px;
+}
+
+.upRow p {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.upLabel {
+  margin-right: 6px;
+  font-weight: 600;
+}
+
+.upRow s {
+  color: var(--ink-3);
+}
+
+.upArrow {
+  margin: 0 6px;
+  color: var(--ink-3);
+  vertical-align: -2px;
+}
+
+.foot {
+  margin-top: 10px;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+@media (max-width: 1023px) {
+  /* on touch, every tool is full ink and a full thumb wide */
+  .evBtn {
+    width: 44px;
+    height: 44px;
+  }
+  .medRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .act {
+    grid-column: 1 / -1;
+  }
+  .rowTools {
+    grid-column: 1 / -1;
+    margin-top: 0;
+    margin-left: -10px;
+  }
+  .fuRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .fuRow .tick {
+    grid-column: 1 / -1;
+    padding-bottom: 0;
+  }
+  .fuRow .owner {
+    padding-left: 30px;
+  }
+}

@@ -1,0 +1,94 @@
+/* Past consultations: summary, assessment and what the patient was told. */
+
+.visits {
+  display: grid;
+}
+
+.visits > li {
+  display: grid;
+  gap: 6px;
+  padding: 14px 0;
+  border-top: 1px solid var(--hair);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.visits > li:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.visits ul {
+  display: grid;
+  gap: 2px;
+}
+
+.visits ul li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr);
+  gap: 8px;
+  font-size: 0.875rem;
+}
+
+.visits ul li::before {
+  content: "";
+  width: 2px;
+  height: 12px;
+  margin-top: 5px;
+  border-radius: 1px;
+  background: var(--signal-ink);
+}
+
+.visitHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 2px 12px;
+}
+
+.visitHead strong {
+  font-weight: 560;
+  color: var(--ink);
+}
+
+.visitHead span {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+/* what the doctor told the patient, set apart from the doctor's own note */
+.toldLabel {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.visitWhen {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 12px;
+}
+.visitNote {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin-block: -12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--slate-800);
+  text-decoration: none;
+}
+@media (hover: hover) and (pointer: fine) {
+  .visitNote:hover {
+    text-decoration: underline;
+  }
+}
+.visitAssess span {
+  margin-right: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}

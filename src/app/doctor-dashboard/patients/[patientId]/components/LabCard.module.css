@@ -1,0 +1,172 @@
+/* One lab report: what is out of range leads, the rest one tap away, and the review form. */
+
+.lab {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+}
+
+.lab[data-pending="true"] {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--alert) 30%, transparent);
+}
+
+.labHead {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px 16px;
+}
+
+.labHead > div {
+  display: grid;
+  gap: 2px;
+}
+
+.labHead strong {
+  font-size: 1rem;
+  font-weight: 560;
+}
+
+.labHead > div > span {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+.tableWrap {
+  position: relative;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.table th,
+.table td {
+  padding: 9px 8px 9px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--hair);
+  white-space: nowrap;
+}
+
+.table thead th {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.table tbody th {
+  font-weight: 560;
+}
+
+.table td {
+  color: var(--ink-3);
+}
+
+.table td strong {
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.quote {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--r-media);
+  background: var(--paper);
+  box-shadow: inset 2px 0 0 var(--signal-ink);
+}
+
+.quote p {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.quote cite {
+  display: block;
+  margin-top: 4px;
+  font-size: 0.75rem;
+  font-style: normal;
+  color: var(--ink-3);
+}
+
+/* lab direction: the previous value with an arrow, in ink; colour is for status only */
+.trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.trend svg {
+  color: var(--ink-2);
+}
+
+.status2 {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  white-space: nowrap;
+}
+
+.status2 i {
+  width: 2px;
+  height: 12px;
+  border-radius: 1px;
+}
+
+.status2[data-tone="worse"] {
+  color: var(--alert);
+}
+
+.status2[data-tone="worse"] i {
+  background: var(--alert);
+}
+
+.status2[data-tone="better"] {
+  color: var(--ink-2);
+}
+
+.status2[data-tone="better"] i {
+  background: var(--slate-600);
+}
+
+.status2[data-tone="seen"] {
+  color: var(--ink);
+}
+
+.status2[data-tone="seen"] i {
+  background: var(--ink-3);
+}
+
+/* the reference range: its own column on wide screens, a second line under the result on phones */
+.refUnder {
+  display: none;
+}
+
+@media (max-width: 599px) {
+  .refCol {
+    display: none;
+  }
+  .refUnder {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--ink-3);
+  }
+  .lab {
+    padding: 12px;
+  }
+}
+
+.reviewForm {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+

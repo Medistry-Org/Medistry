@@ -1,0 +1,41 @@
+/* What the patient logged: medicines taken, weights and symptoms. */
+
+.symptoms {
+  display: grid;
+  gap: 8px;
+}
+
+.symptoms li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  padding: 12px 14px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+}
+
+.symptoms li[data-flag="true"] {
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--alert) 25%, transparent);
+}
+
+.symptoms li > div {
+  display: grid;
+  gap: 2px;
+}
+
+.symptoms strong {
+  font-size: 0.9375rem;
+  font-weight: 560;
+}
+
+.symptoms li > div span {
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+.symptoms :global(.btn) {
+  min-height: 40px;
+}

@@ -1,0 +1,12 @@
+/* One readable column of cards, like Arhaan's Plan and payments panel. */
+.stack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  max-width: 760px;
+}
+.text {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}

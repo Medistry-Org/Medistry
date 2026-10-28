@@ -1,0 +1,696 @@
+/*
+  The note's prose sections: headings, sentences linked to the call, flags, evidence, the editor,
+  the small menus and the signed footer. Scribe text is one step lighter than the doctor's own; a
+  checked section turns full ink (Arhaan's Notes.module.css).
+*/
+
+.iconBtn {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--ink-2);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .iconBtn:not(:disabled):hover {
+    background: var(--hover-wash);
+    color: var(--ink);
+  }
+}
+
+.iconBtn[aria-expanded="true"] {
+  background: var(--hover-wash);
+  color: var(--ink);
+}
+
+.iconBtn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+/* ---------- sections: hairline bands, never boxes ---------- */
+.sec {
+  padding: 20px var(--card-pad);
+  border-top: 1px solid var(--hair);
+  scroll-margin-top: 80px;
+  scroll-margin-bottom: 100px;
+  transition: box-shadow 160ms var(--ease-out);
+}
+
+.sections .sec:focus-visible {
+  outline: none;
+  box-shadow: inset 3px 0 0 var(--signal-ink);
+}
+
+.sections[data-fade="true"] > .sec {
+  animation: appear 240ms var(--ease-out) both;
+}
+
+.secHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 44px;
+  margin-bottom: 10px;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 520;
+  letter-spacing: -0.01em;
+}
+
+.secMeta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.secMeta:empty {
+  display: none;
+}
+
+.metaTick {
+  color: var(--signal-ink);
+}
+
+.tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.check {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  color: var(--ink-3);
+  cursor: pointer;
+  transition:
+    background-color 160ms var(--ease-out),
+    color 160ms var(--ease-out),
+    box-shadow 160ms var(--ease-out);
+}
+
+.check[aria-pressed="true"] {
+  background: var(--signal-ink);
+  box-shadow: none;
+  color: #fff;
+}
+
+.editBtn {
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 999px;
+  color: var(--ink-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  /* quiet until the doctor is in the section; never hidden */
+  .sec .tools .editBtn,
+.sec .tools .iconBtn {
+    color: var(--ink-3);
+  }
+  .sec:hover .tools .editBtn,
+.sec:focus-within .tools .editBtn,
+.sec:hover .tools .iconBtn,
+.sec:focus-within .tools .iconBtn {
+    color: var(--ink);
+  }
+  .editBtn:hover {
+    background: var(--hover-wash);
+    text-decoration: none;
+  }
+  .check:not([aria-pressed="true"]):hover {
+    box-shadow: inset 0 0 0 1.5px var(--ink-3);
+    color: var(--ink);
+  }
+}
+
+/* ---------- prose and sentences ---------- */
+.body {
+  max-width: 68ch;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.prose {
+  text-wrap: pretty;
+}
+
+.sent {
+  margin: 0 -2px;
+  padding: 1px 2px;
+  border-radius: 4px;
+  color: inherit;
+  text-decoration: none;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 200ms var(--ease-out),
+    color 240ms var(--ease-out);
+}
+
+/* the scribe's words in the second ink until the doctor vouches for the section */
+.body[data-tone="draft"] .sent[data-by="scribe"] {
+  color: var(--ink-2);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .sent:hover {
+    background: var(--hover-wash);
+  }
+}
+
+.sent[data-lit="true"],
+.sent[data-flash="true"] {
+  background: var(--signal-wash);
+}
+
+.sent[aria-pressed="true"] {
+  background: var(--signal-wash);
+  color: var(--ink);
+}
+
+.body[data-tone="draft"] .sent[aria-pressed="true"] {
+  color: var(--ink);
+}
+
+.sent[data-flag="true"] {
+  text-decoration: underline wavy color-mix(in srgb, var(--alert) 70%, transparent);
+  text-decoration-thickness: 1px;
+  text-decoration-skip-ink: none;
+  text-underline-offset: 4px;
+}
+
+.sent:focus-visible {
+  outline-offset: 1px;
+  border-radius: 4px;
+}
+
+.planList,
+.nextList {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+}
+
+.planList > li,
+.nextList > li {
+  position: relative;
+  padding-left: 18px;
+}
+
+.planList > li::before,
+.nextList > li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.78em;
+  width: 7px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--slate-600);
+}
+
+.emptyBox {
+  width: 100%;
+  min-height: 64px;
+  padding: 14px 16px;
+  border: 1px dashed var(--hair-2);
+  border-radius: 12px;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--ease-out),
+    color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .emptyBox:hover {
+    border-color: var(--ink-3);
+    color: var(--ink);
+  }
+}
+
+.none {
+  font-size: 0.9375rem;
+  color: var(--ink-3);
+}
+
+.skel {
+  display: grid;
+  gap: 10px;
+  padding-block: 4px;
+}
+
+.skel span {
+  height: 14px;
+  border-radius: 7px;
+  background: var(--bg-2);
+  animation: breathe 1400ms var(--ease-out) infinite alternate;
+}
+
+/* ---------- flags, and what is left of one once settled ---------- */
+.flag {
+  display: grid;
+  gap: 4px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+  box-shadow: inset 3px 0 0 var(--alert);
+}
+
+.flagTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--alert);
+}
+
+.flagWhy {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+.flagOpts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.flagEdit {
+  padding: 0 6px;
+}
+
+.settled {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 6px;
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: var(--ink-3);
+}
+
+.settled svg {
+  color: var(--signal-ink);
+}
+
+.inlineBtn {
+  min-height: 36px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--slate-800);
+  cursor: pointer;
+  transition: background-color 160ms var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .inlineBtn:hover {
+    background: var(--hover-wash);
+  }
+}
+
+/* ---------- evidence, in place ---------- */
+.evidence {
+  scroll-margin-bottom: 150px;
+  display: grid;
+  justify-items: start;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  animation: appear 200ms var(--ease-out);
+}
+
+.evRow {
+  display: grid;
+  gap: 2px;
+}
+
+.evWhen {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.evText {
+  color: var(--ink);
+}
+
+.evNone {
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+.en {
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.evidence mark {
+  border-radius: 3px;
+  background: rgb(244 245 246 / 0.3);
+  color: inherit;
+}
+
+.unsure {
+  text-decoration: underline dotted var(--alert);
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+
+/* ---------- for the patient: a preview of what lands in their app ---------- */
+.preview {
+  display: grid;
+  gap: 10px;
+  padding: 16px;
+  border-radius: var(--r-media);
+  background: var(--bg);
+}
+
+.preview .evidence,
+.preview .flag {
+  background: var(--paper);
+}
+
+.preview .flag {
+  background: color-mix(in srgb, var(--alert) 7%, var(--paper));
+}
+
+.previewHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.nextHead {
+  margin-top: 2px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--ink-3);
+}
+
+.nextList {
+  gap: 4px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+
+/* ---------- editing in place ---------- */
+.editor {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.editor .field {
+  max-height: none;
+  overflow: hidden;
+  line-height: 1.6;
+}
+
+.editFoot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.hint {
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+
+.editActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.doneBtn {
+  min-height: 40px;
+  padding: 0 18px;
+  font-size: 0.875rem;
+}
+
+.doneBtn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+/* ---------- menus ---------- */
+.moreWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.menu {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  right: 0;
+  display: grid;
+  min-width: 224px;
+  padding: 6px;
+  border-radius: 14px;
+  background: var(--paper);
+  box-shadow:
+    0 0 0 1px var(--hair),
+    0 16px 40px -12px rgb(10 11 12 / 0.25);
+  animation: pop 160ms var(--ease-out);
+}
+
+.menu > button {
+  min-height: 40px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--ink);
+  text-align: start;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.menu > button:hover:not(:disabled),
+.menu > button:focus-visible {
+  outline: none;
+  background: var(--hover-wash);
+}
+
+.menu > button:disabled {
+  color: var(--ink-3);
+  opacity: 0.6;
+  cursor: default;
+}
+
+.keys {
+  min-width: 296px;
+  padding: 12px 14px;
+}
+
+.keys dl {
+  display: grid;
+  gap: 6px;
+}
+
+.keys dl > div {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  align-items: center;
+  gap: 8px;
+}
+
+.keys dt {
+  display: flex;
+  gap: 4px;
+}
+
+.keys kbd {
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: 6px;
+  background: var(--bg-2);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.keys dd {
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+
+/* after signing: the attestation, then anything added since */
+.signedFoot {
+  display: grid;
+  justify-items: start;
+  gap: 12px;
+  padding: 20px var(--card-pad) var(--card-pad);
+  border-top: 1px solid var(--hair);
+}
+
+.signedFoot > div {
+  justify-self: stretch;
+}
+
+.signedBy {
+  display: flex;
+  gap: 8px;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.signedBy svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--signal-ink);
+}
+
+.addenda {
+  display: grid;
+  justify-self: stretch;
+  gap: 8px;
+  list-style: none;
+}
+
+.addenda li {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--bg);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
+.addHead {
+  margin-bottom: 2px;
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+.signedFoot form {
+  justify-self: stretch;
+}
+
+.log {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 6px;
+  list-style: none;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+@media (max-width: 1023px) {
+  /* on touch, every tool is full ink and a full thumb wide */
+  .check,
+.iconBtn {
+    width: 44px;
+    height: 44px;
+  }
+  .editBtn,
+.inlineBtn {
+    min-height: 44px;
+  }
+  /* a section head: the title and its tools on one line, who wrote it beneath */
+  .secHead {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "title tools"
+      "meta meta";
+    gap: 0 8px;
+  }
+  .secHead .h2 {
+    grid-area: title;
+  }
+  .secHead .secMeta {
+    grid-area: meta;
+    margin-top: -4px;
+  }
+  .secHead .tools {
+    grid-area: tools;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skel span,
+.sections[data-fade="true"] > .sec,
+.evidence,
+.menu {
+    animation: none;
+  }
+}
+
+@keyframes breathe {
+  to {
+    opacity: 0.3;
+  }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+}

@@ -1,0 +1,24 @@
+/* The review before paying: Arhaan's pay sheet (bill, fine print, one action) on a card. */
+.review {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+/* the secure-payment line, set like Arhaan's pack-verification note: icon, then small text */
+.secure {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}
+.secure svg {
+  flex: none;
+  color: var(--slate-700);
+}
+.calm {
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--ink-2);
+}

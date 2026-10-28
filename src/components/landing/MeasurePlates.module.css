@@ -1,0 +1,211 @@
+/* Technical plates. One stroke vocabulary across all three:
+   2.2 for the thing being measured, 1.2 for structure, 1 for leaders and scales. */
+
+.plate {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+/* type: sized in viewBox units; every plate renders at 0.85x to 1x scale,
+   so 14 units lands between 12 and 14px on screen */
+.txt,
+.txtOn,
+.axis,
+.unit {
+  font-family: var(--font-text);
+  font-size: 15px;
+  letter-spacing: -0.005em;
+}
+.txt {
+  fill: var(--ink-2);
+  font-weight: 500;
+}
+.txtOn {
+  fill: var(--mint-ink);
+  font-weight: 560;
+}
+.axis {
+  fill: var(--ink-3);
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.unit {
+  fill: var(--ink-3);
+  font-size: 13.5px;
+}
+
+.leader {
+  fill: none;
+  stroke: var(--ink-3);
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+.leaderEnd {
+  fill: var(--ink-2);
+}
+.leaderEndOn {
+  fill: var(--mint-ink);
+}
+.rule {
+  stroke: var(--hair-2);
+  stroke-width: 1;
+}
+.signal {
+  fill: var(--mint);
+}
+
+/* waist */
+/* the fat under the skin carries a faint warm tint, the one warm note in the plates */
+.skin {
+  fill: rgb(214 196 170 / 0.24);
+  stroke: var(--teal-800);
+  stroke-width: 1.6;
+}
+.wallFill {
+  fill: var(--paper);
+  stroke: none;
+}
+.wall {
+  fill: none;
+  stroke: var(--hair-2);
+  stroke-width: 1.2;
+}
+.cavity {
+  fill: var(--mint-wash);
+  stroke: none;
+}
+.cavityLine {
+  fill: none;
+  stroke: rgb(11 118 87 / 0.55);
+  stroke-width: 1.2;
+}
+.iso {
+  fill: none;
+  stroke: rgb(11 118 87 / 0.24);
+  stroke-width: 1;
+}
+.bone {
+  fill: var(--bg-2);
+  stroke: var(--hair-2);
+  stroke-width: 1.2;
+}
+.navel {
+  fill: var(--teal-800);
+}
+.tape {
+  fill: none;
+  stroke: var(--teal-800);
+  stroke-width: 2.2;
+  stroke-linejoin: round;
+}
+.tick {
+  stroke: var(--teal-700);
+  stroke-width: 0.9;
+}
+.tickMajor {
+  stroke: var(--teal-800);
+  stroke-width: 1.2;
+}
+.tab {
+  fill: var(--teal-800);
+}
+
+/* weight */
+.band {
+  fill: var(--mint-wash);
+}
+.avg {
+  stroke: var(--teal-800);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+}
+.stem {
+  stroke: var(--hair-2);
+  stroke-width: 1;
+  stroke-dasharray: 2 3;
+}
+.dot {
+  fill: var(--teal-900);
+}
+.ring {
+  fill: var(--paper);
+  stroke: var(--teal-800);
+  stroke-width: 1.6;
+}
+
+/* glucose */
+.range {
+  fill: var(--mint-wash);
+}
+.limit {
+  stroke: rgb(11 118 87 / 0.7);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+.trace {
+  fill: none;
+  stroke: var(--teal-800);
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* Choreography: each plate draws itself once when its card arrives.
+   The card carries data-reveal="draw", so Motion adds .in to it. */
+:global(.js) .draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset var(--dur, 1300ms) var(--ease-io) var(--dl, 0ms);
+}
+:global(.js) .fade,
+:global(.js) .label {
+  opacity: 0;
+  transition: opacity 600ms var(--ease-out) var(--dl, 0ms);
+}
+:global(.js) .label {
+  transition-duration: 700ms;
+}
+:global(.js) .grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+  transform: scaleX(0);
+  transition: transform 1100ms var(--ease-io) var(--dl, 0ms);
+}
+:global(.js) .pop {
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: translateY(6px);
+  transition:
+    opacity 500ms var(--ease-out),
+    transform 700ms var(--ease-drawer);
+  transition-delay: calc(450ms + var(--i) * 90ms);
+}
+:global(.js) :global(.in) .draw {
+  stroke-dashoffset: 0;
+}
+:global(.js) :global(.in) .fade,
+:global(.js) :global(.in) .label,
+:global(.js) :global(.in) .pop {
+  opacity: 1;
+  transform: none;
+}
+:global(.js) :global(.in) .grow {
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :global(.js) .draw {
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+  :global(.js) .fade,
+  :global(.js) .label,
+  :global(.js) .pop,
+  :global(.js) .grow {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

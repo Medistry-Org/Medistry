@@ -1,0 +1,64 @@
+/* Uploading a lab report: the date, its check, a dashed drop area (Arhaan's photo frame), then the action. */
+
+.form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+.ok {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--signal-ink);
+}
+.ok svg {
+  flex: none;
+  margin-top: 2px;
+}
+.zone {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  width: 100%;
+  min-height: 148px;
+  padding: 24px 16px;
+  border: 1.5px dashed var(--hair-2);
+  border-radius: var(--r-media);
+  background: var(--bg);
+  text-align: center;
+  font: inherit;
+  color: var(--ink);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 160ms var(--ease-out),
+    background-color 200ms var(--ease-out);
+}
+.zone svg {
+  color: var(--slate-700);
+}
+.zone strong {
+  max-width: 100%;
+  font-size: 1rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.zone span {
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: var(--ink-3);
+}
+.zone:active:not(:disabled) {
+  transform: scale(0.985);
+}
+.zone:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+@media (hover: hover) and (pointer: fine) {
+  .zone:not(:disabled):hover {
+    background: var(--bg-2);
+  }
+}

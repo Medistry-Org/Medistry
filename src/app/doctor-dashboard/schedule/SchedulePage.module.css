@@ -1,0 +1,141 @@
+/* Schedule: the month as a calendar of booked counts, and the picked day's list beside it. */
+
+.schedGrid {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1280px) {
+  .schedGrid {
+    grid-template-columns: minmax(0, 1.5fr) minmax(320px, 1fr);
+    align-items: stretch;
+    gap: 20px;
+  }
+}
+
+.monthHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.monthNav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cal {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.calHead {
+  padding-bottom: 4px;
+  font-size: 0.75rem;
+  font-weight: 560;
+  text-align: center;
+  color: var(--ink-3);
+}
+
+.calDay {
+  position: relative;
+  display: grid;
+  align-content: space-between;
+  justify-items: start;
+  gap: 6px;
+  aspect-ratio: 1 / 1.05;
+  min-height: 48px;
+  padding: 8px;
+  border: 0;
+  border-radius: var(--r-media);
+  background: var(--bg);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 180ms var(--ease-out),
+    box-shadow 180ms var(--ease-out),
+    transform 160ms var(--ease-out);
+}
+
+.calDay:active {
+  transform: scale(0.97);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .calDay:not([aria-pressed="true"]):hover {
+    box-shadow: inset 0 0 0 1px var(--hair-2);
+  }
+}
+
+.calDay[data-off="true"] {
+  background: transparent;
+  color: var(--ink-3);
+}
+
+.calDay[data-past="true"]:not([aria-pressed="true"]) .calNum {
+  color: var(--ink-3);
+}
+
+.calDay[data-today="true"] .calNum {
+  color: var(--signal-ink);
+  font-weight: 700;
+}
+
+.calDay[aria-pressed="true"] {
+  background: var(--slate-900);
+  color: var(--on-dark);
+}
+
+.calDay[aria-pressed="true"] .calNum {
+  color: var(--on-dark);
+}
+
+.calNum {
+  font-size: 0.875rem;
+  font-weight: 560;
+}
+
+/* the day's count in figures at every width */
+.calCount {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--ink-3);
+}
+
+[aria-pressed="true"] .calCount {
+  color: var(--signal);
+}
+
+@media (max-width: 559px) {
+  .calDay {
+    aspect-ratio: auto;
+    min-height: 52px;
+    padding: 6px;
+    justify-items: center;
+  }
+  .calCount {
+    display: block;
+    color: var(--slate-700);
+  }
+  [aria-pressed="true"] .calCount {
+    color: var(--signal);
+  }
+}
+
+.legend {
+  font-size: 0.75rem;
+  color: var(--ink-3);
+}
+
+/* "7 booked" where there is room; just the number on a phone */
+@media (max-width: 599px) {
+  .calWord {
+    display: none;
+  }
+}

@@ -1,0 +1,207 @@
+/*
+  The consultation room (the design's ConsultationDemo frame): a quiet header, then one carbon video
+  stage that the 100ms call fills. Porcelain around it; the call itself brings its own controls.
+*/
+
+.room {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  padding: 0 18px 18px;
+  background: var(--bg);
+  color: var(--ink);
+}
+/* in the call: exactly one screen tall, so the stage takes what the header leaves */
+.room[data-live="true"] {
+  height: 100dvh;
+}
+.header {
+  height: 72px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.brand,
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+}
+.headerActions {
+  gap: 9px;
+}
+.brand {
+  color: var(--ink);
+}
+.divider {
+  width: 1px;
+  height: 22px;
+  background: var(--hair-2);
+}
+.headerTitle {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* the video stage: carbon, a surface radius, the call's iframe edge to edge */
+.stage {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--slate-950);
+}
+.frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* before joining: the camera check and the one action, centred */
+.prejoin {
+  width: min(520px, 100%);
+  margin: clamp(8px, 4vh, 48px) auto 0;
+  display: grid;
+  gap: 16px;
+}
+.prejoinCard {
+  --card-gap: 14px;
+  gap: var(--card-gap);
+  grid-template-columns: minmax(0, 1fr);
+  padding: var(--card-pad);
+}
+
+.secondaryButton,
+.endButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 15px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+  text-decoration: none;
+  cursor: pointer;
+  transition:
+    transform 120ms var(--ease-out),
+    background-color 140ms var(--ease-out);
+}
+.secondaryButton {
+  border: 1px solid var(--hair-2);
+  color: var(--ink);
+  background: var(--paper);
+}
+.endButton {
+  border: 1px solid var(--alert);
+  color: var(--paper);
+  background: var(--alert);
+}
+.secondaryButton:active,
+.endButton:active {
+  transform: scale(0.98);
+}
+@media (hover: hover) and (pointer: fine) {
+  .secondaryButton:hover {
+    background: var(--bg-2);
+  }
+}
+.secondaryButton:focus-visible,
+.endButton:focus-visible {
+  outline: 2px solid var(--signal-ink);
+  outline-offset: 3px;
+}
+.endButton:disabled {
+  cursor: progress;
+  opacity: 0.6;
+}
+
+/* the doctor's confirmation, inside the sheet */
+.confirmText {
+  font-size: 1rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.confirmActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  margin-top: 20px;
+}
+
+/* after the doctor ends the call */
+.ended {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 20px;
+  text-align: center;
+}
+.endedIcon {
+  display: grid;
+  place-items: center;
+  width: 70px;
+  height: 70px;
+  margin-bottom: 27px;
+  border: 1px solid var(--hair-2);
+  border-radius: 50%;
+  color: var(--signal-ink);
+  background: var(--signal-wash);
+}
+.endedLabel {
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  font-weight: 560;
+}
+.ended h1 {
+  margin: 10px 0 26px;
+  font-family: var(--font-display);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 500;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+@media (max-width: 760px) {
+  .room {
+    padding-inline: 12px;
+    padding-bottom: 12px;
+  }
+  .header {
+    height: 59px;
+  }
+  .brand {
+    gap: 10px;
+  }
+  .brand svg {
+    width: 88px;
+    height: auto;
+  }
+  .divider {
+    height: 18px;
+  }
+  .headerTitle {
+    font-size: 14px;
+  }
+}
+/* a phone in the call: the wordmark and the two actions; the word "Consultation" gives way */
+@media (max-width: 479px) {
+  .room[data-live="true"] :is(.divider, .headerTitle) {
+    display: none;
+  }
+}
+@media (max-width: 390px) {
+  .room {
+    padding-inline: 7px;
+  }
+}

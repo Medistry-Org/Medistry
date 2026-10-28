@@ -1,0 +1,545 @@
+.how {
+  position: relative;
+  background: var(--paper);
+  border-block: 1px solid var(--hair);
+}
+
+.stage {
+  padding-block: var(--section);
+}
+
+.inner {
+  display: grid;
+  gap: 40px;
+}
+
+.head {
+  display: grid;
+  gap: 18px;
+}
+.lede {
+  max-width: 30em;
+}
+
+/* Chart */
+.chart {
+  position: relative;
+}
+.plot {
+  position: relative;
+  aspect-ratio: 5 / 3;
+}
+.svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.rail {
+  stroke: var(--hair-2);
+  stroke-width: 2;
+}
+.lane0 {
+  stroke: var(--hair);
+  stroke-width: 1.5;
+  stroke-dasharray: 2 8;
+}
+.lane,
+.week {
+  font-family: var(--font-text);
+  fill: var(--ink-3);
+  font-size: 36px;
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 10px;
+  stroke-linejoin: round;
+}
+.week {
+  font-size: 32px;
+}
+.laneLong {
+  display: none;
+}
+@media (min-width: 768px) {
+  .laneLong {
+    display: inline;
+  }
+  .laneShort {
+    display: none;
+  }
+}
+@media (min-width: 768px) {
+  .lane {
+    font-size: 21px;
+  }
+  .week {
+    font-size: 19px;
+  }
+}
+.maint {
+  fill: var(--mint-wash);
+}
+.maintLabel {
+  font-family: var(--font-text);
+  font-weight: 560;
+  font-size: 34px;
+  fill: var(--mint-ink);
+}
+.maintSub {
+  display: none;
+  font-weight: 450;
+}
+@media (min-width: 768px) {
+  .maintLabel {
+    font-size: 20px;
+  }
+  .maintSub {
+    display: inline;
+    font-size: 16px;
+  }
+}
+.link {
+  stroke-width: 1.5;
+}
+.dim .link {
+  stroke: var(--hair);
+}
+.dim .you,
+.dim .reply {
+  fill: var(--hair-2);
+}
+.dim .review {
+  fill: none;
+  stroke: var(--hair-2);
+  stroke-width: 2;
+}
+.dim .lab {
+  fill: none;
+  stroke: var(--hair-2);
+  stroke-width: 2;
+}
+.lit .link {
+  stroke: rgb(28 64 70 / 0.28);
+}
+.lit .you {
+  fill: var(--teal-800);
+}
+.lit .reply {
+  fill: var(--mint-ink);
+}
+.lit .review {
+  fill: var(--paper);
+  stroke: var(--teal-800);
+  stroke-width: 2.5;
+}
+.lit .lab {
+  fill: var(--mint);
+  stroke: var(--teal-900);
+  stroke-width: 2;
+}
+.cursor {
+  display: none;
+  position: absolute;
+  top: calc(150 / 600 * 100%);
+  bottom: calc(120 / 600 * 100%);
+  width: 2px;
+  margin-left: -1px;
+  border-radius: 2px;
+  background: var(--mint);
+  box-shadow: 0 0 0 3px rgb(70 216 173 / 0.18);
+}
+
+.dots {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.dot {
+  position: absolute;
+  width: 11px;
+  height: 11px;
+  margin: -5.5px 0 0 -5.5px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  transition:
+    background-color 300ms ease,
+    box-shadow 300ms ease,
+    transform 400ms var(--ease-out);
+}
+.dot[data-on] {
+  background: var(--teal-800);
+  box-shadow:
+    0 0 0 3px var(--paper),
+    inset 0 0 0 1.5px var(--teal-800);
+}
+.dot[data-current] {
+  background: var(--mint);
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 4px var(--teal-800);
+  transform: scale(1.15);
+}
+
+/* two columns with shared left edges; every mark centres in a 14px cell */
+.key {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  justify-content: start;
+  gap: 8px 22px;
+  margin-top: 6px;
+  font-size: 0.8125rem;
+  color: var(--ink-2);
+}
+.key li {
+  display: grid;
+  grid-template-columns: 14px auto;
+  column-gap: 8px;
+  align-items: center;
+}
+.key i {
+  display: block;
+  justify-self: center;
+}
+.kYou {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--teal-800);
+}
+.kReply {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--mint-ink);
+}
+.kReview {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 2px var(--teal-800);
+}
+.kLab {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  background: var(--mint);
+  box-shadow: inset 0 0 0 1.5px var(--teal-900);
+}
+.note {
+  margin-top: 10px;
+  font-size: 0.8125rem;
+  color: var(--ink-3);
+}
+
+/* List: vertical rail on mobile, every step open */
+.listWrap {
+  position: relative;
+  margin-top: 28px;
+  padding-left: 30px;
+}
+/* the rail runs from the first node's centre to the last node's centre */
+.railTrack {
+  position: absolute;
+  left: 5px;
+  top: 11.5px;
+  bottom: var(--tail, 8px);
+  width: 1px;
+  background: var(--hair);
+}
+.rail {
+  position: absolute;
+  inset: 0;
+  background: var(--teal-800);
+  transform-origin: top;
+}
+.list {
+  display: grid;
+  gap: 34px;
+}
+.ev {
+  position: relative;
+}
+.ev::before {
+  content: "";
+  position: absolute;
+  left: -30px;
+  top: 6px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 1.5px var(--hair-2);
+  transition:
+    background-color 300ms ease,
+    box-shadow 300ms ease;
+}
+.ev[data-on]::before {
+  background: var(--teal-800);
+  box-shadow: 0 0 0 3px var(--paper);
+}
+.ev[data-current]::before {
+  background: var(--mint);
+  box-shadow:
+    0 0 0 3px var(--paper),
+    0 0 0 4px var(--teal-800);
+}
+.prog {
+  display: none;
+}
+.stepHead {
+  font: inherit;
+}
+.stepBtn {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: inherit;
+  cursor: default;
+  -webkit-tap-highlight-color: transparent;
+}
+.when {
+  font-size: 0.8125rem;
+  font-weight: 560;
+  color: var(--mint-ink);
+}
+.title {
+  font-family: var(--font-display);
+  font-weight: 560;
+  font-size: clamp(1.2rem, 1.08rem + 0.45vw, 1.45rem);
+  line-height: 1.2;
+  letter-spacing: -0.016em;
+}
+.bodyWrap {
+  display: grid;
+  grid-template-rows: 1fr;
+}
+.bodyWrap > div {
+  overflow: hidden;
+}
+.body {
+  padding-top: 8px;
+  color: var(--ink-2);
+  max-width: 34em;
+  text-wrap: pretty;
+}
+
+/* Desktop: pinned stage. Every step is listed; the current one opens.
+   Scrolling drives it, and each step is also a button that glides there. */
+@media (min-width: 1024px) {
+  .stage {
+    height: 100svh;
+    min-height: 700px;
+    padding-block: calc(var(--nav-h) + 40px) 32px;
+    display: flex;
+    align-items: center;
+  }
+  .inner {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    grid-template-rows: auto 1fr;
+    column-gap: clamp(40px, 5vw, 88px);
+    row-gap: 0;
+    height: 100%;
+    max-height: 780px;
+  }
+  .head {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: start;
+    gap: 14px;
+    --stack-gap: 14px;
+  }
+  /* the same size as every other heading, capped only on short screens where the stage is pinned */
+  .head :global(.h2) {
+    font-size: min(clamp(2.05rem, 1.35rem + 2.7vw, 3.6rem), 5.6vh);
+  }
+  .lede {
+    font-size: 1.0625rem;
+  }
+  .chart {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
+  }
+  .cursor {
+    display: block;
+  }
+  .listWrap {
+    grid-column: 1;
+    grid-row: 2;
+    align-self: start;
+    margin: 24px 0 0;
+    padding: 0;
+  }
+  .railTrack {
+    display: none;
+  }
+  .list {
+    gap: 0;
+    border-top: 1px solid var(--hair);
+  }
+  .ev {
+    padding-left: 22px;
+    border-bottom: 1px solid var(--hair);
+  }
+  .ev::before {
+    display: none;
+  }
+  /* a hairline rail beside every step; it fills as you move through them */
+  .prog {
+    display: block;
+    position: absolute;
+    left: 0;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--hair);
+    overflow: hidden;
+  }
+  .prog i {
+    display: block;
+    height: 100%;
+    background: var(--teal-800);
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+  .ev[data-current] .prog i {
+    background: var(--mint-ink);
+  }
+  .stepBtn {
+    gap: 4px;
+    padding: 13px 0;
+    cursor: pointer;
+  }
+  .stepBtn:focus-visible {
+    outline-offset: 2px;
+  }
+  .when {
+    display: none;
+  }
+  .ev[data-current] .when {
+    display: block;
+  }
+  .title {
+    font-size: 1.3rem;
+    font-weight: 520;
+    color: var(--ink-3);
+    transition: color 240ms ease;
+  }
+  .ev[data-current] .title {
+    color: var(--ink);
+    font-weight: 560;
+  }
+  .bodyWrap {
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 520ms var(--ease-drawer);
+  }
+  .ev[data-current] .bodyWrap {
+    grid-template-rows: 1fr;
+  }
+  .body {
+    padding: 0 0 16px;
+    font-size: 1.0625rem;
+    opacity: 0;
+    transition: opacity 240ms ease;
+  }
+  .ev[data-current] .body {
+    opacity: 1;
+    transition: opacity 420ms ease 120ms;
+  }
+}
+@media (min-width: 1024px) and (hover: hover) and (pointer: fine) {
+  .stepBtn:hover .title {
+    color: var(--ink);
+  }
+}
+/* laptop screens: the list is the explanation, so the intro steps aside and
+   the whole pinned stage, open step included, always fits the screen */
+@media (min-width: 1024px) and (max-height: 860px) {
+  .lede {
+    display: none;
+  }
+  .stepBtn {
+    padding: 10px 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bodyWrap,
+  .body,
+  .title {
+    transition: none !important;
+  }
+}
+
+/* Reduced motion on desktop: no pinning, every step readable at once */
+@media (min-width: 1024px) {
+  .how[data-static] .stage {
+    height: auto;
+    min-height: 0;
+    padding-block: var(--section);
+  }
+  .how[data-static] .inner {
+    max-height: none;
+  }
+  .how[data-static] .chart {
+    align-self: start;
+  }
+  .how[data-static] .cursor,
+  .how[data-static] .prog {
+    display: none;
+  }
+  .how[data-static] .ev {
+    padding-left: 0;
+  }
+  .how[data-static] .stepBtn {
+    cursor: default;
+  }
+  .how[data-static] .when {
+    display: block;
+  }
+  .how[data-static] .title {
+    color: var(--ink);
+  }
+  .how[data-static] .bodyWrap {
+    grid-template-rows: 1fr;
+  }
+  .how[data-static] .body {
+    opacity: 1;
+  }
+}
+@media (min-width: 768px) {
+  .key {
+    grid-template-columns: repeat(4, max-content);
+  }
+}
+/* very short laptop screens: a tighter list so the open step still ends on screen */
+@media (min-width: 1024px) and (max-height: 740px) {
+  .stage {
+    padding-block: calc(var(--nav-h) + 28px) 24px;
+  }
+  .listWrap {
+    margin-top: 18px;
+  }
+  .stepBtn {
+    padding: 8px 0;
+  }
+  .title {
+    font-size: 1.2rem;
+  }
+  .body {
+    font-size: 1rem;
+    padding-bottom: 12px;
+  }
+}
+
+/* the plot's first row is empty on phones; pull it up so the gap after the intro matches the others */
+@media (max-width: 1023px) {
+  .plot {
+    margin-top: -28px;
+  }
+}
